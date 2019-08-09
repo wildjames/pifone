@@ -17,9 +17,9 @@ class Listener():
     play = True
 
     try:
-        C  = gpiozero.DigitalInputDevice(pin=0)
-        NO = gpiozero.DigitalInputDevice(pin=2)
-        NC = gpiozero.DigitalInputDevice(pin=3)
+        C  = gpiozero.DigitalInputDevice(pin=17)
+        NO = gpiozero.DigitalInputDevice(pin=27)
+        NC = gpiozero.DigitalInputDevice(pin=22)
     except:
         print("Not running on a raspberry pi!")
 
@@ -35,9 +35,6 @@ class Listener():
             print("NO:  {}".format(self.NO.value))
 
         threading.Timer(3, self._listen).start()
-
-    def stop(self):
-        self.play = False
 
     def play_clip(self, playme):
         f = wave.open(playme, 'rb')
