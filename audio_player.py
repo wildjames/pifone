@@ -20,11 +20,12 @@ class Listener():
         C  = gpiozero.DigitalInputDevice(pin=17)
         NO = gpiozero.DigitalInputDevice(pin=27)
         NC = gpiozero.DigitalInputDevice(pin=22)
+        print("Successfully initialised to pins 17, 27, 22")
     except:
         print("Not running on a raspberry pi!")
 
     def __init__(self):
-        threading.Timer(3, self._listen).start()
+        threading.Timer(0.5, self._listen).start()
 
     def _listen(self):
         print("Current values:")
