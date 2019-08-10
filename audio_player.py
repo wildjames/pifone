@@ -38,6 +38,8 @@ class Listener():
             print("Black:   {}".format(self.black.value))
             print("Red:     {}".format(self.red.value))
 
+            self.play = self.black.value
+
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def play_clip(self, playme):
