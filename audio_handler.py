@@ -74,6 +74,7 @@ class Listener():
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def make_recording(self):
+        self.play = False
         self._playing = True
         self._recording = True
 
