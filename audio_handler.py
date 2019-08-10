@@ -83,7 +83,7 @@ class Listener():
         #close PyAudio
         p.terminate()
 
-        # I'm no longer playing.
+        # I'm no longer playing.
         self._playing = False
         print("Finished playback")
 
