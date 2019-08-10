@@ -16,6 +16,7 @@ class Listener():
     CHUNK = 1024
     POLLING_RATE = 0.1 #s
     play = True
+    _playing = False
 
     try:
         green  = gpiozero.DigitalOutputDevice(pin=17, initial_value=True)
@@ -33,6 +34,7 @@ class Listener():
     def _listen(self):
         os.system("clear")
         print("Current values:")
+        print("Currently playing?  {}".format(self._playing))
         print("play: {}".format(self.play))
         if self.rpi:
             print("Green:   {}".format(self.green.value))
@@ -41,9 +43,18 @@ class Listener():
 
             self.play = self.black.value
 
+        if self._playing == False and self.play == True:
+            threading.Thread(target=self.play_random)
+
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def play_clip(self, playme):
+        if self._playing:
+            return
+
+        # Now that I'm playing, make sure we don't start another playback
+        self._playing = True
+
         f = wave.open(playme, 'rb')
         p = pyaudio.PyAudio()
 
@@ -69,6 +80,9 @@ class Listener():
 
         #close PyAudio
         p.terminate()
+
+        # I'm no longer playing.
+        self._playing = False
 
     def get_audio_files(self):
         audio_files = []
