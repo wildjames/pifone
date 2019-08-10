@@ -13,9 +13,9 @@ except: pass
 
 
 class Listener():
-    DEBUG = False
+    DEBUG = True
     CHUNK = 1024
-    POLLING_RATE = 0.1 #s
+    POLLING_RATE = 1 #s
     play = True
     _playing = False
 
