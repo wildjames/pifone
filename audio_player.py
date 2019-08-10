@@ -82,6 +82,7 @@ class Listener():
 
             #play stream
             while data and self.play:
+                print("Reading data")
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
 
