@@ -77,7 +77,9 @@ class Listener():
         for root, dirnames, filenames in os.walk("AUDIO_FILES/RECORDED/"):
             for filename in fnmatch.filter(filenames, "*.wav"):
                 fname = filename.replace('.wav', '')
-                audio_files.append(int(fname))
+                try:
+                    audio_files.append(int(fname))
+                except: pass
         new_file = "{:010d}.wav".format(max(audio_files) + 1)
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
