@@ -14,28 +14,29 @@ except: pass
 
 class Listener():
     CHUNK = 1024
+    POLLING_RATE = 0.5 #s
     play = True
 
     try:
-        C  = gpiozero.DigitalInputDevice(pin=17)
-        NO = gpiozero.DigitalInputDevice(pin=27)
-        NC = gpiozero.DigitalInputDevice(pin=22)
+        green  = gpiozero.DigitalInputDevice(pin=17)
+        black = gpiozero.DigitalInputDevice(pin=27)
+        red = gpiozero.DigitalInputDevice(pin=22)
         print("Successfully initialised to pins 17, 27, 22")
     except:
         print("Not running on a raspberry pi!")
 
     def __init__(self):
-        threading.Timer(0.5, self._listen).start()
+        threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
         print("Current values:")
         print("play: {}".format(self.play))
         if hasattr(self, "C"):
-            print("C:   {}".format(self.C.value))
-            print("NC:  {}".format(self.NC.value))
-            print("NO:  {}".format(self.NO.value))
+            print("C:   {}".format(self.green.value))
+            print("NC:  {}".format(self.black.value))
+            print("NO:  {}".format(self.red.value))
 
-        threading.Timer(3, self._listen).start()
+        threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def play_clip(self, playme):
         f = wave.open(playme, 'rb')
