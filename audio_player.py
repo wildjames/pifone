@@ -14,7 +14,7 @@ except: pass
 
 class Listener():
     CHUNK = 1024
-    POLLING_RATE = 0.1 #s
+    POLLING_RATE = 1 #s
     play = True
     _playing = False
 
@@ -52,6 +52,8 @@ class Listener():
         if self._playing:
             return
 
+        print("Starting a new playback")
+
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
 
@@ -83,6 +85,7 @@ class Listener():
 
         # I'm no longer playing.
         self._playing = False
+        print("Finished playback")
 
     def get_audio_files(self):
         audio_files = []
