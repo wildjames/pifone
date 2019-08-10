@@ -60,24 +60,35 @@ class Listener():
             self.play = self.pin27.value
             self.record = self.pin6.value
 
+
+        # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
             self._playing = False
             self._recording = False
 
-        if self._playing == False and self.play == True:
-            threading.Thread(target=self.play_random).start()
+        # If we WERENT playing, and CURRENTLY ARENT recording, but are NOW play,
+        # Start a play thread
+        if self._playing == False:
+            if self._recording == False:
+                if self.play == True:
+                    threading.Thread(target=self.play_random).start()
 
-        if self._recording == False and self.play and self.record:
-            threading.Thread(target=self.make_recording).start()
+        # If we WERENT recording, but ARE play, and ARE record,
+        # start a record thread
+        if self._recording == False:
+            if self.play:
+                if self.record:
+                    threading.Thread(target=self.make_recording).start()
 
 
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def make_recording(self):
-        self.play = False
-        self._playing = True
+        # Setting self.play = False stops the existing sound
+        self._playing = False
         self._recording = True
 
+        # Get the name of the new audio file to create
         audio_files = [0]
         for root, dirnames, filenames in os.walk("AUDIO_FILES/RECORDED/"):
             for filename in fnmatch.filter(filenames, "*.wav"):
@@ -85,10 +96,12 @@ class Listener():
                 try:
                     audio_files.append(int(fname))
                 except: pass
+
         new_file = "{:010d}.wav".format(max(audio_files) + 1)
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
+        # Init the audio handler
         p = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
@@ -152,7 +165,7 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         #play stream
-        while data and self.play:
+        while data and self.play and self._playing:
             stream.write(data)
             data = f.readframes(self.CHUNK)
 
