@@ -14,7 +14,7 @@ except: pass
 
 class Listener():
     CHUNK = 1024
-    POLLING_RATE = 0.5 #s
+    POLLING_RATE = 0.1 #s
     play = True
 
     try:
@@ -31,6 +31,7 @@ class Listener():
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
+        os.system("clear")
         print("Current values:")
         print("play: {}".format(self.play))
         if self.rpi:
