@@ -17,6 +17,7 @@ class Listener():
     CHUNK = 1024
     POLLING_RATE = 0.5 #s
     play = False
+    record = False
     _playing = False
     _recording = False
 
@@ -34,6 +35,7 @@ class Listener():
         pin5   = gpiozero.DigitalInputDevice(pin=5)
         pin6   = gpiozero.DigitalInputDevice(pin=6)
         pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
+        print("Successfully initialised cradle to pins 5, 6, 13")
         rpi = True
     except:
         rpi = False
@@ -45,9 +47,10 @@ class Listener():
     def _listen(self):
         # os.system("clear")
         print("\n\nCurrent values:")
-        print("Currently playing?  {}".format(self._playing))
+        print("Play Switch:          {}".format(self.play))
+        print("Record Switch:        {}".format(self.record))
+        print("Currently playing?    {}".format(self._playing))
         print("Currently recording?  {}".format(self._recording))
-        print("play: {}".format(self.play))
         if self.rpi:
             print("pin17:   {}".format(self.pin17.value))
             print("pin27:   {}".format(self.pin27.value))
@@ -66,18 +69,18 @@ class Listener():
             self._playing = False
             self._recording = False
 
-        # If we WERENT playing, and CURRENTLY ARENT recording, but are NOW play,
-        # Start a play thread
-        if self._playing == False:
-            if self._recording == False:
+        if not self._recording:
+            print("I'm not recording! Do I need to start any threads?")
+            # Start a play thread
+            if self._playing == False:
                 if self.play == True:
+                    print("Starting a random playback thread")
                     threading.Thread(target=self.play_random).start()
 
-        # If we WERENT recording, but ARE play, and ARE record,
-        # start a record thread
-        if self._recording == False:
+            # start a record thread
             if self.play:
                 if self.record:
+                    print("Starting a recording thread")
                     threading.Thread(target=self.make_recording).start()
 
 
@@ -87,6 +90,7 @@ class Listener():
         # Setting self.play = False stops the existing sound
         self._playing = False
         self._recording = True
+        print("Set self._recording to TRUE")
 
         # Wait two ticks to ensure the playback is stopped
         time.sleep(self.POLLING_RATE*2)
@@ -100,9 +104,11 @@ class Listener():
                     audio_files.append(int(fname))
                 except: pass
 
-        new_file = "{:010d}.wav".format(max(audio_files) + 1)
+        new_file = "{:05d}.wav".format(max(audio_files) + 1)
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
+
+        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav")
 
         # Init the audio handler
         p = pyaudio.PyAudio()
@@ -139,20 +145,21 @@ class Listener():
 
         p.terminate()
 
-        # No longer busy
         self._playing = False
+        self.play_clip("AUDIO_FILES/RECORDED/Thanks.wav", False)
+
+        # No longer busy
         self._recording = False
         print("Finished saving recording to {}".format(new_file))
 
-    def play_clip(self, playme):
+    def play_clip(self, playme, listen=True):
         if self._playing:
             return
 
-        print("Starting a new playback")
+        print("Starting a new playback, file {}".format(playme))
 
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
-        self._recording = False
 
         f = wave.open(playme, 'rb')
         p = pyaudio.PyAudio()
@@ -168,9 +175,16 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         #play stream
-        while data and self.play and self._playing:
-            stream.write(data)
-            data = f.readframes(self.CHUNK)
+        if listen:
+            while data and self.play and self._playing:
+                stream.write(data)
+                data = f.readframes(self.CHUNK)
+        else:
+            while data:
+                stream.write(data)
+                data = f.readframes(self.CHUNK)
+
+        print("Done with playback!")
 
         #stop stream
         stream.stop_stream()
@@ -186,7 +200,7 @@ class Listener():
 
     def get_audio_files(self):
         audio_files = []
-        for root, dirnames, filenames in os.walk("AUDIO_FILES/"):
+        for root, dirnames, filenames in os.walk("AUDIO_FILES/DICTAPHONE_DIARIES"):
             for filename in fnmatch.filter(filenames, "*.wav"):
                 fname = os.path.join(root, filename)
                 audio_files.append(fname)
@@ -209,5 +223,32 @@ class Listener():
 
 if __name__ in "__main__":
     l = Listener()
+
+
+    time.sleep(2)
+
+    print("!!!!! PRESSING PLAY SWITCH")
+    l.play = True
+
+    time.sleep(3)
+
+    print("!!!!! PRESSING RECORDING SWITCH")
+    l.record = True
+
+    time.sleep(2)
+
+    print("!!!!! RELEASING RECORDING SWITCH")
+    l.record = False
+
+    time.sleep(12)
+
+    print("!!!!! RELEASING PLAY SWITCH")
+    l.play = False
+
+    time.sleep(3)
+
+    print("!!!! DONE")
+
+    os.exit()
 
 #     l.play_random()
