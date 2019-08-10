@@ -60,6 +60,9 @@ class Listener():
             self.play = self.pin27.value
             self.record = self.pin6.value
 
+        if self.play == False:
+            self._playing = False
+
         if self._playing == False and self.play == True:
             threading.Thread(target=self.play_random).start()
 
