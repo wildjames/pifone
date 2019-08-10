@@ -32,7 +32,7 @@ class Listener():
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
-        os.system("clear")
+        # os.system("clear")
         print("Current values:")
         print("Currently playing?  {}".format(self._playing))
         print("play: {}".format(self.play))
