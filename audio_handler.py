@@ -44,7 +44,7 @@ class Listener():
 
     def _listen(self):
         # os.system("clear")
-        print("Current values:")
+        print("\n\nCurrent values:")
         print("Currently playing?  {}".format(self._playing))
         print("Currently recording?  {}".format(self._recording))
         print("play: {}".format(self.play))
@@ -62,6 +62,7 @@ class Listener():
 
         if self.play == False:
             self._playing = False
+            self._recording = False
 
         if self._playing == False and self.play == True:
             threading.Thread(target=self.play_random).start()
@@ -79,7 +80,7 @@ class Listener():
         audio_files = [0]
         for root, dirnames, filenames in os.walk("AUDIO_FILES/RECORDED/"):
             for filename in fnmatch.filter(filenames, "*.wav"):
-                fname = filename.replace('.wav', '')
+                fname = filename.lower().replace('.wav', '')
                 try:
                     audio_files.append(int(fname))
                 except: pass
@@ -87,10 +88,10 @@ class Listener():
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
-        audio = pyaudio.PyAudio()
+        p = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
-        stream = audio.open(
+        stream = p.open(
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -103,26 +104,28 @@ class Listener():
         while self.play:
             data = stream.read(self.CHUNK)
             frames.append(data)
-            print("  - Making another chunk...")
 
-        print("Finished recording")
+        print("Done recording...")
 
         # Close my stuff
         stream.stop_stream()
         stream.close()
 
-        audio.terminate()
-
         # Reconstruct the wav, for saving
-        waveFile = wave.open(self.WAVE_OUTPUT_FILENAME, 'wb')
+        waveFile = wave.open(new_file, 'wb')
         waveFile.setnchannels(self.CHANNELS)
-        waveFile.setsampwidth(audio.get_sample_size(self.FORMAT))
+        waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
         waveFile.setframerate(self.RATE)
+
         waveFile.writeframes(b''.join(frames))
         waveFile.close()
 
+        p.terminate()
+
         # No longer busy
         self._playing = False
+        self._recording = False
+        print("Finished saving recording to {}".format(new_file))
 
     def play_clip(self, playme):
         if self._playing:
@@ -138,10 +141,10 @@ class Listener():
         p = pyaudio.PyAudio()
 
         stream = p.open(
-            format = p.get_format_from_width(f.getsampwidth()),
-            channels = f.getnchannels(),
-            rate = f.getframerate(),
-            output = True
+            format=p.get_format_from_width(f.getsampwidth()),
+            channels=f.getnchannels(),
+            rate=f.getframerate(),
+            output=True
         )
 
         # read data
