@@ -18,7 +18,7 @@ class Listener():
     play = True
 
     try:
-        green  = gpiozero.DigitalInputDevice(pin=17)
+        green  = gpiozero.DigitalOutputDevice(pin=17, initial_value=True)
         black = gpiozero.DigitalInputDevice(pin=27)
         red = gpiozero.DigitalInputDevice(pin=22)
         print("Successfully initialised to pins 17, 27, 22")
@@ -91,4 +91,4 @@ class Listener():
 if __name__ in "__main__":
     l = Listener()
 
-    l.play_random()
+#     l.play_random()
