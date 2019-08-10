@@ -16,7 +16,7 @@ class Listener():
     DEBUG = True
     CHUNK = 1024
     POLLING_RATE = 1 #s
-    play = True
+    play = False
     _playing = False
 
     try:
