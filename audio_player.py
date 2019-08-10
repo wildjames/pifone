@@ -46,6 +46,9 @@ class Listener():
         if self.rpi:
             self.play = bool(self.black.value)
 
+        if self.play is False:
+            self._playing = False
+
         # If we weren't playing, but now are, start a playback thread
         if self._playing == False and self.play == True:
             threading.Thread(target=self.play_random).start()
