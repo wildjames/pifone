@@ -22,7 +22,9 @@ class Listener():
         black = gpiozero.DigitalInputDevice(pin=27)
         red = gpiozero.DigitalInputDevice(pin=22)
         print("Successfully initialised to pins 17, 27, 22")
+        rpi = True
     except:
+        rpi = False
         print("Not running on a raspberry pi!")
 
     def __init__(self):
@@ -31,10 +33,10 @@ class Listener():
     def _listen(self):
         print("Current values:")
         print("play: {}".format(self.play))
-        if hasattr(self, "C"):
-            print("C:   {}".format(self.green.value))
-            print("NC:  {}".format(self.black.value))
-            print("NO:  {}".format(self.red.value))
+        if self.rpi:
+            print("Green:   {}".format(self.green.value))
+            print("Black:   {}".format(self.black.value))
+            print("Red:     {}".format(self.red.value))
 
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
