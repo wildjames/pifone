@@ -84,39 +84,39 @@ class Listener():
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
-        # audio = pyaudio.PyAudio()
+        audio = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
-        # stream = audio.open(
-        #     format=self.FORMAT,
-        #     channels=self.CHANNELS,
-        #     rate=self.RATE,
-        #     input=True,
-        #     frames_per_buffer=self.CHUNK
-        # )
+        stream = audio.open(
+            format=self.FORMAT,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            input=True,
+            frames_per_buffer=self.CHUNK
+        )
         print("Recording...")
-        # frames = []
+        frames = []
 
         while self.play:
-            # data = stream.read(self.CHUNK)
-            # frames.append(data)
+            data = stream.read(self.CHUNK)
+            frames.append(data)
             print("  - Making another chunk...")
 
         print("Finished recording")
 
-        # # Close my stuff
-        # stream.stop_stream()
-        # stream.close()
+        # Close my stuff
+        stream.stop_stream()
+        stream.close()
 
-        # audio.terminate()
+        audio.terminate()
 
-        # # Reconstruct the wav, for saving
-        # waveFile = wave.open(self.WAVE_OUTPUT_FILENAME, 'wb')
-        # waveFile.setnchannels(self.CHANNELS)
-        # waveFile.setsampwidth(audio.get_sample_size(self.FORMAT))
-        # waveFile.setframerate(self.RATE)
-        # waveFile.writeframes(b''.join(frames))
-        # waveFile.close()
+        # Reconstruct the wav, for saving
+        waveFile = wave.open(self.WAVE_OUTPUT_FILENAME, 'wb')
+        waveFile.setnchannels(self.CHANNELS)
+        waveFile.setsampwidth(audio.get_sample_size(self.FORMAT))
+        waveFile.setframerate(self.RATE)
+        waveFile.writeframes(b''.join(frames))
+        waveFile.close()
 
         # No longer busy
         self._playing = False
