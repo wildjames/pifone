@@ -36,3 +36,6 @@ def make_recording():
     waveFile.setframerate(RATE)
     waveFile.writeframes(b''.join(frames))
     waveFile.close()
+
+if __name__ in "__main__":
+    make_recording()
