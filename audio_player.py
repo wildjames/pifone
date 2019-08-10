@@ -15,14 +15,14 @@ except: pass
 class Listener():
     DEBUG = False
     CHUNK = 1024
-    POLLING_RATE = 1 #s
+    POLLING_RATE = 0.1 #s
     play = True
     _playing = False
 
     try:
-        green  = gpiozero.DigitalOutputDevice(pin=17, initial_value=True)
+        green  = gpiozero.DigitalInputDevice(pin=17)
         black = gpiozero.DigitalInputDevice(pin=27)
-        red = gpiozero.DigitalInputDevice(pin=22)
+        red = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
         print("Successfully initialised to pins 17, 27, 22")
         rpi = True
     except:
