@@ -46,11 +46,16 @@ class Listener():
         # os.system("clear")
         print("Current values:")
         print("Currently playing?  {}".format(self._playing))
+        print("Currently recording?  {}".format(self._recording))
         print("play: {}".format(self.play))
         if self.rpi:
             print("pin17:   {}".format(self.pin17.value))
             print("pin27:   {}".format(self.pin27.value))
-            print("pin22:     {}".format(self.pin22.value))
+            print("pin22:   {}".format(self.pin22.value))
+
+            print("pin5:    {}".format(self.pin5.value))
+            print("pin6:    {}".format(self.pin6.value))
+            print("pin13:   {}".format(self.pin13.value))
 
             self.play = self.pin27.value
             self.record = self.pin6.value
