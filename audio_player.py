@@ -91,6 +91,7 @@ class Listener():
 
         # I'm no longer playing.
         self._playing = False
+
         if self.DEBUG:
             print("Finished playback")
 
@@ -110,6 +111,9 @@ class Listener():
 
 
     def play_random(self):
+        if self._playing:
+            return
+
         self.get_audio_files()
 
         playme = random.choice(self.audio_files)
