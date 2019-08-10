@@ -2,3 +2,5 @@ AUDIO_FILES/
 Dictophone/
 *.wav
 **/*.wav
+__pycache__
+.DS_Store
