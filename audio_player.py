@@ -44,7 +44,7 @@ class Listener():
                 print("Red:     {}".format(self.red.value))
 
         if self.rpi:
-            self.play = self.black.value
+            self.play = bool(self.black.value)
 
         # If we weren't playing, but now are, start a playback thread
         if self._playing == False and self.play == True:
@@ -63,31 +63,35 @@ class Listener():
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
 
-        f = wave.open(playme, 'rb')
-        p = pyaudio.PyAudio()
+        try:
+            f = wave.open(playme, 'rb')
+            p = pyaudio.PyAudio()
 
-        stream = p.open(
-            format = p.get_format_from_width(f.getsampwidth()),
-            channels = f.getnchannels(),
-            rate = f.getframerate(),
-            output = True
-        )
+            stream = p.open(
+                format = p.get_format_from_width(f.getsampwidth()),
+                channels = f.getnchannels(),
+                rate = f.getframerate(),
+                output = True
+            )
 
-        # read data
-        data = f.readframes(self.CHUNK)
-
-        #play stream
-        while data and self.play:
-            stream.write(data)
+            # read data
             data = f.readframes(self.CHUNK)
 
-        #stop stream
-        stream.stop_stream()
-        stream.close()
-        f.close()
+            #play stream
+            while data and self.play:
+                stream.write(data)
+                data = f.readframes(self.CHUNK)
 
-        #close PyAudio
-        p.terminate()
+            #stop stream
+            stream.stop_stream()
+            stream.close()
+            f.close()
+
+            #close PyAudio
+            p.terminate()
+        except Exception as e:
+            print("I fucked up!")
+            print(e)
 
         # I'm no longer playing.
         self._playing = False
