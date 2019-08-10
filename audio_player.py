@@ -13,6 +13,7 @@ except: pass
 
 
 class Listener():
+    DEBUG = False
     CHUNK = 1024
     POLLING_RATE = 1 #s
     play = True
@@ -33,26 +34,31 @@ class Listener():
 
     def _listen(self):
         # os.system("clear")
-        print("Current values:")
-        print("Currently playing?  {}".format(self._playing))
-        print("play: {}".format(self.play))
-        if self.rpi:
-            print("Green:   {}".format(self.green.value))
-            print("Black:   {}".format(self.black.value))
-            print("Red:     {}".format(self.red.value))
+        if self.DEBUG:
+            print("Current values:")
+            print("Currently playing?  {}".format(self._playing))
+            print("play: {}".format(self.play))
+            if self.rpi:
+                print("Green:   {}".format(self.green.value))
+                print("Black:   {}".format(self.black.value))
+                print("Red:     {}".format(self.red.value))
 
+        if self.rpi:
             self.play = self.black.value
 
+        # If we weren't playing, but now are, start a playback thread
         if self._playing == False and self.play == True:
             threading.Thread(target=self.play_random).start()
 
+        # Call the next poll
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def play_clip(self, playme):
         if self._playing:
             return
 
-        print("Starting a new playback")
+        if self.DEBUG:
+            print("Starting a new playback")
 
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
@@ -85,7 +91,8 @@ class Listener():
 
         # I'm no longer playing.
         self._playing = False
-        print("Finished playback")
+        if self.DEBUG:
+            print("Finished playback")
 
     def get_audio_files(self):
         audio_files = []
@@ -94,9 +101,10 @@ class Listener():
                 fname = os.path.join(root, filename)
                 audio_files.append(fname)
 
-        print("I found {} audio files:".format(len(audio_files)))
-        for fn in audio_files:
-            print("- {}".format(fn))
+        if self.DEBUG:
+            print("I found {} audio files:".format(len(audio_files)))
+            for fn in audio_files:
+                print("- {}".format(fn))
 
         self.audio_files = audio_files
 
@@ -105,7 +113,8 @@ class Listener():
         self.get_audio_files()
 
         playme = random.choice(self.audio_files)
-        print("Playing file:\n{}\n".format(playme))
+        if self.DEBUG:
+            print("Playing file:\n{}\n".format(playme))
 
         self.play_clip(playme)
 
