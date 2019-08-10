@@ -85,6 +85,7 @@ class Listener():
                 print("Reading data")
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
+            print("Stopped reading data!\n\n")
 
             #stop stream
             stream.stop_stream()
