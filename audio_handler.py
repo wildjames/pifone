@@ -26,14 +26,14 @@ class Listener():
     RATE = 44100
 
     try:
-        pin17 = gpiozero.DigitalOutputDevice(pin=17, initial_value=True)
+        pin17 = gpiozero.DigitalInputDevice(pin=17)
         pin27 = gpiozero.DigitalInputDevice(pin=27)
-        pin22 = gpiozero.DigitalInputDevice(pin=22)
+        pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
         print("Successfully initialised cradle to pins 17, 27, 22")
 
-        pin5   = gpiozero.DigitalOutputDevice(pin=5, initial_value=True)
+        pin5   = gpiozero.DigitalInputDevice(pin=5)
         pin6   = gpiozero.DigitalInputDevice(pin=6)
-        pin13  = gpiozero.DigitalInputDevice(pin=13)
+        pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
         rpi = True
     except:
         rpi = False
