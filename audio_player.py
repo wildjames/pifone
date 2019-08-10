@@ -44,7 +44,7 @@ class Listener():
             self.play = self.black.value
 
         if self._playing == False and self.play == True:
-            threading.Thread(target=self.play_random)
+            threading.Thread(target=self.play_random).start()
 
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
