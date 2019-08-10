@@ -15,7 +15,7 @@ except: pass
 class Listener():
     DEBUG = True
     CHUNK = 1024
-    POLLING_RATE = 1 #s
+    POLLING_RATE = 0.5 #s
     play = False
     _playing = False
 
@@ -85,6 +85,7 @@ class Listener():
                 print("Reading data")
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
+                print("Data: {}\n\n\n")
             print("Stopped reading data!\n\n")
 
             #stop stream
