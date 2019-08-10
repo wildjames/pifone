@@ -1,15 +1,15 @@
 import fnmatch
 import os
 import random
-
-import pyaudio
+import threading
+import time
 import wave
 
-import threading
+import pyaudio
+
 try:
     import gpiozero
 except: pass
-
 
 
 class Listener():
@@ -87,6 +87,9 @@ class Listener():
         # Setting self.play = False stops the existing sound
         self._playing = False
         self._recording = True
+
+        # Wait two ticks to ensure the playback is stopped
+        time.sleep(self.POLLING_RATE*2)
 
         # Get the name of the new audio file to create
         audio_files = [0]
