@@ -11,6 +11,7 @@ try:
     import gpiozero
 except: pass
 
+AUDIO_FILES_LOCATION = "/home/pi/pifone"
 
 class Listener():
     # Playback, file reading, polling settings
@@ -42,6 +43,7 @@ class Listener():
         print("Not running on a raspberry pi!")
 
     def __init__(self):
+        os.chdir(AUDIO_FILES_LOCATION)
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
