@@ -2,5 +2,5 @@
 from audio_handler import Listener
 
 lis = Listener()
-lis.CHUNK = 262144
+lis.CHUNK = 1024
 lis.RATE  = 48000
