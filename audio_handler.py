@@ -15,8 +15,8 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 
 class Listener():
     # Playback, file reading, polling settings
-    CHUNK = 1024
-    POLLING_RATE = 0.5 #s
+    CHUNK = 4096 * 2
+    POLLING_RATE = 0.1 #s
     play = False
     record = False
     _playing = False
@@ -44,6 +44,7 @@ class Listener():
 
     def __init__(self):
         os.chdir(AUDIO_FILES_LOCATION)
+        print("OK, GO")
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
