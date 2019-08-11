@@ -187,9 +187,9 @@ class Listener():
             #play stream
             if listen:
                 while data and self.play and self._playing:
-                    print("Write stream")
+                    #print("Write stream")
                     stream.write(data)
-                    print('Read data')
+                    #print('Read data')
                     data = f.readframes(self.CHUNK)
             else:
                 while data:
