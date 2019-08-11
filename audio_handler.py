@@ -128,9 +128,13 @@ class Listener():
         print("Recording...")
         frames = []
 
-        while self.play:
-            data = stream.read(self.CHUNK)
-            frames.append(data)
+        try:
+            while self.play:
+                data = stream.read(self.CHUNK)
+                frames.append(data)
+        except Exception as e:
+            print("Crashed during recording")
+            print(e)
 
         print("Done recording...")
 
@@ -178,17 +182,21 @@ class Listener():
         # read data
         data = f.readframes(self.CHUNK)
 
-        #play stream
-        if listen:
-            while data and self.play and self._playing:
-                print("Wrote stream")
-                stream.write(data)
-                print('Read data')
-                data = f.readframes(self.CHUNK)
-        else:
-            while data:
-                stream.write(data)
-                data = f.readframes(self.CHUNK)
+        try:
+            #play stream
+            if listen:
+                while data and self.play and self._playing:
+                    print("Write stream")
+                    stream.write(data)
+                    print('Read data')
+                    data = f.readframes(self.CHUNK)
+            else:
+                while data:
+                    stream.write(data)
+                    data = f.readframes(self.CHUNK)
+        except Exception as e:
+            print("Crashed during recording")
+            print(e)
 
         print("Done with playback!")
 
