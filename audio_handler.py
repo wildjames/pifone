@@ -47,6 +47,7 @@ class Listener():
     def _listen(self):
         # os.system("clear")
         print("\n\nCurrent values:")
+        print("Active threads: {}".format(threading.activeCount()))
         print("Play Switch:          {}".format(self.play))
         print("Record Switch:        {}".format(self.record))
         print("Currently playing?    {}".format(self._playing))
@@ -83,9 +84,9 @@ class Listener():
                     print("Starting a recording thread")
                     threading.Thread(target=self.make_recording).start()
 
-        time.sleep(self.POLLING_RATE)
-        self._listen()
-        # threading.Timer(self.POLLING_RATE, self._listen).start()
+        # time.sleep(self.POLLING_RATE)
+        # self._listen()
+        threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def make_recording(self):
         # Setting self.play = False stops the existing sound
