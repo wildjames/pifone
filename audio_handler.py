@@ -48,20 +48,20 @@ class Listener():
 
     def _listen(self):
         # os.system("clear")
-        print("\n\nCurrent values:")
-        print("Active threads: {}".format(threading.activeCount()))
-        print("Play Switch:          {}".format(self.play))
-        print("Record Switch:        {}".format(self.record))
-        print("Currently playing?    {}".format(self._playing))
-        print("Currently recording?  {}".format(self._recording))
+        # print("\n\nCurrent values:")
+        # print("Active threads: {}".format(threading.activeCount()))
+        # print("Play Switch:          {}".format(self.play))
+        # print("Record Switch:        {}".format(self.record))
+        # print("Currently playing?    {}".format(self._playing))
+        # print("Currently recording?  {}".format(self._recording))
         if self.rpi:
-            print("pin17:   {}".format(self.pin17.value))
-            print("pin27:   {}".format(self.pin27.value))
-            print("pin22:   {}".format(self.pin22.value))
+            # print("pin17:   {}".format(self.pin17.value))
+            # print("pin27:   {}".format(self.pin27.value))
+            # print("pin22:   {}".format(self.pin22.value))
 
-            print("pin5:    {}".format(self.pin5.value))
-            print("pin6:    {}".format(self.pin6.value))
-            print("pin13:   {}".format(self.pin13.value))
+            # print("pin5:    {}".format(self.pin5.value))
+            # print("pin6:    {}".format(self.pin6.value))
+            # print("pin13:   {}".format(self.pin13.value))
 
             self.play = self.pin27.value
             self.record = self.pin6.value
@@ -73,7 +73,7 @@ class Listener():
             self._recording = False
 
         if self._recording == False:
-            print("I'm not recording! Do I need to start any threads?")
+            # print("I'm not recording! Do I need to start any threads?")
             # Start a play thread
             if self._playing == False:
                 if self.play == True:
@@ -181,8 +181,10 @@ class Listener():
         #play stream
         if listen:
             while data and self.play and self._playing:
+                print("Wrote stream")
                 stream.write(data)
-                data = f.readframes(self.CHUNK, exception_on_overflow=True)
+                print('Read data')
+                data = f.readframes(self.CHUNK)
         else:
             while data:
                 stream.write(data)
