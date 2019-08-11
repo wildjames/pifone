@@ -180,7 +180,7 @@ class Listener():
         if listen:
             while data and self.play and self._playing:
                 stream.write(data)
-                data = f.readframes(self.CHUNK)
+                data = f.readframes(self.CHUNK, exception_on_overflow=True)
         else:
             while data:
                 stream.write(data)
