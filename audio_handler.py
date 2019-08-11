@@ -71,7 +71,7 @@ class Listener():
             self._playing = False
             self._recording = False
 
-        if not self._recording:
+        if self._recording == False:
             print("I'm not recording! Do I need to start any threads?")
             # Start a play thread
             if self._playing == False:
@@ -85,8 +85,9 @@ class Listener():
                     print("Starting a recording thread")
                     threading.Thread(target=self.make_recording).start()
 
-
-        threading.Timer(self.POLLING_RATE, self._listen).start()
+        time.sleep(self.POLLING_RATE)
+        self._listen()
+        # threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def make_recording(self):
         # Setting self.play = False stops the existing sound
