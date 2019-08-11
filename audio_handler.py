@@ -247,10 +247,10 @@ if __name__ in "__main__":
     print("!!!!! RELEASING PLAY SWITCH")
     l.play = False
 
-    time.sleep(3)
+    time.sleep(13)
 
     print("!!!! DONE")
 
-    os.exit()
+    exit()
 
 #     l.play_random()
