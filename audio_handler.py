@@ -15,7 +15,7 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 
 class Listener():
     # Playback, file reading, polling settings
-    CHUNK = 4096 * 2
+    CHUNK = 1024
     POLLING_RATE = 0.1 #s
     play = False
     record = False
