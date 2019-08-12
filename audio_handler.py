@@ -17,6 +17,7 @@ class Listener():
     # Playback, file reading, polling settings
     CHUNK = 1024
     POLLING_RATE = 0.1 #s
+    device_ID = 0
     play = False
     record = False
     _playing = False
@@ -124,7 +125,8 @@ class Listener():
             channels=self.CHANNELS,
             rate=self.RATE,
             input=True,
-            frames_per_buffer=self.CHUNK
+            frames_per_buffer=self.CHUNK,
+            output_device_index=self.device_ID,
         )
         print("Recording...")
         frames = []

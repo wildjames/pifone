@@ -12,3 +12,4 @@ for i in range(0, numdevices):
 p.terminate()
 
 lis = Listener()
+lis.device_ID = 2
