@@ -9,9 +9,6 @@ import numpy as np
 import pyaudio
 
 try:
-    import warnings
-    warnings.simplefilter('ignore')
-
     import gpiozero
 
 except: pass
@@ -46,19 +43,19 @@ class Listener():
             # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
             # print("Successfully initialised cradle to pins 5, 6, 13")
 
-        cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
+        cradle_pin  = gpiozero.DigitalInputDevice(pin=27)
         print("Initialised the cradle input")
 
-        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=2, initial_value=False)
-        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
-        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
-        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
+        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
+        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=6, initial_value=False)
+        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=7, initial_value=False)
+        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=8, initial_value=False)
         print("Initialised Output pins")
 
-        self.outA_pin = gpiozero.DigitalInputDevice(pin=6)
-        self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
-        self.outC_pin = gpiozero.DigitalInputDevice(pin=8)
-        self.outD_pin = gpiozero.DigitalInputDevice(pin=9)
+        self.outA_pin = gpiozero.DigitalInputDevice(pin=9)
+        self.outB_pin = gpiozero.DigitalInputDevice(pin=10)
+        self.outC_pin = gpiozero.DigitalInputDevice(pin=11)
+        self.outD_pin = gpiozero.DigitalInputDevice(pin=12)
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
