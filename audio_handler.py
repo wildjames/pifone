@@ -9,7 +9,11 @@ import numpy as np
 import pyaudio
 
 try:
+    import warnings
+    warnings.simplefilter('ignore')
+
     import gpiozero
+
 except: pass
 
 AUDIO_FILES_LOCATION = "/home/pi/pifone"
