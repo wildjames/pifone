@@ -56,6 +56,7 @@ class Listener():
         inpins = [outA_pin, outB_pin, outC_pin, outD_pin]
         print("Initialised Input pins")
 
+
         rpi = True
     except:
         rpi = False
@@ -63,6 +64,7 @@ class Listener():
 
     def __init__(self):
         os.chdir(AUDIO_FILES_LOCATION)
+        self.button_functions = []
         print("OK, GO")
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
@@ -109,10 +111,10 @@ class Listener():
                     break
             self.grpD_pin.value = False
 
-        if button_pressed != np.nan:
-            print("Pushed the button {}".format(button_pressed))
-            function = self.button_functions[button_pressed]
-            self.buttonthread = threading.Thread(target=function).start()
+        print("Pushed the button {}".format(button_pressed))
+        # if button_pressed != np.nan:
+        #     function = self.button_functions[button_pressed]
+        #     self.buttonthread = threading.Thread(target=function).start()
 
         # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
