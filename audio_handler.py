@@ -81,7 +81,6 @@ class Listener():
         #     print("Not running on a raspberry pi!")
 
         os.chdir(AUDIO_FILES_LOCATION)
-        self.button_functions = []
         print("OK, GO")
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
