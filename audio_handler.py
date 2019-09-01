@@ -42,8 +42,8 @@ class Listener():
             # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
             # print("Successfully initialised cradle to pins 5, 6, 13")
 
-            # cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
-            # print("Initialised the cradle input")
+        cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
+        print("Initialised the cradle input")
 
         self.grpA_pin = gpiozero.DigitalOutputDevice(pin=2, initial_value=False)
         self.grpB_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
