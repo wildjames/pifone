@@ -46,16 +46,16 @@ class Listener():
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
-        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
-        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=6, initial_value=False)
-        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=7, initial_value=False)
-        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=8, initial_value=False)
+        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=12, initial_value=False)
+        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=11, initial_value=False)
+        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=10, initial_value=False)
+        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=9, initial_value=False)
         print("Initialised Output pins")
 
-        self.outA_pin = gpiozero.DigitalInputDevice(pin=9)
-        self.outB_pin = gpiozero.DigitalInputDevice(pin=10)
-        self.outC_pin = gpiozero.DigitalInputDevice(pin=11)
-        self.outD_pin = gpiozero.DigitalInputDevice(pin=12)
+        self.outA_pin = gpiozero.DigitalInputDevice(pin=8)
+        self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
+        self.outC_pin = gpiozero.DigitalInputDevice(pin=6)
+        self.outD_pin = gpiozero.DigitalInputDevice(pin=5)
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
