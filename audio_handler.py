@@ -43,7 +43,7 @@ class Listener():
             # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
             # print("Successfully initialised cradle to pins 5, 6, 13")
 
-        self.cradle_pin  = gpiozero.DigitalInputDevice(pin=27)
+        self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
         self.grpA_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
@@ -113,8 +113,8 @@ class Listener():
                     break
             self.grpD_pin.value = False
 
-        print("Pushed the button {}".format(button_pressed))
-        # if button_pressed != np.nan:
+        if button_pressed != np.nan:
+            print("Pushed the button {}".format(button_pressed))
         #     function = self.button_functions[button_pressed]
         #     self.buttonthread = threading.Thread(target=function).start()
 
