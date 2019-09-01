@@ -143,7 +143,7 @@ class Listener():
             if self._playing == False:
                 if self.play == True:
                     print("Handset raised")
-                    threading.Timer(3, target=self.play_random).start()
+                    threading.Timer(3, self.play_random).start()
 
             # start a record thread
             if self.play:
