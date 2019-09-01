@@ -75,6 +75,7 @@ class Listener():
             # self.play = self.pin27.value
             # self.record = self.pin6.value
             self.play = self.cradle_pin.value
+            print(self.play)
 
             button_pressed = np.nan
             # Check the first button group
