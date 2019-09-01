@@ -18,7 +18,7 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 class Listener():
     # Playback, file reading, polling settings
     CHUNK = 1024
-    POLLING_RATE = 0.1 #s
+    POLLING_RATE = 0.01 #s
     play = False
     record = False
     _playing = False
@@ -79,7 +79,7 @@ class Listener():
             button_pressed = np.nan
             # Check the first button group
             self.grpA_pin.value = True
-            outputs = ['a', 'b', 0, 'c']
+            outputs = ['redial', '#', 0, '*']
             for i, pin in enumerate(self.inpins):
                 if pin.value:
                     button_pressed = outputs[i]
