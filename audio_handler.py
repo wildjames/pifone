@@ -28,41 +28,42 @@ class Listener():
     CHANNELS = 1
     RATE = 44100
 
-    try:
-        # This is the old version of the pinout. I've since moved on to a proper dialler
-        # pin17 = gpiozero.DigitalInputDevice(pin=17)
-        # pin27 = gpiozero.DigitalInputDevice(pin=27)
-        # pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
-        # print("Successfully initialised cradle to pins 17, 27, 22")
-
-        # pin5   = gpiozero.DigitalInputDevice(pin=5)
-        # pin6   = gpiozero.DigitalInputDevice(pin=6)
-        # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
-        # print("Successfully initialised cradle to pins 5, 6, 13")
-
-        cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
-        print("Initialised the cradle input")
-
-        grpA_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
-        grpB_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
-        grpC_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
-        grpD_pin = gpiozero.DigitalOutputDevice(pin=6, initial_value=False)
-        print("Initialised Output pins")
-
-        outA_pin = gpiozero.DigitalInputDevice(pin=7)
-        outB_pin = gpiozero.DigitalInputDevice(pin=8)
-        outC_pin = gpiozero.DigitalInputDevice(pin=9)
-        outD_pin = gpiozero.DigitalInputDevice(pin=10)
-        inpins = [outA_pin, outB_pin, outC_pin, outD_pin]
-        print("Initialised Input pins")
-
-
-        rpi = True
-    except:
-        rpi = False
-        print("Not running on a raspberry pi!")
 
     def __init__(self):
+        try:
+            # This is the old version of the pinout. I've since moved on to a proper dialler
+            # pin17 = gpiozero.DigitalInputDevice(pin=17)
+            # pin27 = gpiozero.DigitalInputDevice(pin=27)
+            # pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
+            # print("Successfully initialised cradle to pins 17, 27, 22")
+
+            # pin5   = gpiozero.DigitalInputDevice(pin=5)
+            # pin6   = gpiozero.DigitalInputDevice(pin=6)
+            # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
+            # print("Successfully initialised cradle to pins 5, 6, 13")
+
+            # cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
+            # print("Initialised the cradle input")
+
+            self.grpA_pin = gpiozero.DigitalOutputDevice(pin=2, initial_value=False)
+            self.grpB_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
+            self.grpC_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
+            self.grpD_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
+            print("Initialised Output pins")
+
+            self.outA_pin = gpiozero.DigitalInputDevice(pin=6)
+            self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
+            self.outC_pin = gpiozero.DigitalInputDevice(pin=8)
+            self.outD_pin = gpiozero.DigitalInputDevice(pin=9)
+            self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
+            print("Initialised Input pins")
+
+
+            rpi = True
+        except:
+            rpi = False
+            print("Not running on a raspberry pi!")
+
         os.chdir(AUDIO_FILES_LOCATION)
         self.button_functions = []
         print("OK, GO")
