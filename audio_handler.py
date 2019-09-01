@@ -74,7 +74,7 @@ class Listener():
         if self.rpi:
             # self.play = self.pin27.value
             # self.record = self.pin6.value
-            self.play = ~self.cradle_pin.value
+            self.play = not self.cradle_pin.value
             print(self.play)
 
             button_pressed = np.nan
