@@ -212,7 +212,7 @@ class Listener():
         print("Done recording...")
 
         # Close my stuff
-        self.stream.stop_self.stream()
+        self.stream.stop_stream()
         self.stream.close()
 
         # Reconstruct the wav, for saving
@@ -274,7 +274,7 @@ class Listener():
         print("Done with playback!")
 
         #stop self.stream
-        self.stream.stop_self.stream()
+        self.stream.stop_stream()
         self.stream.close()
         f.close()
 
