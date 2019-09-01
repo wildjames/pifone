@@ -59,7 +59,7 @@ class Listener():
         print("Initialised Input pins")
 
 
-            self.rpi = True
+        self.rpi = True
         # except:
         #     self.rpi = False
         #     print("Not running on a raspberry pi!")
