@@ -129,7 +129,7 @@ class Listener():
                     break
             self.grpD_pin.value = False
 
-        if not button_pressed is nan:
+        if not button_pressed is np.nan:
             print("Pushed the button {}".format(button_pressed))
             function = self.button_functions[button_pressed]
             self.buttonthread = threading.Thread(target=function).start()
