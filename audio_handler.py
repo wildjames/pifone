@@ -187,10 +187,10 @@ class Listener():
         self.play_clip("AUDIO_FILES/RECORDED/Intro.wav")
 
         # Init the audio handler
-        self.p = pyaudio.PyAudio()
+        p = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
-        self.stream = self.p.open(
+        self.stream = p.open(
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -218,16 +218,16 @@ class Listener():
         # Reconstruct the wav, for saving
         waveFile = wave.open(new_file, 'wb')
         waveFile.setnchannels(self.CHANNELS)
-        waveFile.setsampwidth(self.p.get_sample_size(self.FORMAT))
+        waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
         waveFile.setframerate(self.RATE)
 
         waveFile.writeframes(b''.join(frames))
         waveFile.close()
 
-        self.p.terminate()
+        p.terminate()
 
         self._playing = False
-        self.play_clip("AUDIO_FILES/RECORDED/Thanks.wav", False)
+        # self.play_clip("AUDIO_FILES/RECORDED/Thanks.wav", False)
 
         # No longer busy
         self._recording = False
@@ -243,10 +243,10 @@ class Listener():
         self._playing = True
 
         f = wave.open(playme, 'rb')
-        self.p = pyaudio.PyAudio()
+        p = pyaudio.PyAudio()
 
-        self.stream = self.p.open(
-            format=self.p.get_format_from_width(f.getsampwidth()),
+        self.stream = p.open(
+            format=p.get_format_from_width(f.getsampwidth()),
             channels=f.getnchannels(),
             rate=f.getframerate(),
             output=True
@@ -259,9 +259,7 @@ class Listener():
             #play self.stream
             if listen:
                 while data and self.play and self._playing:
-                    #print("Write self.stream")
                     self.stream.write(data)
-                    #print('Read data')
                     data = f.readframes(self.CHUNK)
             else:
                 while data:
@@ -279,7 +277,7 @@ class Listener():
         f.close()
 
         #close PyAudio
-        self.p.terminate()
+        p.terminate()
 
         # I'm no longer playing.
         self._playing = False
