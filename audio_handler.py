@@ -207,7 +207,7 @@ class Listener():
 
     def get_audio_files(self):
         audio_files = []
-        for root, dirnames, filenames in os.walk("AUDIO_FILES/DICTAPHONE_DIARIES"):
+        for root, dirnames, filenames in os.walk("AUDIO_FILES"):
             for filename in fnmatch.filter(filenames, "*.wav"):
                 fname = os.path.join(root, filename)
                 audio_files.append(fname)
