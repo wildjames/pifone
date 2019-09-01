@@ -89,7 +89,6 @@ class Listener():
             # self.play = self.pin27.value
             # self.record = self.pin6.value
             self.play = not self.cradle_pin.value
-            print(self.play)
 
             button_pressed = np.nan
             # Check the first button group
@@ -188,10 +187,10 @@ class Listener():
         self.play_clip("AUDIO_FILES/RECORDED/Intro.wav")
 
         # Init the audio handler
-        p = pyaudio.PyAudio()
+        self.p = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
-        stream = p.open(
+        self.stream = self.p.open(
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -204,7 +203,7 @@ class Listener():
 
         try:
             while self.play:
-                data = stream.read(self.CHUNK)
+                data = self.stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
             print("Crashed during recording")
@@ -213,19 +212,19 @@ class Listener():
         print("Done recording...")
 
         # Close my stuff
-        stream.stop_stream()
-        stream.close()
+        self.stream.stop_self.stream()
+        self.stream.close()
 
         # Reconstruct the wav, for saving
         waveFile = wave.open(new_file, 'wb')
         waveFile.setnchannels(self.CHANNELS)
-        waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
+        waveFile.setsampwidth(self.p.get_sample_size(self.FORMAT))
         waveFile.setframerate(self.RATE)
 
         waveFile.writeframes(b''.join(frames))
         waveFile.close()
 
-        p.terminate()
+        self.p.terminate()
 
         self._playing = False
         self.play_clip("AUDIO_FILES/RECORDED/Thanks.wav", False)
@@ -244,10 +243,10 @@ class Listener():
         self._playing = True
 
         f = wave.open(playme, 'rb')
-        p = pyaudio.PyAudio()
+        self.p = pyaudio.PyAudio()
 
-        stream = p.open(
-            format=p.get_format_from_width(f.getsampwidth()),
+        self.stream = self.p.open(
+            format=self.p.get_format_from_width(f.getsampwidth()),
             channels=f.getnchannels(),
             rate=f.getframerate(),
             output=True
@@ -257,16 +256,16 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         try:
-            #play stream
+            #play self.stream
             if listen:
                 while data and self.play and self._playing:
-                    #print("Write stream")
-                    stream.write(data)
+                    #print("Write self.stream")
+                    self.stream.write(data)
                     #print('Read data')
                     data = f.readframes(self.CHUNK)
             else:
                 while data:
-                    stream.write(data)
+                    self.stream.write(data)
                     data = f.readframes(self.CHUNK)
         except Exception as e:
             print("Crashed during recording")
@@ -274,13 +273,13 @@ class Listener():
 
         print("Done with playback!")
 
-        #stop stream
-        stream.stop_stream()
-        stream.close()
+        #stop self.stream
+        self.stream.stop_self.stream()
+        self.stream.close()
         f.close()
 
         #close PyAudio
-        p.terminate()
+        self.p.terminate()
 
         # I'm no longer playing.
         self._playing = False
