@@ -30,7 +30,7 @@ class Listener():
 
 
     def __init__(self):
-        try:
+        # try:
             # This is the old version of the pinout. I've since moved on to a proper dialler
             # pin17 = gpiozero.DigitalInputDevice(pin=17)
             # pin27 = gpiozero.DigitalInputDevice(pin=27)
@@ -45,24 +45,24 @@ class Listener():
             # cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
             # print("Initialised the cradle input")
 
-            self.grpA_pin = gpiozero.DigitalOutputDevice(pin=2, initial_value=False)
-            self.grpB_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
-            self.grpC_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
-            self.grpD_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
-            print("Initialised Output pins")
+        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=2, initial_value=False)
+        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
+        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
+        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
+        print("Initialised Output pins")
 
-            self.outA_pin = gpiozero.DigitalInputDevice(pin=6)
-            self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
-            self.outC_pin = gpiozero.DigitalInputDevice(pin=8)
-            self.outD_pin = gpiozero.DigitalInputDevice(pin=9)
-            self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
-            print("Initialised Input pins")
+        self.outA_pin = gpiozero.DigitalInputDevice(pin=6)
+        self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
+        self.outC_pin = gpiozero.DigitalInputDevice(pin=8)
+        self.outD_pin = gpiozero.DigitalInputDevice(pin=9)
+        self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
+        print("Initialised Input pins")
 
 
-            rpi = True
-        except:
-            rpi = False
-            print("Not running on a raspberry pi!")
+            self.rpi = True
+        # except:
+        #     self.rpi = False
+        #     print("Not running on a raspberry pi!")
 
         os.chdir(AUDIO_FILES_LOCATION)
         self.button_functions = []
