@@ -4,6 +4,7 @@ import random
 import threading
 import time
 import wave
+import numpy as np
 
 import pyaudio
 
@@ -17,7 +18,6 @@ class Listener():
     # Playback, file reading, polling settings
     CHUNK = 1024
     POLLING_RATE = 0.1 #s
-    device_ID = 0
     play = False
     record = False
     _playing = False
@@ -38,6 +38,9 @@ class Listener():
         pin6   = gpiozero.DigitalInputDevice(pin=6)
         pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
         print("Successfully initialised cradle to pins 5, 6, 13")
+
+
+
         rpi = True
     except:
         rpi = False
@@ -49,24 +52,11 @@ class Listener():
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
-        # os.system("clear")
-        # print("\n\nCurrent values:")
-        # print("Active threads: {}".format(threading.activeCount()))
-        # print("Play Switch:          {}".format(self.play))
-        # print("Record Switch:        {}".format(self.record))
-        # print("Currently playing?    {}".format(self._playing))
-        # print("Currently recording?  {}".format(self._recording))
         if self.rpi:
-            # print("pin17:   {}".format(self.pin17.value))
-            # print("pin27:   {}".format(self.pin27.value))
-            # print("pin22:   {}".format(self.pin22.value))
-
-            # print("pin5:    {}".format(self.pin5.value))
-            # print("pin6:    {}".format(self.pin6.value))
-            # print("pin13:   {}".format(self.pin13.value))
-
             self.play = self.pin27.value
             self.record = self.pin6.value
+
+        button_pressed = np.nan
 
 
         # If we're not playing, then we shouldn't be recording or playing.
