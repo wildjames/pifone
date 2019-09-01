@@ -136,8 +136,7 @@ class Listener():
             if self._playing == False:
                 if self.play == True:
                     print("Handset raised")
-                    self._playing = True
-                    threading.Timer(3, self.play_random).start()
+                    threading.Thread(target=self.play_random).start()
 
             # start a record thread, if we already lifted the handset and pushed the button
             if self.play:
