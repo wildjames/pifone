@@ -18,7 +18,7 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 class Listener():
     # Playback, file reading, polling settings
     CHUNK = 1024
-    POLLING_RATE = 0.01 #s
+    POLLING_RATE = 0.1 #s
     play = False
     record = False
     _playing = False
@@ -59,6 +59,21 @@ class Listener():
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
+        self.button_functions = {
+            'redial': self.start_recording,
+            '*': self.not_implimented,
+            '#': self.not_implimented,
+            0:   self.not_implimented,
+            1:   self.not_implimented,
+            2:   self.not_implimented,
+            3:   self.not_implimented,
+            4:   self.not_implimented,
+            5:   self.not_implimented,
+            6:   self.not_implimented,
+            7:   self.not_implimented,
+            8:   self.not_implimented,
+            9:   self.not_implimented,
+        }
 
         self.rpi = True
         # except:
@@ -116,8 +131,8 @@ class Listener():
 
         if button_pressed != np.nan:
             print("Pushed the button {}".format(button_pressed))
-        #     function = self.button_functions[button_pressed]
-        #     self.buttonthread = threading.Thread(target=function).start()
+            function = self.button_functions[button_pressed]
+            self.buttonthread = threading.Thread(target=function).start()
 
         # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
@@ -128,7 +143,6 @@ class Listener():
             except: pass
 
         if self._recording == False:
-            # print("I'm not recording! Do I need to start any threads?")
             # Start a play thread
             if self._playing == False:
                 if self.play == True:
@@ -141,9 +155,14 @@ class Listener():
                     print("Starting a recording thread")
                     threading.Thread(target=self.make_recording).start()
 
-        # time.sleep(self.POLLING_RATE)
-        # self._listen()
         threading.Timer(self.POLLING_RATE, self._listen).start()
+
+    def not_implimented(self):
+        # make this flash an LED or something, just to show the user something was noticed?
+        print("Button does nothing :(")
+
+    def start_recording(self):
+        self.record = True
 
     def make_recording(self):
         # Setting self.play = False stops the existing sound
