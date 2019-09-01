@@ -210,25 +210,24 @@ class Listener():
         self.stream.stop_stream()
         self.stream.close()
 
-        # Reconstruct the wav, for saving
-        waveFile = wave.open(new_file, 'wb')
-        waveFile.setnchannels(self.CHANNELS)
-        waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
-        waveFile.setframerate(self.RATE)
+        if frames != []:
+            # Reconstruct the wav, for saving
+            waveFile = wave.open(new_file, 'wb')
+            waveFile.setnchannels(self.CHANNELS)
+            waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
+            waveFile.setframerate(self.RATE)
 
-        waveFile.writeframes(b''.join(frames))
-        waveFile.close()
+            waveFile.writeframes(b''.join(frames))
+            waveFile.close()
 
         p.terminate()
 
-        self._playing = False
-        # self.play_clip("AUDIO_FILES/RECORDED/Thanks.wav", False)
-
         # No longer busy
+        self._playing = False
         self._recording = False
         print("Finished saving recording to {}".format(new_file))
 
-    def play_clip(self, playme, listen=True):
+    def play_clip(self, playme):
         if self._playing:
             return
 
@@ -251,15 +250,9 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         try:
-            #play self.stream
-            if listen:
-                while data and self.play and self._playing:
-                    self.stream.write(data)
-                    data = f.readframes(self.CHUNK)
-            else:
-                while data:
-                    self.stream.write(data)
-                    data = f.readframes(self.CHUNK)
+            while data:
+                self.stream.write(data)
+                data = f.readframes(self.CHUNK)
         except Exception as e:
             print("Crashed during recording")
             print(e)
