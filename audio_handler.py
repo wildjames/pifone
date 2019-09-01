@@ -31,18 +31,6 @@ class Listener():
 
 
     def __init__(self):
-        # try:
-            # This is the old version of the pinout. I've since moved on to a proper dialler
-            # pin17 = gpiozero.DigitalInputDevice(pin=17)
-            # pin27 = gpiozero.DigitalInputDevice(pin=27)
-            # pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
-            # print("Successfully initialised cradle to pins 17, 27, 22")
-
-            # pin5   = gpiozero.DigitalInputDevice(pin=5)
-            # pin6   = gpiozero.DigitalInputDevice(pin=6)
-            # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
-            # print("Successfully initialised cradle to pins 5, 6, 13")
-
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
@@ -75,77 +63,83 @@ class Listener():
             9:   self.not_implimented,
         }
 
-        self.rpi = True
-        # except:
-        #     self.rpi = False
-        #     print("Not running on a raspberry pi!")
-
         os.chdir(AUDIO_FILES_LOCATION)
         print("OK, GO")
         threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def _listen(self):
-        if self.rpi:
-            # self.play = self.pin27.value
-            # self.record = self.pin6.value
-            self.play = not self.cradle_pin.value
+        # If the cradle is raised, play is True
+        self.play = not self.cradle_pin.value
 
-            button_pressed = np.nan
-            # Check the first button group
-            self.grpA_pin.value = True
-            outputs = ['redial', '#', 0, '*']
-            for i, pin in enumerate(self.inpins):
-                if pin.value:
-                    button_pressed = outputs[i]
-                    break
-            self.grpA_pin.value = False
+        ##################################################################
+        ########## Check if any of the buttons have been pushed ##########
+        ##################################################################
+        button_pressed = None
 
-            # Check the second group
-            self.grpB_pin.value = True
-            outputs = [np.nan, 9, 8, 7]
-            for i, pin in enumerate(self.inpins):
-                if pin.value:
-                    button_pressed = outputs[i]
-                    break
-            self.grpB_pin.value = False
+        # Check the first button group
+        self.grpA_pin.value = True
+        outputs = ['redial', '#', 0, '*']
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpA_pin.value = False
 
-            # Check the Third group
-            self.grpC_pin.value = True
-            outputs = [np.nan, 6, 5, 4]
-            for i, pin in enumerate(self.inpins):
-                if pin.value:
-                    button_pressed = outputs[i]
-                    break
-            self.grpC_pin.value = False
+        # Check the second group
+        self.grpB_pin.value = True
+        outputs = [np.nan, 9, 8, 7]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpB_pin.value = False
 
-            # Check the fourth group
-            self.grpD_pin.value = True
-            outputs = [np.nan, 3, 2, 1]
-            for i, pin in enumerate(self.inpins):
-                if pin.value:
-                    button_pressed = outputs[i]
-                    break
-            self.grpD_pin.value = False
+        # Check the Third group
+        self.grpC_pin.value = True
+        outputs = [np.nan, 6, 5, 4]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpC_pin.value = False
 
-        if not button_pressed is np.nan:
+        # Check the fourth group
+        self.grpD_pin.value = True
+        outputs = [np.nan, 3, 2, 1]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpD_pin.value = False
+
+        if not button_pressed is None:
             print("Pushed the button {}".format(button_pressed))
             function = self.button_functions[button_pressed]
 
+            # Start the button's function
             self.buttonthread = threading.Thread(target=function).start()
+
+
+        ##################################################################
+        ################# Cradle raised: start playback. #################
+        ##################################################################
 
         # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
             self._playing = False
             self._recording = False
 
+        # If we aren't recording, then we should check to see if we just
+        # lifted the handset
         if self._recording == False:
-            # Start a play thread
+            # Start a play thread only if we aren't already playing
             if self._playing == False:
                 if self.play == True:
                     print("Handset raised")
+                    self._playing = True
                     threading.Timer(3, self.play_random).start()
 
-            # start a record thread
+            # start a record thread, if we already lifted the handset and pushed the button
             if self.play:
                 if self.record:
                     print("Starting a recording thread")
