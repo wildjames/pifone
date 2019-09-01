@@ -229,6 +229,7 @@ class Listener():
 
     def play_clip(self, playme):
         if self._playing:
+            print("Already playing")
             return
 
         print("Starting a new playback, file {}".format(playme))
