@@ -197,7 +197,7 @@ class Listener():
             rate=self.RATE,
             input=True,
             frames_per_buffer=self.CHUNK,
-            output_device_index=self.device_ID,
+            # output_device_index=self.device_ID,
         )
         print("Recording...")
         frames = []
