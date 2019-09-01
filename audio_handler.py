@@ -178,8 +178,11 @@ class Listener():
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
-        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav")
+        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", listen=False)
 
+        self.record_clip(new_file)
+
+    def record_clip(self, oname):
         # Init the audio handler
         p = pyaudio.PyAudio()
 
@@ -226,7 +229,7 @@ class Listener():
         self._recording = False
         print("Finished saving recording to {}".format(new_file))
 
-    def play_clip(self, playme):
+    def play_clip(self, playme, listen=True):
         if self._playing:
             print("Already playing")
             return
@@ -250,9 +253,14 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         try:
-            while data:
-                self.stream.write(data)
-                data = f.readframes(self.CHUNK)
+            if listen:
+                while data and self.play and self._playing:
+                    self.stream.write(data)
+                    data = f.readframes(self.CHUNK)
+            else:
+                while data:
+                    self.stream.write(data)
+                    data = f.readframes(self.CHUNK)
         except Exception as e:
             print("Crashed during recording")
             print(e)
