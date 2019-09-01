@@ -29,17 +29,32 @@ class Listener():
     RATE = 44100
 
     try:
-        pin17 = gpiozero.DigitalInputDevice(pin=17)
-        pin27 = gpiozero.DigitalInputDevice(pin=27)
-        pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
-        print("Successfully initialised cradle to pins 17, 27, 22")
+        # This is the old version of the pinout. I've since moved on to a proper dialler
+        # pin17 = gpiozero.DigitalInputDevice(pin=17)
+        # pin27 = gpiozero.DigitalInputDevice(pin=27)
+        # pin22 = gpiozero.DigitalOutputDevice(pin=22, initial_value=True)
+        # print("Successfully initialised cradle to pins 17, 27, 22")
 
-        pin5   = gpiozero.DigitalInputDevice(pin=5)
-        pin6   = gpiozero.DigitalInputDevice(pin=6)
-        pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
-        print("Successfully initialised cradle to pins 5, 6, 13")
+        # pin5   = gpiozero.DigitalInputDevice(pin=5)
+        # pin6   = gpiozero.DigitalInputDevice(pin=6)
+        # pin13  = gpiozero.DigitalOutputDevice(pin=13, initial_value=True)
+        # print("Successfully initialised cradle to pins 5, 6, 13")
 
+        cradle_pin  = gpiozero.DigitalInputDevice(pin=2)
+        print("Initialised the cradle input")
 
+        grpA_pin = gpiozero.DigitalOutputDevice(pin=3, initial_value=False)
+        grpB_pin = gpiozero.DigitalOutputDevice(pin=4, initial_value=False)
+        grpC_pin = gpiozero.DigitalOutputDevice(pin=5, initial_value=False)
+        grpD_pin = gpiozero.DigitalOutputDevice(pin=6, initial_value=False)
+        print("Initialised Output pins")
+
+        outA_pin = gpiozero.DigitalInputDevice(pin=7)
+        outB_pin = gpiozero.DigitalInputDevice(pin=8)
+        outC_pin = gpiozero.DigitalInputDevice(pin=9)
+        outD_pin = gpiozero.DigitalInputDevice(pin=10)
+        inpins = [outA_pin, outB_pin, outC_pin, outD_pin]
+        print("Initialised Input pins")
 
         rpi = True
     except:
@@ -53,16 +68,59 @@ class Listener():
 
     def _listen(self):
         if self.rpi:
-            self.play = self.pin27.value
-            self.record = self.pin6.value
+            # self.play = self.pin27.value
+            # self.record = self.pin6.value
+            self.play = self.cradle_pin.value
 
-        button_pressed = np.nan
+            button_pressed = np.nan
+            # Check the first button group
+            self.grpA_pin.value = True
+            outputs = ['a', 'b', 0, 'c']
+            for i, pin in enumerate(self.inpins):
+                if pin.value:
+                    button_pressed = outputs[i]
+                    break
+            self.grpA_pin.value = False
 
+            # Check the second group
+            self.grpB_pin.value = True
+            outputs = [np.nan, 9, 8, 7]
+            for i, pin in enumerate(self.inpins):
+                if pin.value:
+                    button_pressed = outputs[i]
+                    break
+            self.grpB_pin.value = False
+
+            # Check the Third group
+            self.grpC_pin.value = True
+            outputs = [np.nan, 6, 5, 4]
+            for i, pin in enumerate(self.inpins):
+                if pin.value:
+                    button_pressed = outputs[i]
+                    break
+            self.grpC_pin.value = False
+
+            # Check the fourth group
+            self.grpD_pin.value = True
+            outputs = [np.nan, 3, 2, 1]
+            for i, pin in enumerate(self.inpins):
+                if pin.value:
+                    button_pressed = outputs[i]
+                    break
+            self.grpD_pin.value = False
+
+        if button_pressed != np.nan:
+            print("Pushed the button {}".format(button_pressed))
+            function = self.button_functions[button_pressed]
+            self.buttonthread = threading.Thread(target=function).start()
 
         # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
             self._playing = False
             self._recording = False
+            try:
+                self.buttonthread.join()
+            except: pass
 
         if self._recording == False:
             # print("I'm not recording! Do I need to start any threads?")
