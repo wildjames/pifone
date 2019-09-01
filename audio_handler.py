@@ -130,22 +130,20 @@ class Listener():
         if not button_pressed is np.nan:
             print("Pushed the button {}".format(button_pressed))
             function = self.button_functions[button_pressed]
+
             self.buttonthread = threading.Thread(target=function).start()
 
         # If we're not playing, then we shouldn't be recording or playing.
         if self.play == False:
             self._playing = False
             self._recording = False
-            try:
-                self.buttonthread.join()
-            except: pass
 
         if self._recording == False:
             # Start a play thread
             if self._playing == False:
                 if self.play == True:
-                    print("Starting a random playback thread")
-                    threading.Thread(target=self.play_random).start()
+                    print("Handset raised")
+                    threading.Timer(3, target=self.play_random).start()
 
             # start a record thread
             if self.play:
@@ -160,6 +158,9 @@ class Listener():
         print("Button does nothing :(")
 
     def start_recording(self):
+        print("#####################################################")
+        print("Starting a recording")
+        print("#####################################################")
         self.record = True
 
     def make_recording(self):
