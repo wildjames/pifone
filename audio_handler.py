@@ -86,7 +86,8 @@ class Listener():
         '''Check what button was last pushed'''
         # If the cradle is raised, play is True
         self.play = not self.cradle_pin.value
-        if not self.play:
+        if not self.play and self._handset_is_up:
+            print("Handset in cradle")
             self._handset_is_up = False
 
         if not self._handset_is_up and self.play:
