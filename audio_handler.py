@@ -335,7 +335,7 @@ class Listener():
             a = str(a)
             for banned in self.FORBIDDEN_AUDIO:
                 if not banned in a:
-                    audio_files.append()
+                    audio_files.append(a)
 
         print("I found {} audio files:".format(len(audio_files)))
         for fn in audio_files:
