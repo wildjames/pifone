@@ -1,12 +1,13 @@
 import fnmatch
 import os
 import random
+import sys
 import threading
 import time
 import wave
-import numpy as np
 from pathlib import Path
 
+import numpy as np
 import pyaudio
 
 try:
@@ -98,6 +99,9 @@ class Listener():
     def stop(self):
         '''Stop polling'''
         self._is_polling = False
+
+    def quit(self):
+        sys.exit()
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
