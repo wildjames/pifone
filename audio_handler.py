@@ -161,18 +161,18 @@ class Listener():
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
         report what function it wants to call.'''
-        print()
 
         t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
 
 
         if self._call_func:
+            print()
             print("Button sequence is {}".format(self.button_seq))
             print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
             print("This button wants to call the function: {}".format(func.__name__))
             threading.Thread(target=func).start()
-            self.call_func = False
+            self._call_func = False
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def not_implimented(self):
