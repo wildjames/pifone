@@ -70,6 +70,8 @@ class Listener():
             9:   self.not_implimented,
         }
 
+        self.konami = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
+
         self._playing = False
         self._recording = False
 
@@ -111,6 +113,7 @@ class Listener():
             print("Handset in cradle")
             self._handset_was_up = False
             self.button_seq = []
+            self._call_seq = True
 
         if not self._handset_was_up and self._handset_is_up:
             self.handset_lifted()
@@ -187,6 +190,16 @@ class Listener():
             threading.Thread(target=func).start()
             self._call_func = False
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
+
+    def parse_seq(self):
+        '''Check the button sequence. If we want to do something, do it '''
+        if self.button_seq == self.konami:
+            threading.Thread(target=self.konami_function)
+            self._call_seq
+
+        if self.button_seq == self.kill_seq:
+            self.quit()
+            self._call_seq
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
