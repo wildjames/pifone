@@ -202,11 +202,11 @@ class Listener():
         '''Check the button sequence. If we want to do something, do it '''
         if self.button_seq == self.konami:
             threading.Thread(target=self.konami_function)
-            self._call_seq
+            self._call_seq = False
 
         if self.button_seq == self.kill_seq:
             self.quit()
-            self._call_seq
+            self._call_seq = False
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
