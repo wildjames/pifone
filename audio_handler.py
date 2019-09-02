@@ -71,6 +71,7 @@ class Listener():
         }
 
         self.konami = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
+        self.kill_seq = ['*', '*', '*']
 
         self._playing = False
         self._recording = False
@@ -96,6 +97,7 @@ class Listener():
         print("OK, GO")
 
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
+        threading.Timer(self.POLLING_RATE, self.parse_seq).start()
         threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
@@ -201,9 +203,14 @@ class Listener():
             self.quit()
             self._call_seq
 
+        threading.Timer(self.POLLING_RATE, self.parse_seq).start()
+
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
         print("Button does nothing :(")
+
+    def konami_function(self):
+        print("KONAMI")
 
     def handset_lifted(self):
         self._handset_was_up = True
