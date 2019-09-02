@@ -67,6 +67,8 @@ class Listener():
         self._handset_is_up  = False
 
         self._is_polling = False
+        self.last_button = None
+        self.last_button_pressed_at = 0.0
 
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
