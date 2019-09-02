@@ -46,6 +46,7 @@ class Listener():
         print("Initialised Input pins")
 
         self.button_functions = {
+            None:     self.not_implimented,
             'redial': self.start_recording,
             '*': self.not_implimented,
             '#': self.not_implimented,
@@ -68,7 +69,7 @@ class Listener():
 
         self._is_polling = False
         self.last_button = None
-        self.last_button_pressed_at = 0.0
+        self.last_button_pressed_at = time.clock()
 
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
