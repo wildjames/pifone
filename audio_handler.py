@@ -63,6 +63,7 @@ class Listener():
 
         self.play = False
         self._playing = False
+        self._handset_is_up = False
         self._is_polling = False
 
         os.chdir(AUDIO_FILES_LOCATION)
