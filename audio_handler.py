@@ -89,9 +89,12 @@ class Listener():
         if not self.play:
             self._playing = False
 
-        ################################################################
-        # # # # # Check if any of the buttons have been pushed # # # # #
-        ################################################################
+        if self._playing is False and self.play:
+            self.handset_lifted()
+
+        ############################################################
+        # # # # Check if any of the buttons have been pushed # # # #
+        ############################################################
         button_pressed = None
 
         # Check the first button group
@@ -151,6 +154,9 @@ class Listener():
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
         print("Button does nothing :(")
+
+    def handset_lifted(self):
+        print("Handset lifted!")
 
     def start_recording(self):
         print("#####################################################")
