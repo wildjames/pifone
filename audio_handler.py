@@ -250,7 +250,7 @@ class Listener():
                     max_num = a
             except: pass
 
-        new_file = "{:05d}.wav".format(max_num) + 1)
+        new_file = "{:05d}.wav".format(max_num + 1)
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
