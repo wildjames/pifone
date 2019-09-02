@@ -87,9 +87,9 @@ class Listener():
         # If the cradle is raised, play is True
         self.play = not self.cradle_pin.value
         if not self.play:
-            self._playing = False
+            self._handset_is_up = False
 
-        if self._playing is False and self.play:
+        if not self._handset_is_up and self.play:
             self.handset_lifted()
 
         ############################################################
@@ -156,6 +156,7 @@ class Listener():
         print("Button does nothing :(")
 
     def handset_lifted(self):
+        self._handset_is_up = True
         print("Handset lifted!")
 
     def start_recording(self):
