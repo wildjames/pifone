@@ -176,6 +176,8 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
+        self.play_random()
+
 
     def start_recording(self):
         print("#####################################################")
@@ -225,7 +227,7 @@ class Listener():
         frames = []
 
         try:
-            while self._handle_is_up:
+            while self._handset_is_up:
                 data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
@@ -280,7 +282,7 @@ class Listener():
 
         try:
             if listen:
-                while data and self.play and self._playing:
+                while data and self._handset_is_up and self._playing:
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
             else:
