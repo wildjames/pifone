@@ -162,6 +162,7 @@ class Listener():
         t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
 
+        print("Button sequence is {}".format(self.button_seq))
         print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
         print("This button wants to call the function: {}".format(func.__name__))
 
