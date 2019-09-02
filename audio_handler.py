@@ -68,6 +68,7 @@ class Listener():
         self._handset_is_up  = False
 
         self._is_polling = False
+        self._call_func  = False
         self.button_seq  = []
         self.last_button = None
         self.last_button_pressed_at = time.time()
@@ -148,6 +149,10 @@ class Listener():
             print("Pushed the button {}".format(button_pressed))
             if self.last_button is None:
                 self.button_seq.append(button_pressed)
+        else:
+            # If the last button was None, then the next time we push a
+            # button we want to call it's function
+            self._call_func = True
 
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
@@ -158,15 +163,18 @@ class Listener():
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
         report what function it wants to call.'''
+        print()
 
         t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
 
-        print("Button sequence is {}".format(self.button_seq))
-        print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
-        print("This button wants to call the function: {}".format(func.__name__))
 
-        threading.Thread(target=func).start()
+        if self._call_func:
+            print("Button sequence is {}".format(self.button_seq))
+            print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
+            print("This button wants to call the function: {}".format(func.__name__))
+            threading.Thread(target=func).start()
+            self.call_func = False
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def not_implimented(self):
