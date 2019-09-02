@@ -73,9 +73,10 @@ class Listener():
 
     def start(self):
         '''Start the polling function.'''
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
         self._is_polling = True
         print("OK, GO")
+
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
         '''Stop polling'''
@@ -290,46 +291,12 @@ class Listener():
         for fn in audio_files:
             print("- {}".format(fn))
 
-        self.audio_files = audio_files
-
+        return audio_files
 
     def play_random(self):
-        self.get_audio_files()
+        files = self.get_audio_files()
 
-        playme = random.choice(self.audio_files)
+        playme = random.choice(files)
         print("Playing file:\n{}\n".format(playme))
 
         self.play_clip(playme)
-
-
-if __name__ in "__main__":
-    l = Listener()
-
-
-    time.sleep(2)
-
-    print("!!!!! PRESSING PLAY SWITCH")
-    l.play = True
-
-    time.sleep(3)
-
-    print("!!!!! PRESSING RECORDING SWITCH")
-    l.record = True
-
-    time.sleep(2)
-
-    print("!!!!! RELEASING RECORDING SWITCH")
-    l.record = False
-
-    time.sleep(12)
-
-    print("!!!!! RELEASING PLAY SWITCH")
-    l.play = False
-
-    time.sleep(13)
-
-    print("!!!! DONE")
-
-    exit()
-
-#     l.play_random()
