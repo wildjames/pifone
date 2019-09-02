@@ -176,7 +176,7 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        self.play_random()
+        threading.Thread(target=self.play_random).start()
 
 
     def start_recording(self):
@@ -266,6 +266,8 @@ class Listener():
 
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
+
+        time.sleep(2)
 
         f = wave.open(playme, 'rb')
         p = pyaudio.PyAudio()
