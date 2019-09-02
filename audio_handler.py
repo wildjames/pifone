@@ -19,18 +19,16 @@ class Listener():
     # Playback, file reading, polling settings
     CHUNK = 1024
     POLLING_RATE = 0.1 #s
-    play = False
-    record = False
-    _playing = False
-    _recording = False
 
     # Recording settings
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
 
-
     def __init__(self, start=False):
+        '''Set up the pin I/O.
+
+        If start is True, also start the polling thread.'''
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
@@ -63,6 +61,8 @@ class Listener():
             9:   self.not_implimented,
         }
 
+        self.play = False
+        self._playing = False
         self._is_polling = False
 
         os.chdir(AUDIO_FILES_LOCATION)
@@ -78,12 +78,15 @@ class Listener():
         print("OK, GO")
 
     def stop(self):
-        pass
+        '''Stop polling'''
+        self._is_polling = False
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
         # If the cradle is raised, play is True
         self.play = not self.cradle_pin.value
+        if not self.play:
+            self._playing = False
 
         ################################################################
         # # # # # Check if any of the buttons have been pushed # # # # #
@@ -126,15 +129,23 @@ class Listener():
                 break
         self.grpD_pin.value = False
 
-        if not button_pressed is None:
+        if button_pressed is not None:
             print("Pushed the button {}".format(button_pressed))
             self.last_button = button_pressed
             self.last_button_pressed_at = time.clock()
 
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+        if self._is_polling:
+            threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def handle_button(self):
+        '''Print the last button pushed, and when it was pressed. Also
+        report what function it wants to call.'''
 
+        t_elapsed = time.clock() - self.last_button_pressed_at
+        func = self.button_functions[self.last_button]
+
+        print("The last button pressed was {}, {}s ago".format(self.last_button, t_elapsed))
+        print("This button wants to call the function: {}".format(func.__name__))
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
@@ -142,9 +153,8 @@ class Listener():
 
     def start_recording(self):
         print("#####################################################")
-        print("Starting a recording")
+        print("                Starting a recording")
         print("#####################################################")
-        self.record = True
 
     def make_recording(self):
         # Setting self.play = False stops the existing sound
@@ -157,7 +167,7 @@ class Listener():
 
         # Get the name of the new audio file to create
         audio_files = [0]
-        for root, dirnames, filenames in os.walk("AUDIO_FILES/RECORDED/"):
+        for _, _, filenames in os.walk("AUDIO_FILES/RECORDED/"):
             for filename in fnmatch.filter(filenames, "*.wav"):
                 fname = filename.lower().replace('.wav', '')
                 try:
@@ -177,7 +187,7 @@ class Listener():
         p = pyaudio.PyAudio()
 
         # Start recording, until the cradle is activated
-        self.stream = p.open(
+        stream = p.open(
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -190,7 +200,7 @@ class Listener():
 
         try:
             while self.play:
-                data = self.stream.read(self.CHUNK)
+                data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
             print("Crashed during recording")
@@ -199,12 +209,12 @@ class Listener():
         print("Done recording...")
 
         # Close my stuff
-        self.stream.stop_stream()
-        self.stream.close()
+        stream.stop_stream()
+        stream.close()
 
         if frames != []:
             # Reconstruct the wav, for saving
-            waveFile = wave.open(new_file, 'wb')
+            waveFile = wave.open(oname, 'wb')
             waveFile.setnchannels(self.CHANNELS)
             waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
             waveFile.setframerate(self.RATE)
@@ -217,7 +227,7 @@ class Listener():
         # No longer busy
         self._playing = False
         self._recording = False
-        print("Finished saving recording to {}".format(new_file))
+        print("Finished saving recording to {}".format(oname))
 
     def play_clip(self, playme, listen=True):
         if self._playing:
@@ -232,7 +242,7 @@ class Listener():
         f = wave.open(playme, 'rb')
         p = pyaudio.PyAudio()
 
-        self.stream = p.open(
+        stream = p.open(
             format=p.get_format_from_width(f.getsampwidth()),
             channels=f.getnchannels(),
             rate=f.getframerate(),
@@ -245,11 +255,11 @@ class Listener():
         try:
             if listen:
                 while data and self.play and self._playing:
-                    self.stream.write(data)
+                    stream.write(data)
                     data = f.readframes(self.CHUNK)
             else:
                 while data:
-                    self.stream.write(data)
+                    stream.write(data)
                     data = f.readframes(self.CHUNK)
         except Exception as e:
             print("Crashed during recording")
@@ -257,9 +267,9 @@ class Listener():
 
         print("Done with playback!")
 
-        #stop self.stream
-        self.stream.stop_stream()
-        self.stream.close()
+        #stop stream
+        stream.stop_stream()
+        stream.close()
         f.close()
 
         #close PyAudio
