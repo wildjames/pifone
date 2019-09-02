@@ -302,12 +302,12 @@ class Listener():
         try:
             if interruptible:
                 # I care about the playing flag - i.e. I am interruptible
-                while data and not self._recording:
+                while data and not self._recording and self._handset_is_up:
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
             else:
                 # Uninterruptible playback
-                while data:
+                while data and self._handset_is_up:
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
         except Exception as e:
