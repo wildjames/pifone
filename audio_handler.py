@@ -82,6 +82,7 @@ class Listener():
         self._is_polling = False
         self._call_func  = False
         self.button_seq  = []
+        self._call_seq   = True
         self.last_button = None
         self.last_button_pressed_at = time.time()
 
@@ -180,6 +181,9 @@ class Listener():
         '''Print the last button pushed, and when it was pressed. Also
         report what function it wants to call.'''
 
+        if self._call_seq:
+            self.parse_seq()
+
         t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
 
@@ -193,7 +197,6 @@ class Listener():
             if self._is_polling:
                 threading.Thread(target=func).start()
             self._call_func = False
-        self.parse_seq()
 
         if self._is_polling:
             threading.Timer(self.POLLING_RATE, self.parse_button).start()
