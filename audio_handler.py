@@ -104,6 +104,8 @@ class Listener():
         self._is_polling = False
 
     def quit(self):
+        self.stop()
+        time.sleep(self.POLLING_RATE*10)
         exit()
 
     def poll_buttons(self):
@@ -187,11 +189,13 @@ class Listener():
             print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
             print("This button wants to call the function: {}".format(func.__name__))
             print("--------------------------------------------------")
-            threading.Thread(target=func).start()
+            if self._is_polling:
+                threading.Thread(target=func).start()
             self._call_func = False
         self.parse_seq()
 
-        threading.Timer(self.POLLING_RATE, self.parse_button).start()
+        if self._is_polling:
+            threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def parse_seq(self):
         '''Check the button sequence. If we want to do something, do it '''
