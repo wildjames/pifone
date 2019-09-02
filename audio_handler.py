@@ -117,6 +117,8 @@ class Listener():
         if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
             self._handset_was_up = False
+
+        if not self._handset_is_up:
             self.button_seq = []
             self._call_seq = True
 
