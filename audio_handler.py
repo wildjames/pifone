@@ -68,6 +68,7 @@ class Listener():
         self._handset_is_up  = False
 
         self._is_polling = False
+        self.button_seq  = []
         self.last_button = None
         self.last_button_pressed_at = time.time()
 
@@ -82,7 +83,7 @@ class Listener():
         self._is_polling = True
         print("OK, GO")
 
-        threading.Timer(self.POLLING_RATE, self.parse_button).start()
+        # threading.Timer(self.POLLING_RATE, self.parse_button).start()
         threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
@@ -96,6 +97,7 @@ class Listener():
         if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
             self._handset_was_up = False
+            self.button_seq = []
 
         if not self._handset_was_up and self._handset_is_up:
             self.handset_lifted()
@@ -141,10 +143,14 @@ class Listener():
                 break
         self.grpD_pin.value = False
 
+        # If a button was pushed, say so
         if button_pressed is not None:
             print("Pushed the button {}".format(button_pressed))
-            self.last_button = button_pressed
-            self.last_button_pressed_at = time.time()
+            if self.last_button is None:
+                self.button_seq.append(button_pressed)
+
+        self.last_button = button_pressed
+        self.last_button_pressed_at = time.time()
 
         if self._is_polling:
             threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
@@ -159,6 +165,7 @@ class Listener():
         print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
         print("This button wants to call the function: {}".format(func.__name__))
 
+        threading.Thread(target=func).start()
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def not_implimented(self):
