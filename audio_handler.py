@@ -69,7 +69,7 @@ class Listener():
 
         self._is_polling = False
         self.last_button = None
-        self.last_button_pressed_at = time.clock()
+        self.last_button_pressed_at = time.time()
 
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
@@ -144,7 +144,7 @@ class Listener():
         if button_pressed is not None:
             print("Pushed the button {}".format(button_pressed))
             self.last_button = button_pressed
-            self.last_button_pressed_at = time.clock()
+            self.last_button_pressed_at = time.time()
 
         if self._is_polling:
             threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
@@ -153,10 +153,10 @@ class Listener():
         '''Print the last button pushed, and when it was pressed. Also
         report what function it wants to call.'''
 
-        t_elapsed = time.clock() - self.last_button_pressed_at
+        t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
 
-        print("The last button pressed was {}, {}s ago".format(self.last_button, t_elapsed))
+        print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
         print("This button wants to call the function: {}".format(func.__name__))
 
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
