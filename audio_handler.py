@@ -24,13 +24,13 @@ class Listener():
     _playing = False
     _recording = False
 
-    # Recording settings
+    # Recording settings
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
 
 
-    def __init__(self):
+    def __init__(self, start=False):
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
@@ -63,17 +63,31 @@ class Listener():
             9:   self.not_implimented,
         }
 
-        os.chdir(AUDIO_FILES_LOCATION)
-        print("OK, GO")
-        threading.Timer(self.POLLING_RATE, self._listen).start()
+        self._is_polling = False
 
-    def _listen(self):
-        # If the cradle is raised, play is True
+        os.chdir(AUDIO_FILES_LOCATION)
+        print("Initialised successfully!")
+
+        if start:
+            self.start()
+
+    def start(self):
+        '''Start the polling function.'''
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+        self._is_polling = True
+        print("OK, GO")
+
+    def stop(self):
+        pass
+
+    def poll_buttons(self):
+        '''Check what button was last pushed'''
+        # If the cradle is raised, play is True
         self.play = not self.cradle_pin.value
 
-        ##################################################################
-        ########## Check if any of the buttons have been pushed ##########
-        ##################################################################
+        ################################################################
+        # # # # # Check if any of the buttons have been pushed # # # # #
+        ################################################################
         button_pressed = None
 
         # Check the first button group
@@ -85,7 +99,7 @@ class Listener():
                 break
         self.grpA_pin.value = False
 
-        # Check the second group
+        # Check the second group
         self.grpB_pin.value = True
         outputs = [np.nan, 9, 8, 7]
         for i, pin in enumerate(self.inpins):
@@ -94,7 +108,7 @@ class Listener():
                 break
         self.grpB_pin.value = False
 
-        # Check the Third group
+        # Check the Third group
         self.grpC_pin.value = True
         outputs = [np.nan, 6, 5, 4]
         for i, pin in enumerate(self.inpins):
@@ -103,7 +117,7 @@ class Listener():
                 break
         self.grpC_pin.value = False
 
-        # Check the fourth group
+        # Check the fourth group
         self.grpD_pin.value = True
         outputs = [np.nan, 3, 2, 1]
         for i, pin in enumerate(self.inpins):
@@ -114,40 +128,16 @@ class Listener():
 
         if not button_pressed is None:
             print("Pushed the button {}".format(button_pressed))
-            function = self.button_functions[button_pressed]
+            self.last_button = button_pressed
+            self.last_button_pressed_at = time.clock()
 
-            # Start the button's function
-            self.buttonthread = threading.Thread(target=function).start()
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
+    def handle_button(self):
 
-        ##################################################################
-        ################# Cradle raised: start playback. #################
-        ##################################################################
-
-        # If we're not playing, then we shouldn't be recording or playing.
-        if self.play == False:
-            self._playing = False
-            self._recording = False
-
-        # If we aren't recording, then we should check to see if we just
-        # lifted the handset
-        if self._recording == False:
-            # Start a play thread only if we aren't already playing
-            if self._playing == False:
-                if self.play == True:
-                    print("Handset raised")
-                    threading.Thread(target=self.play_random).start()
-
-            # start a record thread, if we already lifted the handset and pushed the button
-            if self.play:
-                if self.record:
-                    print("Starting a recording thread")
-                    threading.Thread(target=self.make_recording).start()
-
-        threading.Timer(self.POLLING_RATE, self._listen).start()
 
     def not_implimented(self):
-        # make this flash an LED or something, just to show the user something was noticed?
+        # make this flash an LED or something, just to show the user something was noticed?
         print("Button does nothing :(")
 
     def start_recording(self):
@@ -162,7 +152,7 @@ class Listener():
         self._recording = True
         print("Set self._recording to TRUE")
 
-        # Wait two ticks to ensure the playback is stopped
+        # Wait two ticks to ensure the playback is stopped
         time.sleep(self.POLLING_RATE*2)
 
         # Get the name of the new audio file to create
@@ -213,7 +203,7 @@ class Listener():
         self.stream.close()
 
         if frames != []:
-            # Reconstruct the wav, for saving
+            # Reconstruct the wav, for saving
             waveFile = wave.open(new_file, 'wb')
             waveFile.setnchannels(self.CHANNELS)
             waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
@@ -224,7 +214,7 @@ class Listener():
 
         p.terminate()
 
-        # No longer busy
+        # No longer busy
         self._playing = False
         self._recording = False
         print("Finished saving recording to {}".format(new_file))
@@ -275,7 +265,7 @@ class Listener():
         #close PyAudio
         p.terminate()
 
-        # I'm no longer playing.
+        # I'm no longer playing.
         self._playing = False
         print("Finished playback")
 
