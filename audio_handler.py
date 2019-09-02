@@ -97,7 +97,6 @@ class Listener():
         print("OK, GO")
 
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
-        threading.Timer(self.POLLING_RATE, self.parse_seq).start()
         threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
@@ -191,6 +190,8 @@ class Listener():
             print("--------------------------------------------------")
             threading.Thread(target=func).start()
             self._call_func = False
+        self.parse_seq()
+
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def parse_seq(self):
@@ -202,8 +203,6 @@ class Listener():
         if self.button_seq == self.kill_seq:
             self.quit()
             self._call_seq
-
-        threading.Timer(self.POLLING_RATE, self.parse_seq).start()
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
