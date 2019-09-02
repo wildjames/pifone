@@ -102,6 +102,7 @@ class Listener():
     def stop(self):
         '''Stop polling'''
         self._is_polling = False
+        self._handset_is_up = False
 
     def quit(self):
         self.stop()
@@ -236,13 +237,18 @@ class Listener():
         time.sleep(self.POLLING_RATE*2)
 
         # Get the name of the new audio file to create
-        audio_files = [0]
-        for _, _, filenames in os.walk("AUDIO_FILES/RECORDED/"):
-            for filename in fnmatch.filter(filenames, "*.wav"):
-                fname = filename.lower().replace('.wav', '')
-                try:
-                    audio_files.append(int(fname))
-                except: pass
+        audio_files = Path('.').glob("**/RECORDED/*.wav")
+        audio_files = [str(p) for p in audio_files]
+        max_num = 0
+        for a in audio_files:
+            try:
+                a = os.path.split(a)[1]
+                a = a.replace('.wav', '')
+                print(a)
+                a = int(a)
+                if a > max_num:
+                    max_num = a
+            except: pass
 
         new_file = "{:05d}.wav".format(max(audio_files) + 1)
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
