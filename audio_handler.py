@@ -70,6 +70,7 @@ class Listener():
         }
 
         self._playing = False
+        self._recording = False
 
         self._handset_was_up = False
         self._handset_is_up  = False
@@ -310,7 +311,7 @@ class Listener():
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
         except Exception as e:
-            print("Crashed during recording")
+            print("Crashed during Playback")
             print(e)
 
         print("Done with playback!")
