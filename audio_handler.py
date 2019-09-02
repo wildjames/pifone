@@ -90,6 +90,7 @@ class Listener():
             self._handset_is_up = False
 
         if not self._handset_is_up and self.play:
+            print("handset up? {}".format(self._handset_is_up))
             self.handset_lifted()
 
         ############################################################
