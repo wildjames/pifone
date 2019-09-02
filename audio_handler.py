@@ -55,7 +55,7 @@ class Listener():
 
         self.button_functions = {
             None:     self.not_implimented,
-            'redial': self.start_recording,
+            'redial': self.play_random,
             '*': self.not_implimented,
             '#': self.not_implimented,
             0:   self.not_implimented,
@@ -225,7 +225,7 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        threading.Thread(target=self.play_random).start()
+        threading.Thread(target=self.make_recording).start()
 
     def start_recording(self):
         print("#####################################################")
