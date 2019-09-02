@@ -206,6 +206,7 @@ class Listener():
         if self.button_seq == self.konami:
             threading.Thread(target=self.konami_function)
             self._call_seq = False
+            self._call_func = False
 
         if self.button_seq == self.kill_seq:
             self.quit()
