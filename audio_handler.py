@@ -145,7 +145,7 @@ class Listener():
         if self._is_polling:
             threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
-    def handle_button(self):
+    def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
         report what function it wants to call.'''
 
@@ -154,6 +154,8 @@ class Listener():
 
         print("The last button pressed was {}, {}s ago".format(self.last_button, t_elapsed))
         print("This button wants to call the function: {}".format(func.__name__))
+
+        threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
