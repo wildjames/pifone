@@ -61,9 +61,11 @@ class Listener():
             9:   self.not_implimented,
         }
 
-        self.play = False
         self._playing = False
-        self._handset_is_up = False
+
+        self._handset_was_up = False
+        self._handset_is_up  = False
+
         self._is_polling = False
 
         os.chdir(AUDIO_FILES_LOCATION)
@@ -86,12 +88,12 @@ class Listener():
     def poll_buttons(self):
         '''Check what button was last pushed'''
         # If the cradle is raised, play is True
-        self.play = not self.cradle_pin.value
-        if not self.play and self._handset_is_up:
+        self._handset_is_up = not self.cradle_pin.value
+        if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
-            self._handset_is_up = False
+            self._handset_was_up = False
 
-        if not self._handset_is_up and self.play:
+        if not self._handset_was_up and self._handset_is_up:
             self.handset_lifted()
 
         ############################################################
@@ -158,7 +160,7 @@ class Listener():
         print("Button does nothing :(")
 
     def handset_lifted(self):
-        self._handset_is_up = True
+        self._handset_was_up = True
         print("Handset lifted!")
 
     def start_recording(self):
@@ -209,7 +211,7 @@ class Listener():
         frames = []
 
         try:
-            while self.play:
+            while self._handle_is_up:
                 data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
