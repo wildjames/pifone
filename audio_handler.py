@@ -149,10 +149,8 @@ class Listener():
             print("Pushed the button {}".format(button_pressed))
             if self.last_button is None:
                 self.button_seq.append(button_pressed)
-        else:
-            # If the last button was None, then the next time we push a
-            # button we want to call it's function
-            self._call_func = True
+                # Raise a flag to call this button's function, if it has one
+                self._call_func = True
 
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
