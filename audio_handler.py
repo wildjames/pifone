@@ -104,7 +104,7 @@ class Listener():
         self._is_polling = False
 
     def quit(self):
-        sys.exit()
+        exit()
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
@@ -162,7 +162,6 @@ class Listener():
 
         # If a button was pushed, say so
         if button_pressed is not None:
-            print("Pushed the button {}".format(button_pressed))
             if self.last_button is None:
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
