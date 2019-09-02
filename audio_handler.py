@@ -5,6 +5,7 @@ import threading
 import time
 import wave
 import numpy as np
+from pathlib import Path
 
 import pyaudio
 
@@ -24,6 +25,12 @@ class Listener():
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
+
+    FORBIDDEN_AUDIO = [
+        'Intro',
+        'Thanks',
+        'VOYAGER',
+    ]
 
     def __init__(self, start=False):
         '''Set up the pin I/O.
@@ -167,10 +174,11 @@ class Listener():
 
 
         if self._call_func:
-            print()
+            print("--------------------------------------------------")
             print("Button sequence is {}".format(self.button_seq))
             print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
             print("This button wants to call the function: {}".format(func.__name__))
+            print("--------------------------------------------------")
             threading.Thread(target=func).start()
             self._call_func = False
         threading.Timer(self.POLLING_RATE, self.parse_button).start()
@@ -184,15 +192,16 @@ class Listener():
         print("Handset lifted!")
         threading.Thread(target=self.play_random).start()
 
-
     def start_recording(self):
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
+        self.play_clip("")
+        self.make_recording()
 
     def make_recording(self):
-        # Setting self.play = False stops the existing sound
-        self._playing = False
+        '''Stop current playback, if it's running, play the 'please record a
+        message' mesasge, and start recording.'''
         self._recording = True
         print("Set self._recording to TRUE")
 
@@ -212,7 +221,7 @@ class Listener():
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
-        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", listen=False)
+        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", interruptible=False)
 
         self.record_clip(new_file)
 
@@ -261,9 +270,10 @@ class Listener():
         # No longer busy
         self._playing = False
         self._recording = False
+
         print("Finished saving recording to {}".format(oname))
 
-    def play_clip(self, playme, listen=True):
+    def play_clip(self, playme, interruptible=True):
         if self._playing:
             print("Already playing")
             return
@@ -289,11 +299,13 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         try:
-            if listen:
-                while data and self._handset_is_up and self._playing:
+            if interruptible:
+                # I care about the playing flag - i.e. I am interruptible
+                while data and not self._recording:
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
             else:
+                # Uninterruptible playback
                 while data:
                     stream.write(data)
                     data = f.readframes(self.CHUNK)
@@ -316,11 +328,13 @@ class Listener():
         print("Finished playback")
 
     def get_audio_files(self):
+        fnames = Path('.').glob("**/*.wav")
+
         audio_files = []
-        for root, dirnames, filenames in os.walk("AUDIO_FILES"):
-            for filename in fnmatch.filter(filenames, "*.wav"):
-                fname = os.path.join(root, filename)
-                audio_files.append(fname)
+        for a in fnames:
+            for banned in self.FORBIDDEN_AUDIO:
+                if not banned in a:
+                    audio_files.append()
 
         print("I found {} audio files:".format(len(audio_files)))
         for fn in audio_files:
