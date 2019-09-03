@@ -115,7 +115,6 @@ class Listener():
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
-        self._interrupt = False
         # If the cradle is raised, play is True
         self._handset_is_up = not self.cradle_pin.value
         if not self._handset_is_up and self._handset_was_up:
@@ -252,14 +251,15 @@ class Listener():
     def interrupt_playback(self):
         '''Stops current playback without having to replace the handset'''
         self._interrupt = True
+        print("INTERRUPTING PLAYBACK")
         time.sleep(self.POLLING_RATE * 5)
-        return
+        self._interrupt = False
 
     def start_recording(self):
+        self.interrupt_playback()
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
-        self.interrupt_playback()
         self.make_recording()
 
     def make_recording(self):
