@@ -331,7 +331,7 @@ class Listener():
 
         try:
             while True:
-                if not self._interrupt:
+                if self._interrupt:
                     print("Interrupted recording")
                     break
                 data = stream.read(self.CHUNK)
@@ -393,7 +393,7 @@ class Listener():
 
         try:
             while data:
-                if not self._interrupt:
+                if self._interrupt:
                     print("Interrupted playback")
                     break
                 stream.write(data)
