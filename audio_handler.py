@@ -31,6 +31,7 @@ class Listener():
         'Intro',
         'Thanks',
         'VOYAGER',
+        'CUM',
     ]
 
     def __init__(self, start=False):
@@ -55,7 +56,7 @@ class Listener():
 
         self.button_functions = {
             None:     self.not_implimented,
-            'redial': self.play_random,
+            'redial': self.make_recording,
             '*': self.not_implimented,
             '#': self.not_implimented,
             0:   self.not_implimented,
@@ -71,7 +72,9 @@ class Listener():
         }
 
         self.konami = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
-        self.kill_seq = ['*', '*', '*']
+        self.kill_seq = [4, 2, 8, 6]
+        self.cummy = [2, 1, 0, 8]
+        self.voyager = [1, 9, 7, 7]
 
         self._playing = False
         self._recording = False
@@ -215,6 +218,15 @@ class Listener():
             self._call_seq = False
             self._call_func = False
 
+        if self.button_seq == self.cummy:
+            self.play_cummy()
+
+    def play_cummy(self):
+        '''play a cum file'''
+        fnames = Path('.').glob("AUDIO_FILES/CUM/*.wav")
+        playme = random.choice(fnames)
+        self.play_clip(playme)
+
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
         print("Button does nothing :(")
@@ -225,7 +237,7 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        threading.Thread(target=self.make_recording).start()
+        threading.Thread(target=self.play_random).start()
 
     def start_recording(self):
         print("#####################################################")
