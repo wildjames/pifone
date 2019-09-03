@@ -255,10 +255,10 @@ class Listener():
         '''Call to API to check if the number entered is valid'''
         URL = "http://apilayer.net/api/validate"
 
-        URL += "? access_key = {}".format(self.NUMVERIFY_APIKEY)
-        URL += "& number = {}".format(num)
-        URL += "& country_code = GB"
-        URL += "& format = 1" # return JSON
+        URL += "?access_key={}".format(self.NUMVERIFY_APIKEY)
+        URL += "&number={}".format(num)
+        URL += "&country_code=GB"
+        URL += "&format=1" # return JSON
 
         resp = requests.post(URL)
         packet = resp.json()
