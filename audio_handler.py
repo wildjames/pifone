@@ -242,10 +242,11 @@ class Listener():
 
     def play_voyager(self):
         '''play a voyager file'''
-        fnames = Path("AUDIO_FILES").glob("VOYAGER/*.wav")
+        fnames = Path(".").glob("AUDIO_FILES/VOYAGER/*.wav")
         try:
             playme = random.choice(fnames)
-        except: pass
+        except:
+            return
 
         self.play_clip(playme)
 
