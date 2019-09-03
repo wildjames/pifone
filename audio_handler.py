@@ -6,6 +6,7 @@ import threading
 import time
 import wave
 from pathlib import Path
+import requests
 
 import numpy as np
 import pyaudio
@@ -21,6 +22,8 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 
 
 class Listener():
+    NUMVERIFY_APIKEY = "55d54bda772465a9979d9c78ca1b7313"
+
     CHUNK = 1024
     POLLING_RATE = 0.1 #s
 
@@ -93,6 +96,9 @@ class Listener():
 
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
+
+        num = '07730031507'
+        print("The number {} is valid? {}".format(num, self.validate_phone_number(num)))
 
         if start:
             self.start()
@@ -244,6 +250,22 @@ class Listener():
 
     def konami_function(self):
         print("KONAMI")
+
+    def validate_phone_number(self, num):
+        '''Call to API to check if the number entered is valid'''
+        URL = "http://apilayer.net/api/validate"
+
+        URL += "? access_key = ".format(self.NUMVERIFY_APIKEY)
+        URL += "& number = ".format(num)
+        URL += "& country_code = GB"
+        URL += "& format = 1" # return JSON
+
+        resp = requests.post(url)
+        packet = resp.json()
+
+        isvalid = packet['valid']
+
+        return isvalid
 
     def handset_lifted(self):
         self._handset_was_up = True
