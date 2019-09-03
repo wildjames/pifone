@@ -265,7 +265,7 @@ class Listener():
         # Stop current playback
         self.interrupt_playback()
 
-        while True:
+        while self._handset_is_up:
             playme = random.choice(fnames)
             self.play_clip(playme)
 
