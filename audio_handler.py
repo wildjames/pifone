@@ -248,7 +248,7 @@ class Listener():
 
     def play_voyager(self):
         '''play a voyager file'''
-        fnames = Path(".").glob("AUDIO_FILES/VOYAGER/*.wav")
+        fnames = Path(".").glob("**/VOYAGER/*.wav")
         try:
             playme = random.choice(fnames)
         except:
@@ -259,7 +259,7 @@ class Listener():
 
     def play_cummy(self):
         '''play a cum file'''
-        fnames = Path('.').glob("AUDIO_FILES/CUM/*.wav")
+        fnames = Path('.').glob("**/CUM/*.wav")
         try:
             playme = random.choice(fnames)
         except:
