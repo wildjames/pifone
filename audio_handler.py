@@ -128,16 +128,17 @@ class Listener():
     def poll_buttons(self):
         '''Check what button was last pushed'''
         self._interrupt = False
+
         # If the cradle is raised, play is True
         self._handset_is_up = not self.cradle_pin.value
         if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
+            self.call_seq = True
             self._handset_was_up = False
             self.interrupt_playback()
 
         if not self._handset_is_up:
             self.button_seq = []
-            self._call_seq = True
             self._playing = False
             self._interrupt = True
 
