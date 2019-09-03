@@ -100,6 +100,11 @@ class Listener():
         if start:
             self.start()
 
+    def interrupt_playback(self):
+        '''Stops current playback without having to replace the handset'''
+        self._interrupt = True
+        print("INTERRUPTING PLAYBACK")
+
     def start(self):
         '''Start the polling function.'''
         self._is_polling = True
@@ -272,13 +277,6 @@ class Listener():
         print("Handset lifted!")
         threading.Thread(target=self.play_random).start()
 
-    def interrupt_playback(self):
-        '''Stops current playback without having to replace the handset'''
-        self._interrupt = True
-        print("INTERRUPTING PLAYBACK")
-        time.sleep(self.POLLING_RATE * 5)
-        self._interrupt = False
-
     def start_recording(self):
         self.interrupt_playback()
         print("#####################################################")
@@ -342,6 +340,7 @@ class Listener():
             print("Crashed during recording")
             print(e)
 
+
         print("Done recording...")
 
         # Close my stuff
@@ -363,6 +362,7 @@ class Listener():
         # No longer busy
         self._playing = False
         self._recording = False
+        self._interrupt = False
 
         print("Finished saving recording to {}".format(oname))
 
@@ -414,6 +414,7 @@ class Listener():
 
         # I'm no longer playing.
         self._playing = False
+        self._interrupt = False
         print("Finished playback")
 
     def get_audio_files(self):
