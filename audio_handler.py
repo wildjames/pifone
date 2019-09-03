@@ -260,7 +260,7 @@ class Listener():
         URL += "& country_code = GB"
         URL += "& format = 1" # return JSON
 
-        resp = requests.post(url)
+        resp = requests.post(URL)
         packet = resp.json()
 
         isvalid = packet['valid']
