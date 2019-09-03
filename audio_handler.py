@@ -263,16 +263,14 @@ class Listener():
         print(os.listdir('AUDIO_FILES'))
         fnames = [str(f) for f in Path('.').glob("**/CUM/*")]
         print(fnames)
-        try:
-            playme = random.choice(fnames)
-        except:
-            print("No files found")
+        if fnames == []:
             return
-
         # Stop current playback
         self.interrupt_playback()
 
-        self.play_clip(playme)
+        while True:
+            playme = random.choice(fnames)
+            self.play_clip(playme)
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
