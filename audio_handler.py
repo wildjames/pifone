@@ -25,7 +25,7 @@ class Listener():
     NUMVERIFY_APIKEY = "55d54bda772465a9979d9c78ca1b7313"
 
     CHUNK = 1024
-    POLLING_RATE = 0.1 #s
+    POLLING_RATE = 0.05 #s
 
     # Recording settings
     FORMAT = pyaudio.paInt16
@@ -236,6 +236,18 @@ class Listener():
 
         if self.button_seq == self.cummy:
             self.play_cummy()
+
+        if self.button_seq == self.voyager:
+            self.play_voyager()
+
+    def play_voyager(self):
+        '''play a voyager file'''
+        fnames = Path("AUDIO_FILES").glob("VOYAGER/*.wav")
+        try:
+            playme = random.choice(fnames)
+        except: pass
+
+        self.play_clip(playme)
 
     def play_cummy(self):
         '''play a cum file'''
