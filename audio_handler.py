@@ -253,6 +253,7 @@ class Listener():
         try:
             playme = random.choice(fnames)
         except:
+            print("No files found")
             return
 
         self.play_clip(playme)
@@ -263,6 +264,7 @@ class Listener():
         try:
             playme = random.choice(fnames)
         except:
+            print("No files found")
             return
 
         # Stop current playback
