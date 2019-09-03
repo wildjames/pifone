@@ -231,8 +231,7 @@ class Listener():
             return
 
         # Stop current playback
-        self._playing = False
-        time.sleep(self.POLLING_RATE*3)
+        self.interrupt_playback()
 
         self.play_clip(playme)
 
@@ -308,7 +307,10 @@ class Listener():
         frames = []
 
         try:
-            while not self._interrupt:
+            while True:
+                if not self._interrupt:
+                    print("Interrupted recording")
+                    break
                 data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
@@ -365,7 +367,10 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         try:
-            while data and not self._interrupt:
+            while data:
+                if not self._interrupt:
+                    print("Interrupted playback")
+                    break
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
         except Exception as e:
