@@ -133,7 +133,7 @@ class Listener():
         self._handset_is_up = not self.cradle_pin.value
         if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
-            self.call_seq = True
+            self._call_seq = True
             self._handset_was_up = False
             self.interrupt_playback()
 
@@ -240,7 +240,6 @@ class Listener():
             self._call_seq = False
             self._call_func = False
             self.play_cummy()
-
 
         if self.button_seq == self.voyager:
             self._call_seq = False
