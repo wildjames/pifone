@@ -115,6 +115,7 @@ class Listener():
 
     def quit(self):
         self.stop()
+        self.interrupt_playback()
         time.sleep(self.POLLING_RATE*10)
         exit()
 
@@ -125,6 +126,7 @@ class Listener():
         if not self._handset_is_up and self._handset_was_up:
             print("Handset in cradle")
             self._handset_was_up = False
+            self.interrupt_playback()
 
         if not self._handset_is_up:
             self.button_seq = []
