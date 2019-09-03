@@ -126,6 +126,7 @@ class Listener():
         if not self._handset_is_up:
             self.button_seq = []
             self._call_seq = True
+            self._playing = False
             self._interrupt = True
 
         if not self._handset_was_up and self._handset_is_up:
@@ -267,9 +268,6 @@ class Listener():
         '''Stop current playback, if it's running, play the 'please record a
         message' mesasge, and start recording.'''
 
-        # Wait two ticks to ensure the playback is stopped
-        time.sleep(self.POLLING_RATE*2)
-
         # Get the name of the new audio file to create
         audio_files = Path('.').glob("**/RECORDED/*.wav")
         audio_files = [str(p) for p in audio_files]
@@ -293,6 +291,9 @@ class Listener():
         self.record_clip(new_file)
 
     def record_clip(self, oname):
+        self._playing = True
+        self._recording = True
+
         # Init the audio handler
         p = pyaudio.PyAudio()
 
