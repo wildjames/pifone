@@ -248,7 +248,7 @@ class Listener():
 
     def play_voyager(self):
         '''play a voyager file'''
-        fnames = Path(".").glob("**/VOYAGER/*.wav")
+        fnames = [str(f) for f in Path(".").glob("**/VOYAGER/*.wav")]
         try:
             playme = random.choice(fnames)
         except:
@@ -260,7 +260,7 @@ class Listener():
     def play_cummy(self):
         '''play a cum file'''
         print(os.listdir('AUDIO_FILES'))
-        fnames = Path('.').glob("**/CUM/*")
+        fnames = [str(f) for f in Path('.').glob("**/CUM/*")]
         print(fnames)
         try:
             playme = random.choice(fnames)
