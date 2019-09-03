@@ -112,7 +112,6 @@ class Listener():
         self._is_polling = True
         print("OK, GO")
 
-        threading.Timer(self.POLLING_RATE, self.parse_button).start()
         threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
@@ -198,6 +197,7 @@ class Listener():
         self.last_button_pressed_at = time.time()
 
         if self._is_polling:
+            threading.Thread(target=self.parse_button()).start()
             threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def parse_button(self):
@@ -221,9 +221,6 @@ class Listener():
             if self._is_polling:
                 threading.Thread(target=func).start()
             self._call_func = False
-
-        if self._is_polling:
-            threading.Timer(self.POLLING_RATE, self.parse_button).start()
 
     def parse_seq(self):
         '''Check the button sequence. If we want to do something, do it '''
