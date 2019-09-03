@@ -259,6 +259,7 @@ class Listener():
 
     def play_cummy(self):
         '''play a cum file'''
+        print(os.listdir('AUDIO_FILES'))
         fnames = Path('.').glob("**/CUM/*.wav")
         try:
             playme = random.choice(fnames)
