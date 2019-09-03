@@ -105,6 +105,7 @@ class Listener():
         '''Stops current playback without having to replace the handset'''
         self._interrupt = True
         print("INTERRUPTING PLAYBACK")
+        time.sleep(0.5)
 
     def start(self):
         '''Start the polling function.'''
