@@ -97,9 +97,6 @@ class Listener():
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
 
-        num = '07730031507'
-        print("The number {} is valid? {}".format(num, self.validate_phone_number(num)))
-
         if start:
             self.start()
 
