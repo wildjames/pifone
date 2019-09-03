@@ -215,6 +215,7 @@ class Listener():
             print("Button sequence is {}".format(self.button_seq))
             print("The last button pressed was {}, {:.3f}s ago".format(self.last_button, t_elapsed))
             print("This button wants to call the function: {}".format(func.__name__))
+            print("_call_seq: {}".format(self._call_seq))
             print("--------------------------------------------------")
             if self._is_polling:
                 threading.Thread(target=func).start()
@@ -226,19 +227,24 @@ class Listener():
     def parse_seq(self):
         '''Check the button sequence. If we want to do something, do it '''
         if self.button_seq == self.konami:
-            threading.Thread(target=self.konami_function).start()
             self._call_seq = False
             self._call_func = False
+            threading.Thread(target=self.konami_function).start()
 
         if self.button_seq == self.kill_seq:
-            self.quit()
             self._call_seq = False
             self._call_func = False
+            self.quit()
 
         if self.button_seq == self.cummy:
+            self._call_seq = False
+            self._call_func = False
             self.play_cummy()
 
+
         if self.button_seq == self.voyager:
+            self._call_seq = False
+            self._call_func = False
             self.play_voyager()
 
     def play_voyager(self):
