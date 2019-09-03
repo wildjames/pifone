@@ -262,6 +262,7 @@ class Listener():
 
         resp = requests.post(URL)
         packet = resp.json()
+        print(packet)
 
         isvalid = packet['valid']
 
