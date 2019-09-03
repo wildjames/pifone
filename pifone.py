@@ -1,4 +1,5 @@
+#!/usr/bin/env python3
 from audio_handler import Listener
 
-if __name__ in "__main__":
-    l = Listener()
+lis = Listener()
+lis.start()
