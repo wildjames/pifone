@@ -237,10 +237,10 @@ class Listener():
         samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
         samples += np.sin(2*np.pi*np.arange(fs*duration)*f_B/fs)
 
-        samples = samples.astype(self.FORMAT)
+        samples = samples.astype(np.float32)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = p.open(format=self.FORMAT,
+        stream = p.open(format=pyaudio.paFloat32,
                         channels=self.CHANNELS,
                         rate=self.RATE,
                         output=True)
