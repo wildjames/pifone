@@ -303,13 +303,13 @@ class Listener():
 
     def play_voyager(self):
         '''play a voyager file'''
+        self.interrupt_playback()
         fnames = [str(f) for f in Path(".").glob("**/VOYAGER/*.wav")]
-        try:
-            playme = random.choice(fnames)
-        except:
+        if fnames == []:
             print("No files found")
             return
 
+        playme = random.choice(fnames)
         self.play_clip(playme)
 
     def play_cummy(self):
