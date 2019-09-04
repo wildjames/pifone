@@ -128,7 +128,7 @@ class Listener():
         self._is_polling = True
         print("OK, GO")
 
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+        threading.Timer(self.POLLING_RATE, self.poller).start()
 
     def stop(self):
         '''Stop polling'''
