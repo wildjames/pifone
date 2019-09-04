@@ -351,7 +351,7 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        threading.Timer(2, self.play_random).start()
+        threading.Thread(target=self.play_random).start()
 
     def start_recording(self):
         self.interrupt_playback()
