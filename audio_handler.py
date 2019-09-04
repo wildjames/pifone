@@ -275,8 +275,7 @@ class Listener():
             print("This button wants to call the function: {}".format(func.__name__))
             print("_call_seq: {}".format(self._call_seq))
             print("--------------------------------------------------")
-            if self._is_polling:
-                threading.Thread(target=func).start()
+            threading.Thread(target=func).start()
             self._call_func = False
 
     def parse_seq(self):
@@ -294,12 +293,12 @@ class Listener():
         if self.button_seq == self.cummy:
             self._call_seq = False
             self._call_func = False
-            self.play_cummy()
+            threading.Thread(target=self.play_cummy).start()
 
         if self.button_seq == self.voyager:
             self._call_seq = False
             self._call_func = False
-            self.play_voyager()
+            threading.Thread(target=self.play_voyager).start()
 
     def play_voyager(self):
         '''play a voyager file'''
