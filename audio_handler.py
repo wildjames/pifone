@@ -243,6 +243,7 @@ class Listener():
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = p.open(format=pyaudio.paFloat32,
+                        channels=1,
                         rate=fs,
                         output=True)
 
