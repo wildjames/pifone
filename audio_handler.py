@@ -242,8 +242,8 @@ class Listener():
             f_B = 440
 
         # generate samples, note conversion to float32 array
-        samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
-        samples += np.sin(2*np.pi*np.arange(fs*duration)*f_B/fs)
+        samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
+        samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
 
         samples *= volume
 
