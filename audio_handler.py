@@ -6,7 +6,7 @@ import threading
 import time
 import wave
 from pathlib import Path
-import requests
+from requests import post
 
 import numpy as np
 import pyaudio
