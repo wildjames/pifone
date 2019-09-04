@@ -222,7 +222,7 @@ class Listener():
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
         p = pyaudio.PyAudio()
-        volume = 1.0     # range [0.0, 1.0]
+        volume = 0.4     # range [0.0, 1.0]
         fs = 44100       # sampling rate, Hz, must be integer
         duration = 0.3   # in seconds, may be float
         # f = 440.0        # sine frequency, Hz, may be float
@@ -234,6 +234,9 @@ class Listener():
 
         f_A = freqs_A[f_A]
         f_B = freqs_B[f_B]
+
+        if button == 'tone':
+            duration = 1.0
 
         # generate samples, note conversion to float32 array
         samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
