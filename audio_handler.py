@@ -440,7 +440,6 @@ class Listener():
                 if self._interrupt:
                     print("Interrupted playback")
                     break
-                print("Playing chunk")
                 self.stream.write(data)
                 data = f.readframes(self.CHUNK)
         except Exception as e:
