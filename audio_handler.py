@@ -120,6 +120,7 @@ class Listener():
     def interrupt_playback(self):
         '''Stops current playback without having to replace the handset'''
         self._interrupt = True
+        self._playing = False
         print("INTERRUPTING PLAYBACK")
         time.sleep(2)
 
@@ -338,7 +339,6 @@ class Listener():
 
         resp = requests.post(URL)
         packet = resp.json()
-        print(packet)
 
         isvalid = packet['valid']
 
