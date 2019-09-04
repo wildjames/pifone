@@ -128,7 +128,7 @@ class Listener():
         self._is_polling = True
         print("OK, GO")
 
-        threading.Timer(self.POLLING_RATE, self.poller).start()
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def stop(self):
         '''Stop polling'''
@@ -140,12 +140,6 @@ class Listener():
         self.interrupt_playback()
         time.sleep(self.POLLING_RATE*10)
         exit()
-
-    def poller(self):
-        if self._is_polling:
-            threading.Thread(target=self.parse_button).start()
-            threading.Thread(target=self.poll_buttons).start()
-            threading.Timer(self.POLLING_RATE, self.poller).start()
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
@@ -218,6 +212,10 @@ class Listener():
 
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
+
+        if self._is_polling:
+            threading.Thread(target=self.parse_button).start()
+            threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
