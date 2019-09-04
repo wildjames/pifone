@@ -114,18 +114,6 @@ class Listener():
         os.chdir(AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
 
-        self.p = pyaudio.PyAudio()
-        # for paFloat32 sample values must be in range [-1.0, 1.0]
-        self.stream = self.p.open(
-            format=self.FORMAT,
-            channels=self.CHANNELS,
-            rate=self.RATE,
-            input=True,
-            output=True,
-            frames_per_buffer=self.CHUNK
-        )
-
-
         if start:
             self.start()
 
@@ -231,8 +219,11 @@ class Listener():
 
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
+        p = pyaudio.PyAudio()
         volume = 1.0     # range [0.0, 1.0]
+        fs = 44100       # sampling rate, Hz, must be integer
         duration = 0.3   # in seconds, may be float
+        # f = 440.0        # sine frequency, Hz, may be float
 
         freqs_A = [1209, 1336, 1477, 1633]
         freqs_B = [697,  770,  852,  941]
@@ -243,13 +234,24 @@ class Listener():
         f_B = freqs_B[f_B]
 
         # generate samples, note conversion to float32 array
-        samples =  np.sin(2*np.pi*np.arange(self.RATE*duration)*f_A/self.RATE)
-        samples += np.sin(2*np.pi*np.arange(self.RATE*duration)*f_B/self.RATE)
+        samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
+        samples += np.sin(2*np.pi*np.arange(fs*duration)*f_B/fs)
 
-        samples = samples.astype(np.float16)
+        samples = samples.astype(np.float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = p.open(format=pyaudio.paFloat32,
+                        channels=self.CHANNELS,
+                        rate=self.RATE,
+                        output=True)
 
         # play. May repeat with different volume values (if done interactively)
-        self.stream.write(volume*samples)
+        stream.write(volume*samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        p.terminate()
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
@@ -387,6 +389,18 @@ class Listener():
         self._playing = True
         self._recording = True
 
+        # Init the audio handler
+        p = pyaudio.PyAudio()
+
+        # Start recording, until the cradle is activated
+        stream = p.open(
+            format=self.FORMAT,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            input=True,
+            frames_per_buffer=self.CHUNK,
+            # output_device_index=self.device_ID,
+        )
         print("Recording...")
         frames = []
 
@@ -395,7 +409,7 @@ class Listener():
                 if self._interrupt:
                     print("Interrupted recording")
                     break
-                data = self.stream.read(self.CHUNK)
+                data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
             print("Crashed during recording")
@@ -403,15 +417,21 @@ class Listener():
 
         print("Done recording...")
 
+        # Close my stuff
+        stream.stop_stream()
+        stream.close()
+
         if frames != []:
             # Reconstruct the wav, for saving
             waveFile = wave.open(oname, 'wb')
             waveFile.setnchannels(self.CHANNELS)
-            waveFile.setsampwidth(self.p.get_sample_size(self.FORMAT))
+            waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
             waveFile.setframerate(self.RATE)
 
             waveFile.writeframes(b''.join(frames))
             waveFile.close()
+
+        p.terminate()
 
         # No longer busy
         self._playing = False
@@ -431,6 +451,14 @@ class Listener():
         self._playing = True
 
         f = wave.open(playme, 'rb')
+        p = pyaudio.PyAudio()
+
+        stream = p.open(
+            format = p.get_format_from_width(f.getsampwidth()),
+            channels = f.getnchannels(),
+            rate = f.getframerate(),
+            output = True
+        )
 
         # read data
         data = f.readframes(self.CHUNK)
@@ -440,7 +468,7 @@ class Listener():
                 if self._interrupt:
                     print("Interrupted playback")
                     break
-                self.stream.write(data)
+                stream.write(data)
                 data = f.readframes(self.CHUNK)
         except Exception as e:
             print("Crashed during Playback")
@@ -448,7 +476,13 @@ class Listener():
 
         print("Done with playback!")
 
+        #stop stream
+        stream.stop_stream()
+        stream.close()
         f.close()
+
+        #close PyAudio
+        p.terminate()
 
         # I'm no longer playing.
         self._playing = False
