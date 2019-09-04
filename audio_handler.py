@@ -59,6 +59,22 @@ class Listener():
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
+        self.button_tones = {
+            'redial': [0, 3],
+            '*': [3, 0],
+            '#': [3, 2],
+            0:   [3, 1],
+            1:   [0, 0],
+            2:   [0, 1],
+            3:   [0, 2],
+            4:   [1, 0],
+            5:   [1, 1],
+            6:   [1, 2],
+            7:   [2, 0],
+            8:   [2, 1],
+            9:   [2, 2],
+        }
+
         self.button_functions = {
             None:     self.not_implimented,
             'redial': self.start_recording,
@@ -125,6 +141,12 @@ class Listener():
         time.sleep(self.POLLING_RATE*10)
         exit()
 
+    def poller(self):
+        if self._is_polling:
+            threading.Thread(target=self.parse_button).start()
+            threading.Thread(target=self.poll_buttons).start()
+            threading.Timer(self.POLLING_RATE, self.poller).start()
+
     def poll_buttons(self):
         '''Check what button was last pushed'''
         self._interrupt = False
@@ -189,6 +211,7 @@ class Listener():
         # If a button was pushed, say so
         if button_pressed is not None:
             if self.last_button is None:
+                self.dialtone(button_pressed)
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self._call_func = True
@@ -196,9 +219,44 @@ class Listener():
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
 
-        if self._is_polling:
-            threading.Thread(target=self.parse_button()).start()
-            threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+    def dialtone(self, button):
+        '''Play a dialtone for the button when it's pushed'''
+        p = pyaudio.PyAudio()
+        volume = 1.0     # range [0.0, 1.0]
+        fs = 44100       # sampling rate, Hz, must be integer
+        duration = 0.5   # in seconds, may be float
+        # f = 440.0        # sine frequency, Hz, may be float
+
+        freqs_A = [1209, 1336, 1477, 1633]
+        freqs_B = [697,  770,  852,  941]
+
+        f_A, f_B = self.button_tones[button]
+
+        f_A = freqs_A[f_A]
+        f_B = freqs_B[f_B]
+
+        # generate samples, note conversion to float32 array
+        samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
+        samples += np.sin(2*np.pi*np.arange(fs*duration)*f_B/fs)
+
+        samples = samples.astype(np.float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = p.open(format=pyaudio.paFloat32,
+                        rate=fs,
+                        output=True)
+
+        # play. May repeat with different volume values (if done interactively)
+        stream.write(volume*samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        p.terminate()
+
+    def not_implimented(self):
+        # make this flash an LED or something, just to show the user something was noticed?
+        print("Button does nothing :(")
 
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
@@ -209,7 +267,6 @@ class Listener():
 
         t_elapsed = time.time() - self.last_button_pressed_at
         func = self.button_functions[self.last_button]
-
 
         if self._call_func:
             print("--------------------------------------------------")
@@ -269,10 +326,6 @@ class Listener():
             playme = random.choice(fnames)
             self.play_clip(playme)
 
-    def not_implimented(self):
-        # make this flash an LED or something, just to show the user something was noticed?
-        print("Button does nothing :(")
-
     def konami_function(self):
         print("KONAMI")
 
@@ -296,7 +349,7 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        threading.Thread(target=self.play_random).start()
+        threading.Timer(2, self.play_random).start()
 
     def start_recording(self):
         self.interrupt_playback()
@@ -307,7 +360,10 @@ class Listener():
 
     def make_recording(self):
         '''Stop current playback, if it's running, play the 'please record a
-        message' mesasge, and start recording.'''
+        message' mesasge, and start recording.
+
+        fresh recordings are numbered in ascending order
+        '''
 
         # Get the name of the new audio file to create
         audio_files = Path('.').glob("**/RECORDED/*.wav")
@@ -361,7 +417,6 @@ class Listener():
             print("Crashed during recording")
             print(e)
 
-
         print("Done recording...")
 
         # Close my stuff
@@ -396,8 +451,6 @@ class Listener():
 
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
-
-        time.sleep(2)
 
         f = wave.open(playme, 'rb')
         p = pyaudio.PyAudio()
