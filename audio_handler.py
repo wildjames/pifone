@@ -60,6 +60,7 @@ class Listener():
         print("Initialised Input pins")
 
         self.button_tones = {
+            'tone': [2, 2],
             'redial': [0, 3],
             '*': [3, 0],
             '#': [3, 2],
@@ -388,6 +389,9 @@ class Listener():
     def record_clip(self, oname):
         self._playing = True
         self._recording = True
+
+        # Play a tone
+        self.button_tones('tone')
 
         # Init the audio handler
         p = pyaudio.PyAudio()
