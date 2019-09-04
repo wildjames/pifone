@@ -391,7 +391,7 @@ class Listener():
         self._recording = True
 
         # Play a tone
-        self.button_tones('tone')
+        self.dialtone('tone')
 
         # Init the audio handler
         p = pyaudio.PyAudio()
