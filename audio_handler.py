@@ -222,7 +222,7 @@ class Listener():
         p = pyaudio.PyAudio()
         volume = 1.0     # range [0.0, 1.0]
         fs = 44100       # sampling rate, Hz, must be integer
-        duration = 0.5   # in seconds, may be float
+        duration = 0.3   # in seconds, may be float
         # f = 440.0        # sine frequency, Hz, may be float
 
         freqs_A = [1209, 1336, 1477, 1633]
@@ -237,12 +237,12 @@ class Listener():
         samples =  np.sin(2*np.pi*np.arange(fs*duration)*f_A/fs)
         samples += np.sin(2*np.pi*np.arange(fs*duration)*f_B/fs)
 
-        samples = samples.astype(np.float32)
+        samples = samples.astype(self.FORMAT)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = p.open(format=pyaudio.paFloat32,
-                        channels=1,
-                        rate=fs,
+        stream = p.open(format=self.FORMAT,
+                        channels=self.CHANNELS,
+                        rate=self.RATE,
                         output=True)
 
         # play. May repeat with different volume values (if done interactively)
