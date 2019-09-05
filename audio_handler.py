@@ -239,8 +239,8 @@ class Listener():
             volume = 0.05
             duration = 2.5
 
-            f_A = 350
-            f_B = 440
+            f_A = 480
+            f_B = 480
 
         # generate samples, note conversion to float32 array
         samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
@@ -331,7 +331,7 @@ class Listener():
         # Stop current playback
         self.interrupt_playback()
 
-        while self._handset_is_up:
+        while self._handset_is_up and not self._playing:
             playme = random.choice(fnames)
             self.play_clip(playme)
 
