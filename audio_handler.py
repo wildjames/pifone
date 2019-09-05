@@ -24,7 +24,7 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 class Listener():
     NUMVERIFY_APIKEY = "55d54bda772465a9979d9c78ca1b7313"
 
-    CHUNK = 1024
+    CHUNK = 128
     POLLING_RATE = 0.05 #s
 
     # Recording settings
@@ -124,7 +124,7 @@ class Listener():
         self._interrupt = True
         self._playing = False
         print("INTERRUPTING PLAYBACK")
-        time.sleep(0.5)
+        time.sleep(1)
 
     def start(self):
         '''Start the polling function.'''
