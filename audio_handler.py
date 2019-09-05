@@ -159,6 +159,7 @@ class Listener():
         if not self._handset_is_up:
             self.button_seq = []
             self._playing = False
+            self._playing_cummy = False
             self._interrupt = True
 
         if not self._handset_was_up and self._handset_is_up:
@@ -208,6 +209,7 @@ class Listener():
         # If a button was pushed, say so
         if button_pressed is not None:
             if self.last_button is None:
+                self._playing_cummy = False
                 self.dialtone(button_pressed)
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
@@ -324,6 +326,7 @@ class Listener():
 
     def play_cummy(self):
         '''play a cum file'''
+        self._playing_cummy = True
         print(os.listdir('AUDIO_FILES'))
         fnames = [str(f) for f in Path('.').glob("**/CUM/*")]
         print("Found {:d} drops of CUM".format(len(fnames)))
@@ -333,9 +336,10 @@ class Listener():
         # Stop current playback
         self.interrupt_playback()
 
-        while self._handset_is_up and not self._playing:
+        while self._handset_is_up and not self._playing and self._playing_cummy:
             playme = random.choice(fnames)
             self.play_clip(playme)
+        self._playing_cummy = False
 
     def konami_function(self):
         self.interrupt_playback()
