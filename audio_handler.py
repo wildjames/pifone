@@ -485,7 +485,7 @@ class Listener():
 
         try:
             while data:
-                if self._interrupt:
+                if self._interrupt or not self._handset_is_up:
                     print("Interrupted playback")
                     break
                 stream.write(data)
