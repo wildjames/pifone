@@ -81,7 +81,7 @@ class Listener():
             None:     self.not_implimented,
             'redial': self.start_recording,
             '#': self.play_random,
-            '*': self.not_implimented,
+            '*': self.store_phone_number,
             0:   self.not_implimented,
             1:   self.not_implimented,
             2:   self.not_implimented,
@@ -312,6 +312,12 @@ class Listener():
             self._call_seq = False
             self._call_func = False
             threading.Thread(target=self.play_voyager).start()
+
+    def store_phone_number(self):
+        num = self.button_seq
+        if self.validate_phone_number(num):
+            with open("numbers.txt", 'a+') as f:
+                f.write("{}\n".format(num))
 
     def play_voyager(self):
         '''play a voyager file'''
