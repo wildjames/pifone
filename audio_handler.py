@@ -338,6 +338,7 @@ class Listener():
             self.play_clip(playme)
 
     def konami_function(self):
+        self.interrupt_playback()
         self.play_clip('AUDIO_FILES/mortal_kombat.wav')
 
     def validate_phone_number(self, num):
