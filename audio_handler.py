@@ -79,9 +79,9 @@ class Listener():
 
         self.button_functions = {
             None:     self.not_implimented,
-            'redial': self.not_implimented,
+            'redial': self.start_recording,
+            '#': self.play_random,
             '*': self.not_implimented,
-            '#': self.not_implimented,
             0:   self.not_implimented,
             1:   self.not_implimented,
             2:   self.not_implimented,
