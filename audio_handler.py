@@ -79,12 +79,12 @@ class Listener():
 
         self.button_functions = {
             None:     self.not_implimented,
-            'redial': self.play_cummy,
+            'redial': self.not_implimented,
             '*': self.not_implimented,
             '#': self.not_implimented,
             0:   self.not_implimented,
-            1:   self.play_random,
-            2:   self.start_recording,
+            1:   self.not_implimented,
+            2:   self.not_implimented,
             3:   self.not_implimented,
             4:   self.not_implimented,
             5:   self.not_implimented,
@@ -326,7 +326,7 @@ class Listener():
         '''play a cum file'''
         print(os.listdir('AUDIO_FILES'))
         fnames = [str(f) for f in Path('.').glob("**/CUM/*")]
-        print(fnames)
+        print("Found {:d} drops of CUM".format(len(fnames)))
         if fnames == []:
             return
 
