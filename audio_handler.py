@@ -37,6 +37,7 @@ class Listener():
         'Thanks',
         'VOYAGER',
         'CUM',
+        'mortal_kombat'
     ]
 
     def __init__(self, start=False):
@@ -93,10 +94,10 @@ class Listener():
             9:   self.not_implimented,
         }
 
-        self.konami = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
+        self.konami   = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
         self.kill_seq = [4, 2, 8, 6]
-        self.cummy = [2, 1, 0, 8]
-        self.voyager = [1, 9, 7, 7]
+        self.cummy    = [2, 1, 0, 8]
+        self.voyager  = [1, 9, 7, 7]
 
         self._playing = False
         self._recording = False
@@ -328,6 +329,7 @@ class Listener():
         print(fnames)
         if fnames == []:
             return
+
         # Stop current playback
         self.interrupt_playback()
 
@@ -336,7 +338,7 @@ class Listener():
             self.play_clip(playme)
 
     def konami_function(self):
-        print("KONAMI")
+        self.play_clip('AUDIO_FILES/mortal_kombat.wav')
 
     def validate_phone_number(self, num):
         '''Call to API to check if the number entered is valid'''
@@ -400,7 +402,10 @@ class Listener():
         self._recording = True
 
         # Play a tone
-        self.dialtone('tone')
+        if self._handset_is_up:
+            self.dialtone('tone')
+        else:
+            return
 
         # Init the audio handler
         p = pyaudio.PyAudio()
@@ -452,7 +457,6 @@ class Listener():
         self._playing = False
         self._recording = False
         self._interrupt = False
-
 
     def play_clip(self, playme, interruptible=True):
         if self._playing:
@@ -509,11 +513,11 @@ class Listener():
         audio_files = []
         for a in fnames:
             a = str(a)
-            flag = False
+            flag = True
             for banned in self.FORBIDDEN_AUDIO:
                 if banned in a:
-                    flag = True
-            if not flag:
+                    flag = False
+            if flag:
                 audio_files.append(a)
 
         print("I found {} audio files:".format(len(audio_files)))
