@@ -79,12 +79,12 @@ class Listener():
 
         self.button_functions = {
             None:     self.not_implimented,
-            'redial': self.start_recording,
+            'redial': self.play_cummy,
             '*': self.not_implimented,
             '#': self.not_implimented,
             0:   self.not_implimented,
-            1:   self.not_implimented,
-            2:   self.not_implimented,
+            1:   self.play_random,
+            2:   self.start_recording,
             3:   self.not_implimented,
             4:   self.not_implimented,
             5:   self.not_implimented,
@@ -360,7 +360,8 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
-        threading.Thread(target=self.play_random).start()
+        # threading.Thread(target=self.play_random).start()
+        # threading.Thread(target=self.play_clip, args=('AUDIO_FILES/operator.wav')).start()
 
     def start_recording(self):
         self.interrupt_playback()
