@@ -123,7 +123,7 @@ class Listener():
         self._interrupt = True
         self._playing = False
         print("INTERRUPTING PLAYBACK")
-        time.sleep(2)
+        time.sleep(0.5)
 
     def start(self):
         '''Start the polling function.'''
@@ -444,6 +444,8 @@ class Listener():
             waveFile.writeframes(b''.join(frames))
             waveFile.close()
 
+            print("Finished saving recording to {}".format(oname))
+
         p.terminate()
 
         # No longer busy
@@ -451,7 +453,6 @@ class Listener():
         self._recording = False
         self._interrupt = False
 
-        print("Finished saving recording to {}".format(oname))
 
     def play_clip(self, playme, interruptible=True):
         if self._playing:
