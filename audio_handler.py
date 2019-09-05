@@ -222,7 +222,7 @@ class Listener():
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
         p = pyaudio.PyAudio()
-        volume = 0.5     # range [0.0, 1.0]
+        volume = 0.2     # range [0.0, 1.0]
         fs = 44100       # sampling rate, Hz, must be integer
         duration = 0.3   # in seconds, may be float
         # f = 440.0        # sine frequency, Hz, may be float
