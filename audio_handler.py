@@ -210,7 +210,7 @@ class Listener():
         if button_pressed is not None:
             if self.last_button is None:
                 self._playing_cummy = False
-                threading.Thread(target=self.dialtone, args=(button_pressed)).start()
+                threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self._call_func = True
@@ -375,7 +375,7 @@ class Listener():
         self._handset_was_up = True
         print("Handset lifted!")
         # threading.Thread(target=self.play_random).start()
-        # threading.Thread(target=self.play_clip, args=('AUDIO_FILES/operator.wav')).start()
+        # threading.Thread(target=self.play_clip, args=('AUDIO_FILES/operator.wav',)).start()
 
     def start_recording(self):
         self.interrupt_playback()
