@@ -124,7 +124,7 @@ class Listener():
         self._interrupt = True
         self._playing = False
         print("INTERRUPTING PLAYBACK")
-        time.sleep(1)
+        time.sleep(0.5)
 
     def start(self):
         '''Start the polling function.'''
@@ -210,7 +210,7 @@ class Listener():
         if button_pressed is not None:
             if self.last_button is None:
                 self._playing_cummy = False
-                self.dialtone(button_pressed)
+                threading.Thread(target=self.dialtone, args=(button_pressed)).start()
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self._call_func = True
@@ -226,9 +226,8 @@ class Listener():
         '''Play a dialtone for the button when it's pushed'''
         p = pyaudio.PyAudio()
         volume = 0.1     # range [0.0, 1.0]
-        fs = 44100       # sampling rate, Hz, must be integer
-        duration = 1.0   # in seconds, may be float
-        # f = 440.0        # sine frequency, Hz, may be float
+        fs = self.RATE   # sampling rate, Hz, must be integer
+        duration = 0.5   # in seconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
