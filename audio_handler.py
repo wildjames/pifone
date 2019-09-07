@@ -142,7 +142,7 @@ class Listener():
         self.stop()
         self.interrupt_playback()
         time.sleep(self.POLLING_RATE*10)
-        os.system('sudo reboot')
+        os.system('cd /home/pi/pifone; git pull; sudo reboot')
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
