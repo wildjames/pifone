@@ -227,7 +227,7 @@ class Listener():
         p = pyaudio.PyAudio()
         volume = 0.2     # range [0.0, 1.0]
         fs = 44100       # sampling rate, Hz, must be integer
-        duration = 0.8   # in seconds, may be float
+        duration = 1.5   # in seconds, may be float
         # f = 440.0        # sine frequency, Hz, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
