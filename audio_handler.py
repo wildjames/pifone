@@ -237,6 +237,8 @@ class Listener():
         f_A = freqs_A[f_A]
         f_B = freqs_B[f_B]
 
+        f = f_A + f_B
+
         if button == 'tone':
             volume = 0.05
             duration = 2.5
@@ -244,7 +246,6 @@ class Listener():
             f = 1400
             # f_B = 1400
 
-        f = f_A + f_B
 
         # generate samples, note conversion to float32 array
         # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
