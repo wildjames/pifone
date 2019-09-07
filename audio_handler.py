@@ -227,7 +227,7 @@ class Listener():
         p = pyaudio.PyAudio()
         volume = 0.2     # range [0.0, 1.0]
         fs = 44100       # sampling rate, Hz, must be integer
-        duration = 0.3   # in seconds, may be float
+        duration = 0.8   # in seconds, may be float
         # f = 440.0        # sine frequency, Hz, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
@@ -242,12 +242,15 @@ class Listener():
             volume = 0.05
             duration = 2.5
 
-            f_A = 1400
-            f_B = 1400
+            f = 1400
+            # f_B = 1400
+
+        f = f_A + f_B
 
         # generate samples, note conversion to float32 array
-        samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
-        samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
+        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
+        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
+        samples = np.sin(2*np.pi*np.arange(int(fs*duration))*f/fs)
 
         samples *= volume
 
