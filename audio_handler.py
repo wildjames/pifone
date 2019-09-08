@@ -181,7 +181,7 @@ class Listener():
 
         # Check the second group
         self.grpB_pin.value = True
-        outputs = [np.nan, 9, 8, 7]
+        outputs = [None, 9, 8, 7]
         for i, pin in enumerate(self.inpins):
             if pin.value:
                 button_pressed = outputs[i]
@@ -190,7 +190,7 @@ class Listener():
 
         # Check the Third group
         self.grpC_pin.value = True
-        outputs = [np.nan, 6, 5, 4]
+        outputs = [None, 6, 5, 4]
         for i, pin in enumerate(self.inpins):
             if pin.value:
                 button_pressed = outputs[i]
@@ -199,7 +199,7 @@ class Listener():
 
         # Check the fourth group
         self.grpD_pin.value = True
-        outputs = [np.nan, 3, 2, 1]
+        outputs = [None, 3, 2, 1]
         for i, pin in enumerate(self.inpins):
             if pin.value:
                 button_pressed = outputs[i]
