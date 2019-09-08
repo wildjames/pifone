@@ -24,7 +24,7 @@ AUDIO_FILES_LOCATION = "/home/pi/pifone"
 class Listener():
     NUMVERIFY_APIKEY = "55d54bda772465a9979d9c78ca1b7313"
 
-    CHUNK = 128
+    CHUNK = 512
     POLLING_RATE = 0.05 #s
 
     # Recording settings
