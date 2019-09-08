@@ -546,6 +546,7 @@ class Listener():
         return audio_files
 
     def play_random(self):
+        self.interrupt_playback()
         files = self.get_audio_files()
 
         playme = random.choice(files)
