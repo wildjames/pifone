@@ -503,8 +503,10 @@ class Listener():
                 if self._interrupt or not self._handset_is_up:
                     print("Interrupted playback")
                     break
+                print("Writing to stream...")
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
+                print("Wrote to stream!")
         except Exception as e:
             print("Crashed during Playback")
             print(e)
