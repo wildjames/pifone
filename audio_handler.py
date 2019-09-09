@@ -320,7 +320,11 @@ class Listener():
         numbers = [0,1,2,3,4,5,6,7,8,9]
         num = [num for num in self.button_seq if num in numbers]
 
-        if self.validate_phone_number(num):
+        print("Validating the number: {}".format(num))
+        isValid = self.validate_phone_number(num)
+        print("Is it valid?: {}".format(isValid))
+
+        if isValid:
             with open("numbers.txt", 'a+') as f:
                 f.write("{}\n".format(num))
 
