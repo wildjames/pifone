@@ -382,7 +382,7 @@ class Listener():
         self._handset_was_up = True
         print("Handset lifted!")
         # threading.Thread(target=self.play_random).start()
-        threading.Thread(target=self.play_clip, args=('AUDIO_FILES/operator.wav',)).start()
+        threading.Timer(1.0, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
     def start_recording(self):
         self.interrupt_playback()
