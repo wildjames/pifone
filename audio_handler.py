@@ -318,7 +318,7 @@ class Listener():
 
     def store_phone_number(self):
         numbers = [0,1,2,3,4,5,6,7,8,9]
-        num = [num for num in self.button_seq if num in numbers]
+        num = [str(num) for num in self.button_seq if num in numbers]
         num = ''.join(num)
 
         print("Validating the number: {}".format(num))
