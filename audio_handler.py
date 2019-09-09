@@ -327,6 +327,7 @@ class Listener():
         if isValid:
             with open("numbers.txt", 'a+') as f:
                 f.write("{}\n".format(num))
+        print("Done!\n")
 
     def play_voyager(self):
         '''play a voyager file'''
