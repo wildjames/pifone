@@ -498,8 +498,12 @@ class Listener():
         p.play()
 
         while p.is_playing:
-            if not self._handset_is_up or self._interrupt:
+            if self._interrupt:
                 p.pause()
+                print("is p playing? {}".format(p.is_playing))
+            if not self._handset_is_up:
+                p.pause()
+                print("is p playing? {}".format(p.is_playing))
 
         self.dialtone('tone')
 
