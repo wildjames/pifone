@@ -6,13 +6,11 @@ import threading
 import time
 import wave
 from pathlib import Path
-from requests import post
 
 import numpy as np
 import pyaudio
-import wave
+from requests import post
 
-import threading
 try:
     import gpiozero
 
@@ -513,8 +511,11 @@ class Listener():
 
             print("About to start playback...")
             while data and self._handset_is_up and not self._interrupt:
+                print("Writing stream...", end='r')
                 stream.write(data)
+                print("Reading data...", end='`r')
                 data = f.readframes(self.CHUNK)
+            print()
 
             print("Done with playback!")
 
