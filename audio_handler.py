@@ -42,8 +42,8 @@ class Listener():
 
     def __init__(self, start=False):
         '''Set up the pin I/O.
-
         If start is True, also start the polling thread.'''
+
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
@@ -269,6 +269,7 @@ class Listener():
         stream.close()
 
         p.terminate()
+        print("Played a dialtone")
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
@@ -491,36 +492,35 @@ class Listener():
         # Now that I'm playing, make sure we don't start another playback
         self._playing = True
 
-        f = wave.open(playme, 'rb')
+        with wave.open(playme, 'rb') as f:
 
-        frames = f.getnframes()
-        rate = f.getframerate()
-        duration = frames / rate
-        print("This file is {:.1f}s long".format(duration))
+            frames = f.getnframes()
+            rate = f.getframerate()
+            duration = frames / rate
+            print("This file is {:.1f}s long".format(duration))
 
-        p = pyaudio.PyAudio()
+            p = pyaudio.PyAudio()
 
-        stream = p.open(
-            format = p.get_format_from_width(f.getsampwidth()),
-            channels = f.getnchannels(),
-            rate = f.getframerate(),
-            output = True
-        )
+            stream = p.open(
+                format = p.get_format_from_width(f.getsampwidth()),
+                channels = f.getnchannels(),
+                rate = f.getframerate(),
+                output = True
+            )
 
-        # read data
-        data = f.readframes(self.CHUNK)
-
-        print("About to start playback...")
-        while data and self._handset_is_up and not self._interrupt:
-            stream.write(data)
+            # read data
             data = f.readframes(self.CHUNK)
 
-        print("Done with playback!")
+            print("About to start playback...")
+            while data and self._handset_is_up and not self._interrupt:
+                stream.write(data)
+                data = f.readframes(self.CHUNK)
+
+            print("Done with playback!")
 
         #stop stream
         stream.stop_stream()
         stream.close()
-        f.close()
 
         #close PyAudio
         p.terminate()
@@ -554,6 +554,7 @@ class Listener():
 
     def play_random(self):
         self.interrupt_playback()
+        print("Getting audio files")
         files = self.get_audio_files()
 
         playme = random.choice(files)
