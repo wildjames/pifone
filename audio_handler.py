@@ -519,7 +519,8 @@ class Listener():
         #close PyAudio
         p.terminate()
 
-        self.dialtone('tone')
+        if not self._interrupt:
+            self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
