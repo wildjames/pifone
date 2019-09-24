@@ -521,7 +521,9 @@ class Listener():
 
         #stop stream
         stream.stop_stream()
+        print("Stopped stream")
         stream.close()
+        print("Closed stream")
 
         #close PyAudio
         p.terminate()
