@@ -493,20 +493,20 @@ class Listener():
         instance = vlc.Instance('--aout=alsa')
 
         p = instance.media_player_new()
-        print("p.is_playing: {}".format(p.is_playing()))
+        print("p.get_state: {}".format(p.get_state()))
         m = instance.media_new(playme)
         p.set_media(m)
         p.play()
 
-        print("After playback started: p.is_playing: {}".format(p.is_playing()))
+        print("After playback started: p.get_state: {}".format(p.get_state()))
 
-        while p.is_playing():
+        while p.get_state():
             if self._interrupt:
                 p.pause()
-                print("is p playing? {}".format(p.is_playing))
+                print("is p playing? {}".format(p.get_state()))
             if not self._handset_is_up:
                 p.pause()
-                print("is p playing? {}".format(p.is_playing))
+                print("is p playing? {}".format(p.get_state()))
 
         self.dialtone('tone')
 
