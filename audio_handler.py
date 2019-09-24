@@ -503,10 +503,10 @@ class Listener():
 
         while p.get_state() == vlc.State.Playing:
             if self._interrupt:
-                m.stop_async()
+                p.stop()
                 print("is p playing? {}".format(p.get_state()))
             if not self._handset_is_up:
-                m.stop_async()
+                p.stop()
                 print("is p playing? {}".format(p.get_state()))
 
         self.dialtone('tone')
