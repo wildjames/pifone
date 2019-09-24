@@ -492,6 +492,7 @@ class Listener():
         self._playing = True
 
         f = wave.open(playme, 'rb')
+        print(dir(f))
         p = pyaudio.PyAudio()
 
         stream = p.open(
