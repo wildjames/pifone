@@ -509,8 +509,9 @@ class Listener():
                 print("is p playing? {}".format(p.is_playing()))
 
         p.release()
+        instance.release()
 
-        self.dialtone('tone')
+        # self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
