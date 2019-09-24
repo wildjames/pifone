@@ -493,7 +493,7 @@ class Listener():
         instance = vlc.Instance('--aout=alsa')
 
         p = instance.media_player_new()
-        m = instance.media_new('something.mp3')
+        m = instance.media_new(playme)
         p.set_media(m)
         p.play()
 
@@ -501,6 +501,11 @@ class Listener():
             if not self._handset_is_up or self._interrupt:
                 p.pause()
 
+        self.dialtone('tone')
+
+        # I'm no longer playing.
+        self._playing = False
+        self._interrupt = False
         print("Finished playback")
 
     # def play_clip(self, playme, interruptible=True):
