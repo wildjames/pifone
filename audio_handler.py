@@ -493,24 +493,24 @@ class Listener():
         instance = vlc.Instance('--aout=alsa')
 
         p = instance.media_player_new()
-        print("p.get_state: {}".format(p.get_state()))
+        print("p.is_playing: {}".format(p.is_playing()))
         m = instance.media_new(playme)
         p.set_media(m)
         p.play()
 
         time.sleep(0.5)
-        print("After playback started: p.get_state: {}".format(p.get_state()))
+        print("After playback started: p.is_playing: {}".format(p.is_playing()))
 
         for i in dir(p):
             print(i)
 
-        while p.get_state() == vlc.State.Playing:
+        while p.is_playing():
             if self._interrupt:
                 p.stop()
-                print("is p playing? {}".format(p.get_state()))
+                print("is p playing? {}".format(p.is_playing()))
             if not self._handset_is_up:
                 p.stop()
-                print("is p playing? {}".format(p.get_state()))
+                print("is p playing? {}".format(p.is_playing()))
 
         m.close()
         p.close()
