@@ -511,9 +511,9 @@ class Listener():
 
             print("About to start playback...")
             while data and self._handset_is_up and not self._interrupt:
-                print("Writing stream...", end='r')
+                print("Writing stream...", end='\r')
                 stream.write(data)
-                print("Reading data...", end='`r')
+                print("Reading data...", end='\r')
                 data = f.readframes(self.CHUNK)
             print()
 
