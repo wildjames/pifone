@@ -512,9 +512,6 @@ class Listener():
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
 
-        m.close()
-        p.close()
-
         self.dialtone('tone')
 
         # I'm no longer playing.
