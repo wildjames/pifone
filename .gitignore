@@ -1,5 +1,6 @@
 AUDIO_FILES/
 Dictophone/
+numbers.txt
 *.wav
 **/*.wav
 __pycache__
