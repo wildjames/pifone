@@ -244,7 +244,6 @@ class Listener():
             duration = 2.5
 
             f = 1400
-            # f_B = 1400
 
 
         # generate samples, note conversion to float32 array
@@ -447,10 +446,7 @@ class Listener():
         frames = []
 
         try:
-            while True:
-                if self._interrupt:
-                    print("Interrupted recording")
-                    break
+            while not self._interrupt:
                 data = stream.read(self.CHUNK)
                 frames.append(data)
         except Exception as e:
@@ -511,6 +507,8 @@ class Listener():
             if not self._handset_is_up:
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
+
+        p.release()
 
         self.dialtone('tone')
 
