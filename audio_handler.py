@@ -500,10 +500,11 @@ class Listener():
             p = pyaudio.PyAudio()
 
             stream = p.open(
-                format = p.get_format_from_width(f.getsampwidth()),
-                channels = f.getnchannels(),
-                rate = f.getframerate(),
-                output = True
+                format=p.get_format_from_width(f.getsampwidth()),
+                channels=f.getnchannels(),
+                rate=f.getframerate(),
+                output=True,
+                frames_per_buffer=self.CHUNK
             )
 
             # read data
