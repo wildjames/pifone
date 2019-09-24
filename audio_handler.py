@@ -498,6 +498,7 @@ class Listener():
         p.set_media(m)
         p.play()
 
+        time.sleep(0.5)
         print("After playback started: p.get_state: {}".format(p.get_state()))
 
         while p.get_state():
