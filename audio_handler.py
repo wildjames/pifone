@@ -501,7 +501,7 @@ class Listener():
         time.sleep(0.5)
         print("After playback started: p.get_state: {}".format(p.get_state()))
 
-        while p.get_state() == vlc.State.Playing():
+        while p.get_state() == vlc.State.Playing:
             if self._interrupt:
                 p.pause()
                 print("is p playing? {}".format(p.get_state()))
