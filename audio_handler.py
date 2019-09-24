@@ -493,11 +493,12 @@ class Listener():
         instance = vlc.Instance('--aout=alsa')
 
         p = instance.media_player_new()
+        print("p.is_playing: {}".format(p.is_playing()))
         m = instance.media_new(playme)
         p.set_media(m)
         p.play()
 
-        print(p.is_playing())
+        print("After playback started: p.is_playing: {}".format(p.is_playing()))
 
         while p.is_playing():
             if self._interrupt:
