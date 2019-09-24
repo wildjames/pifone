@@ -492,7 +492,12 @@ class Listener():
         self._playing = True
 
         f = wave.open(playme, 'rb')
-        print(dir(f))
+
+        frames = f.getnframes()
+        rate = f.getframerate()
+        duration = frames / rate
+        print("This file is {:.1f}s long".format(duration))
+
         p = pyaudio.PyAudio()
 
         stream = p.open(
