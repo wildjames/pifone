@@ -11,6 +11,8 @@ import numpy as np
 import pyaudio
 from requests import post
 
+import vlc
+
 try:
     import gpiozero
 
@@ -485,57 +487,78 @@ class Listener():
             print("Already playing")
             return
 
-        print("Starting a new playback")
-
-        # Now that I'm playing, make sure we don't start another playback
+        print("starting new playback")
         self._playing = True
 
-        with wave.open(playme, 'rb') as f:
+        instance = vlc.Instance('--aout=alsa')
 
-            frames = f.getnframes()
-            rate = f.getframerate()
-            duration = frames / rate
-            print("This file is {:.1f}s long".format(duration))
+        p = instance.media_player_new()
+        m = instance.media_new('something.mp3')
+        p.set_media(m)
+        p.play()
 
-            p = pyaudio.PyAudio()
+        while p.is_playing:
+            if not self._handset_is_up or self._interrupt:
+                p.pause()
 
-            stream = p.open(
-                format=p.get_format_from_width(f.getsampwidth()),
-                channels=f.getnchannels(),
-                rate=f.getframerate(),
-                output=True,
-                frames_per_buffer=self.CHUNK
-            )
-
-            # read data
-            data = f.readframes(self.CHUNK)
-
-            print("About to start playback...")
-            while data and self._handset_is_up and not self._interrupt:
-                print("Writing stream...", end='\r')
-                stream.write(data)
-                print("Reading data...", end='\r')
-                data = f.readframes(self.CHUNK)
-            print()
-
-            print("Done with playback!")
-
-        #stop stream
-        stream.stop_stream()
-        print("Stopped stream")
-        stream.close()
-        print("Closed stream")
-
-        #close PyAudio
-        p.terminate()
-
-        if not self._interrupt:
-            self.dialtone('tone')
-
-        # I'm no longer playing.
-        self._playing = False
-        self._interrupt = False
         print("Finished playback")
+
+    # def play_clip(self, playme, interruptible=True):
+    #     if self._playing:
+    #         print("Already playing")
+    #         return
+
+    #     print("Starting a new playback")
+
+    #     # Now that I'm playing, make sure we don't start another playback
+    #     self._playing = True
+
+    #     with wave.open(playme, 'rb') as f:
+
+    #         frames = f.getnframes()
+    #         rate = f.getframerate()
+    #         duration = frames / rate
+    #         print("This file is {:.1f}s long".format(duration))
+
+    #         p = pyaudio.PyAudio()
+
+    #         stream = p.open(
+    #             format=p.get_format_from_width(f.getsampwidth()),
+    #             channels=f.getnchannels(),
+    #             rate=f.getframerate(),
+    #             output=True,
+    #             frames_per_buffer=self.CHUNK
+    #         )
+
+    #         # read data
+    #         data = f.readframes(self.CHUNK)
+
+    #         print("About to start playback...")
+    #         while data and self._handset_is_up and not self._interrupt:
+    #             print("Writing stream...", end='\r')
+    #             stream.write(data)
+    #             print("Reading data...", end='\r')
+    #             data = f.readframes(self.CHUNK)
+    #         print()
+
+    #         print("Done with playback!")
+
+    #     #stop stream
+    #     stream.stop_stream()
+    #     print("Stopped stream")
+    #     stream.close()
+    #     print("Closed stream")
+
+    #     #close PyAudio
+    #     p.terminate()
+
+    #     if not self._interrupt:
+    #         self.dialtone('tone')
+
+    #     # I'm no longer playing.
+    #     self._playing = False
+    #     self._interrupt = False
+    #     print("Finished playback")
 
     def get_audio_files(self):
         fnames = Path('.').glob("**/*.wav")
