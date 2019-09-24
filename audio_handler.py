@@ -497,9 +497,6 @@ class Listener():
         time.sleep(0.5)
         print("After playback started: p.is_playing: {}".format(p.is_playing()))
 
-        for i in dir(instance):
-            print(i)
-
         while p.is_playing():
             if self._interrupt:
                 p.stop()
@@ -511,7 +508,7 @@ class Listener():
         p.release()
         instance.release()
 
-        # self.dialtone('tone')
+        self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
