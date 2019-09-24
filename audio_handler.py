@@ -506,10 +506,7 @@ class Listener():
 
         print("About to start playback...")
         try:
-            while data:
-                if self._interrupt or not self._handset_is_up:
-                    print("Interrupted playback")
-                    break
+            while data and self._handset_is_up and not self._interrupt:
                 stream.write(data)
                 data = f.readframes(self.CHUNK)
         except Exception as e:
