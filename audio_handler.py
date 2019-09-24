@@ -505,13 +505,9 @@ class Listener():
         data = f.readframes(self.CHUNK)
 
         print("About to start playback...")
-        try:
-            while data and self._handset_is_up and not self._interrupt:
-                stream.write(data)
-                data = f.readframes(self.CHUNK)
-        except Exception as e:
-            print("Crashed during Playback")
-            print(e)
+        while data and self._handset_is_up and not self._interrupt:
+            stream.write(data)
+            data = f.readframes(self.CHUNK)
 
         print("Done with playback!")
 
