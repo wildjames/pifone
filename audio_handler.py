@@ -497,9 +497,9 @@ class Listener():
         p.set_media(m)
         p.play()
 
-        print(p.is_playing)
+        print(p.is_playing())
 
-        while p.is_playing:
+        while p.is_playing():
             if self._interrupt:
                 p.pause()
                 print("is p playing? {}".format(p.is_playing))
