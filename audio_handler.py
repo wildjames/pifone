@@ -214,12 +214,12 @@ class Listener():
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self._call_func = True
+                threading.Thread(target=self.parse_button).start()
 
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
 
         if self._is_polling:
-            threading.Thread(target=self.parse_button).start()
             threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def dialtone(self, button):
@@ -251,7 +251,6 @@ class Listener():
         # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
         # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
         samples = np.sin(2*np.pi*np.arange(int(fs*duration))*f/fs)
-
         samples *= volume
 
         samples = samples.astype(np.float32)
@@ -299,7 +298,7 @@ class Listener():
         if self.button_seq == self.konami:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.konami_function).start()
+            self.konami_function
 
         if self.button_seq == self.kill_seq:
             self._call_seq = False
@@ -309,12 +308,12 @@ class Listener():
         if self.button_seq == self.cummy:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.play_cummy).start()
+            self.play_cummy
 
         if self.button_seq == self.voyager:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.play_voyager).start()
+            self.play_voyager
 
     def store_phone_number(self):
         numbers = [0,1,2,3,4,5,6,7,8,9]
@@ -382,7 +381,7 @@ class Listener():
         self._handset_was_up = True
         print("Handset lifted!")
         # threading.Thread(target=self.play_random).start()
-        threading.Timer(1.0, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
+        threading.Thread(self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
     def start_recording(self):
         self.interrupt_playback()
