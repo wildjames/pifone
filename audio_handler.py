@@ -506,6 +506,7 @@ class Listener():
             if not self._handset_is_up:
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
+            self._playing = p.is_playing()
 
         p.release()
         instance.release()
