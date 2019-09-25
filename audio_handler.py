@@ -511,70 +511,14 @@ class Listener():
         p.release()
         instance.release()
 
-        # if not self._interrupt:
-        #     self.dialtone('tone')
+        if not self._interrupt:
+
+            threading.Thread(target=self.dialtone('tone')).start()
 
         # I'm no longer playing.
         self._playing = False
         self._interrupt = False
         print("Finished playback")
-
-    # def play_clip(self, playme, interruptible=True):
-    #     if self._playing:
-    #         print("Already playing")
-    #         return
-
-    #     print("Starting a new playback")
-
-    #     # Now that I'm playing, make sure we don't start another playback
-    #     self._playing = True
-
-    #     with wave.open(playme, 'rb') as f:
-
-    #         frames = f.getnframes()
-    #         rate = f.getframerate()
-    #         duration = frames / rate
-    #         print("This file is {:.1f}s long".format(duration))
-
-    #         p = pyaudio.PyAudio()
-
-    #         stream = p.open(
-    #             format=p.get_format_from_width(f.getsampwidth()),
-    #             channels=f.getnchannels(),
-    #             rate=f.getframerate(),
-    #             output=True,
-    #             frames_per_buffer=self.CHUNK
-    #         )
-
-    #         # read data
-    #         data = f.readframes(self.CHUNK)
-
-    #         print("About to start playback...")
-    #         while data and self._handset_is_up and not self._interrupt:
-    #             print("Writing stream...", end='\r')
-    #             stream.write(data)
-    #             print("Reading data...", end='\r')
-    #             data = f.readframes(self.CHUNK)
-    #         print()
-
-    #         print("Done with playback!")
-
-    #     #stop stream
-    #     stream.stop_stream()
-    #     print("Stopped stream")
-    #     stream.close()
-    #     print("Closed stream")
-
-    #     #close PyAudio
-    #     p.terminate()
-
-    #     if not self._interrupt:
-    #         self.dialtone('tone')
-
-    #     # I'm no longer playing.
-    #     self._playing = False
-    #     self._interrupt = False
-    #     print("Finished playback")
 
     def get_audio_files(self):
         fnames = Path('.').glob("**/*.wav")
