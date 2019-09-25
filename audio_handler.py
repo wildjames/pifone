@@ -224,6 +224,7 @@ class Listener():
 
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
+        print("Playing a button tone")
         p = pyaudio.PyAudio()
         volume = 0.1     # range [0.0, 1.0]
         fs = self.RATE   # sampling rate, Hz, must be integer
@@ -508,8 +509,8 @@ class Listener():
         p.release()
         instance.release()
 
-        if not self._interrupt:
-            self.dialtone('tone')
+        # if not self._interrupt:
+        #     self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
