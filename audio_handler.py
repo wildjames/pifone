@@ -391,11 +391,13 @@ class Listener():
         threading.Timer(1.0, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
     def start_recording(self):
+        self._is_polling = False
         self.interrupt_playback()
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
         self.make_recording()
+        self._is_polling = True
 
     def make_recording(self):
         '''Stop current playback, if it's running, play the 'please record a
