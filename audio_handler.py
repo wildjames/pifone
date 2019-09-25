@@ -37,7 +37,8 @@ class Listener():
         'Thanks',
         'VOYAGER',
         'CUM',
-        'mortal_kombat'
+        'mortal_kombat',
+        'operator'
     ]
 
     def __init__(self, start=False):
