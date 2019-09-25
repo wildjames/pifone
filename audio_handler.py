@@ -508,7 +508,8 @@ class Listener():
         p.release()
         instance.release()
 
-        self.dialtone('tone')
+        if not self._interrupt:
+            self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
