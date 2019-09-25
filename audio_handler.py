@@ -207,6 +207,9 @@ class Listener():
                 break
         self.grpD_pin.value = False
 
+        if not self._is_polling:
+            button_pressed = None
+
         # If a button was pushed, say so
         if button_pressed is not None:
             if self.last_button is None:
@@ -219,9 +222,8 @@ class Listener():
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
 
-        if self._is_polling:
-            threading.Thread(target=self.parse_button).start()
-            threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+        threading.Thread(target=self.parse_button).start()
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
@@ -258,10 +260,12 @@ class Listener():
         samples = samples.astype(np.float32)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = p.open(format=pyaudio.paFloat32,
-                        channels=self.CHANNELS,
-                        rate=self.RATE,
-                        output=True)
+        stream = p.open(
+            format=pyaudio.paFloat32,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            output=True
+        )
 
         # play. May repeat with different volume values (if done interactively)
         stream.write(samples)
@@ -512,8 +516,9 @@ class Listener():
         instance.release()
 
         if not self._interrupt:
-
-            threading.Thread(target=self.dialtone('tone')).start()
+            try:
+                self.dialtone('tone')
+            except: pass
 
         # I'm no longer playing.
         self._playing = False
