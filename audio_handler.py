@@ -228,7 +228,6 @@ class Listener():
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
         print("Playing a button tone")
-        p = pyaudio.PyAudio()
         volume = 0.1     # range [0.0, 1.0]
         fs = self.RATE   # sampling rate, Hz, must be integer
         duration = 0.5   # in seconds, may be float
@@ -259,6 +258,7 @@ class Listener():
 
         samples = samples.astype(np.float32)
 
+        p = pyaudio.PyAudio()
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = p.open(
             format=pyaudio.paFloat32,
@@ -391,13 +391,13 @@ class Listener():
         threading.Timer(1.0, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
     def start_recording(self):
-        self._is_polling = False
         self.interrupt_playback()
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
+        # self._is_polling = False
         self.make_recording()
-        self._is_polling = True
+        # self._is_polling = True
 
     def make_recording(self):
         '''Stop current playback, if it's running, play the 'please record a
@@ -494,19 +494,14 @@ class Listener():
         print("starting new playback")
         self._playing = True
 
-        instance = vlc.Instance('--aout=alsa')
-
-        p = instance.media_player_new()
-        print("p.is_playing: {}".format(p.is_playing()))
-        m = instance.media_new(playme)
-        p.set_media(m)
+        p = vlc.MediaPlayer(playme)
         p.play()
 
         time.sleep(0.5)
         print("After playback started: p.is_playing: {}".format(p.is_playing()))
 
         while p.is_playing():
-            if self._interrupt:
+            if self._interrupt and interruptible:
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
             if not self._handset_is_up:
@@ -514,8 +509,7 @@ class Listener():
                 print("is p playing? {}".format(p.is_playing()))
             self._playing = p.is_playing()
 
-        p.release()
-        instance.release()
+        p.stop
 
         if not self._interrupt:
             try:
