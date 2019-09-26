@@ -251,6 +251,7 @@ class Listener():
 
     def play_tone(self, sample, duration):
         '''duration in ms'''
+        print(sample)
         sound = pygame.sndarray.make_sound(sample)
         sound.play(-1)
         pygame.time.delay(duration)
