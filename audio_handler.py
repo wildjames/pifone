@@ -258,25 +258,28 @@ class Listener():
 
         samples = samples.astype(np.float32)
 
-        p = pyaudio.PyAudio()
-        # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = p.open(
-            format=pyaudio.paFloat32,
-            channels=self.CHANNELS,
-            rate=self.RATE,
-            output=True
-        )
+        try:
+            p = pyaudio.PyAudio()
+            # for paFloat32 sample values must be in range [-1.0, 1.0]
+            stream = p.open(
+                format=pyaudio.paFloat32,
+                channels=self.CHANNELS,
+                rate=self.RATE,
+                output=True
+            )
 
-        print("Pyaudio is using the following device: \n{}".format(p.get_default_output_device_info()))
+            print("Pyaudio is using the following device: \n{}".format(p.get_default_output_device_info()))
 
-        # play. May repeat with different volume values (if done interactively)
-        stream.write(samples)
+            # play. May repeat with different volume values (if done interactively)
+            stream.write(samples)
 
-        stream.stop_stream()
-        stream.close()
+            stream.stop_stream()
+            stream.close()
 
-        p.terminate()
-        print("Played a dialtone")
+            p.terminate()
+            print("Played a dialtone")
+        except:
+            print("---------- !!!!!  Failed to play a dialtone !!!!! ----------")
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
