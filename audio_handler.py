@@ -132,6 +132,7 @@ class Listener():
         self._playing = False
         print("INTERRUPTING PLAYBACK")
         time.sleep(0.5)
+        self._interrupt = False
 
     def start(self):
         '''Start the polling function.'''
@@ -153,7 +154,7 @@ class Listener():
 
     def poll_buttons(self):
         '''Check what button was last pushed'''
-        self._interrupt = False
+        # self._interrupt = False
 
         # If the cradle is raised, play is True
         self._handset_is_up = not self.cradle_pin.value
