@@ -28,6 +28,7 @@ class Listener():
 
     CHUNK = 512
     POLLING_RATE = 0.05 #s
+    VOLUME = 1.0
 
     # Recording settings
     FORMAT = pyaudio.paInt16
@@ -256,7 +257,7 @@ class Listener():
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
         print("Playing a button tone")
-        volume = 0.1     # range [0.0, 1.0]
+        volume = 4096 * self.VOLUME
         duration = 500   # in milliseconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
