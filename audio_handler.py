@@ -273,7 +273,7 @@ class Listener():
         f = f_A + f_B
 
         if button == 'tone':
-            f = 1400
+            f = 1400.
 
         sample = self.sine_wave(f, volume)
         self.play_tone(sample, duration)
