@@ -128,10 +128,10 @@ class Listener():
 
     def interrupt_playback(self):
         '''Stops current playback without having to replace the handset'''
-        self._interrupt = True
-        self._playing = False
         print("INTERRUPTING PLAYBACK")
-        time.sleep(0.5)
+        t0 = time.clock()
+        while time.clock() - t0 < 0.5:
+            self._interrupt = True
         self._interrupt = False
 
     def start(self):
@@ -504,18 +504,21 @@ class Listener():
         time.sleep(0.5)
         print("After playback started: p.is_playing: {}".format(p.is_playing()))
 
+        flag = True
         while p.is_playing():
             if self._interrupt and interruptible:
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
+                flag = False
             if not self._handset_is_up:
                 p.stop()
                 print("is p playing? {}".format(p.is_playing()))
+                flag = False
             self._playing = p.is_playing()
 
-        p.stop
+        p.stop()
 
-        if not self._interrupt:
+        if flag:
             try:
                 self.dialtone('tone')
             except: pass
