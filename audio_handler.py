@@ -395,9 +395,9 @@ class Listener():
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
-        # self._is_polling = False
+        self._is_polling = False
         self.make_recording()
-        # self._is_polling = True
+        self._is_polling = True
 
     def make_recording(self):
         '''Stop current playback, if it's running, play the 'please record a
