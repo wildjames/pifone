@@ -251,7 +251,6 @@ class Listener():
 
     def play_tone(self, sample, duration):
         '''duration in ms'''
-        print(sample)
         sound = pygame.sndarray.make_sound(sample)
         sound.play(-1)
         pygame.time.delay(duration)
@@ -261,7 +260,7 @@ class Listener():
         '''Play a dialtone for the button when it's pushed'''
         print("Playing a button tone")
         volume = 4096 * self.VOLUME
-        duration = 500   # in milliseconds, may be float
+        duration = 300   # in milliseconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
@@ -274,9 +273,6 @@ class Listener():
         f = f_A + f_B
 
         if button == 'tone':
-            volume = 0.05
-            duration = 2.5
-
             f = 1400
 
         sample = self.sine_wave(f, volume)
