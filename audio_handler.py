@@ -11,6 +11,7 @@ import numpy as np
 import pyaudio
 import pygame
 from requests import post
+from scipy.signal import square
 
 import vlc
 
@@ -226,12 +227,37 @@ class Listener():
         threading.Thread(target=self.parse_button).start()
         threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
+    def sine_wave(self, hz, peak):
+        """Compute N samples of a sine wave with given frequency and peak amplitude.
+        Defaults to one second.
+        """
+        length = self.RATE / float(hz)
+        omega = np.pi * 2 / length
+        xvalues = np.arange(int(length)) * omega
+        onecycle = peak * np.sin(xvalues)
+        return np.resize(onecycle, (self.RATE,)).astype(np.int16)
+
+    def square_wave(self, hz, peak, duty_cycle=.5):
+        """Compute N samples of a sine wave with given frequency and peak amplitude.
+        Defaults to one second.
+        """
+        t = np.linspace(0, 1, 500 * 440/hz, endpoint=False)
+        wave = square(2 * np.pi * 5 * t, duty=duty_cycle)
+        wave = np.resize(wave, (self.RATE,))
+        return (peak / 2 * wave.astype(np.int16))
+
+    def play_tone(self, sample, duration):
+        '''duration in ms'''
+        sound = pygame.sndarray.make_sound(sample)
+        sound.play(-1)
+        pygame.time.delay(duration)
+        sound.stop()
+
     def dialtone(self, button):
         '''Play a dialtone for the button when it's pushed'''
         print("Playing a button tone")
         volume = 0.1     # range [0.0, 1.0]
-        fs = self.RATE   # sampling rate, Hz, must be integer
-        duration = 0.5   # in seconds, may be float
+        duration = 500   # in milliseconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
@@ -249,20 +275,8 @@ class Listener():
 
             f = 1400
 
-
-        # generate samples, note conversion to float32 array
-        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
-        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
-        samples = np.sin(2*np.pi*np.arange(int(fs*duration))*f/fs)
-
-        samples *= volume
-
-        samples = samples.astype(np.float32)
-
-        sound = pygame.sndarray.make_sound(samples)
-        sound.play(-1)
-        pygame.time.delay(duration*1000.)
-        sound.stop()
+        sample = self.sine_wave(f, volume)
+        self.play_tone(sample, duration)
 
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
