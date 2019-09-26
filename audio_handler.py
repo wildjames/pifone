@@ -40,6 +40,7 @@ class Listener():
         'Thanks',
         'VOYAGER',
         'CUM',
+        'RECORDED.OLD',
         'mortal_kombat',
         'operator'
     ]
