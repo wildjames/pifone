@@ -238,7 +238,7 @@ class Listener():
         omega = np.pi * 2 / length
         xvalues = np.arange(int(length)) * omega
         onecycle = peak * np.sin(xvalues)
-        return np.resize(onecycle, (self.RATE,)).astype(np.int16)
+        return np.resize(onecycle, (self.RATE,2)).astype(np.int16)
 
     def square_wave(self, hz, peak, duty_cycle=.5):
         """Compute N samples of a sine wave with given frequency and peak amplitude.
@@ -246,7 +246,7 @@ class Listener():
         """
         t = np.linspace(0, 1, 500 * 440/hz, endpoint=False)
         wave = square(2 * np.pi * 5 * t, duty=duty_cycle)
-        wave = np.resize(wave, (self.RATE,))
+        wave = np.resize(wave, (self.RATE,2))
         return (peak / 2 * wave.astype(np.int16))
 
     def play_tone(self, sample, duration):
