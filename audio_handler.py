@@ -267,6 +267,8 @@ class Listener():
             output=True
         )
 
+        print("Pyaudio is using the following device: \n{}".format(p.get_default_output_device_info))
+
         # play. May repeat with different volume values (if done interactively)
         stream.write(samples)
 
