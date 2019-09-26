@@ -48,6 +48,8 @@ class Listener():
         '''Set up the pin I/O.
         If start is True, also start the polling thread.'''
 
+        pygame.init()
+
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
