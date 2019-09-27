@@ -510,10 +510,12 @@ class Listener():
         while p.is_playing():
             if self._interrupt and interruptible:
                 p.stop()
+                print("Interrupted!")
                 print("is p playing? {}".format(p.is_playing()))
                 flag = False
             if not self._handset_is_up:
                 p.stop()
+                print("Handset put down!")
                 print("is p playing? {}".format(p.is_playing()))
                 flag = False
             self._playing = p.is_playing()
