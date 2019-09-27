@@ -109,6 +109,8 @@ class Listener():
         # Button handling flags
         self.last_button = None
         self.last_button_pressed_at = time.time()
+        self._call_seq = True
+        self._call_func = True
 
         os.chdir(self.AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
