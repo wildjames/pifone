@@ -1,39 +1,29 @@
-import fnmatch
 import os
-import random
-import sys
-import threading
 import time
 import wave
 from pathlib import Path
+from threading import Thread, Timer
 
+import gpiozero
 import numpy as np
 import pyaudio
-import pygame
+from numpy import random
 from requests import post
-from scipy.signal import square
-
-import vlc
-
-try:
-    import gpiozero
-
-except: pass
-
-AUDIO_FILES_LOCATION = "/home/pi/pifone"
 
 
 class Listener():
+    # Fixed variables
+    AUDIO_FILES_LOCATION = "/home/pi/pifone"
     NUMVERIFY_APIKEY = "55d54bda772465a9979d9c78ca1b7313"
 
     CHUNK = 512
     POLLING_RATE = 0.05 #s
-    VOLUME = 1.0
+    VOLUME = 0.1
+    RATE = 44100
 
     # Recording settings
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
-    RATE = 44100
 
     FORBIDDEN_AUDIO = [
         'Intro',
@@ -45,21 +35,23 @@ class Listener():
         'operator'
     ]
 
-    def __init__(self, start=False):
-        '''Set up the pin I/O.
-        If start is True, also start the polling thread.'''
+    def __init__(self):
+        # Set up audio player
+        self.player = pyaudio.PyAudio()
 
-        pygame.init()
-
+        # I/O Pin setup
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
         print("Initialised the cradle input")
 
+        # The buttons are separated into groups.
+        # These are one side of the buttons, which will have a voltage applied
         self.grpA_pin = gpiozero.DigitalOutputDevice(pin=12, initial_value=False)
         self.grpB_pin = gpiozero.DigitalOutputDevice(pin=11, initial_value=False)
         self.grpC_pin = gpiozero.DigitalOutputDevice(pin=10, initial_value=False)
         self.grpD_pin = gpiozero.DigitalOutputDevice(pin=9, initial_value=False)
         print("Initialised Output pins")
 
+        # These are the input pins. I need to check which circuit is closed.
         self.outA_pin = gpiozero.DigitalInputDevice(pin=8)
         self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
         self.outC_pin = gpiozero.DigitalInputDevice(pin=6)
@@ -67,6 +59,7 @@ class Listener():
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
+        # Keys for reconstructing the dialtones
         self.button_tones = {
             'tone': [2, 2],
             'redial': [0, 3],
@@ -106,57 +99,25 @@ class Listener():
         self.cummy    = [2, 1, 0, 8]
         self.voyager  = [1, 9, 7, 7]
 
+        # Playback flag
         self._playing = False
-        self._recording = False
-        self._interrupt = False
 
+        # Cradle handling flags
+        self._handset_is_up = False
         self._handset_was_up = False
-        self._handset_is_up  = False
 
-        self._is_polling = False
-        self._call_func  = False
-        self.button_seq  = []
-        self._call_seq   = True
+        # Button handling flags
         self.last_button = None
         self.last_button_pressed_at = time.time()
 
-        os.chdir(AUDIO_FILES_LOCATION)
+        os.chdir(self.AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
 
-        if start:
-            self.start()
-
-    def interrupt_playback(self):
-        '''Stops current playback without having to replace the handset'''
-        print("INTERRUPTING PLAYBACK")
-        t0 = time.clock()
-        while time.clock() - t0 < 0.5:
-            self._interrupt = True
-        self._interrupt = False
-
-    def start(self):
-        '''Start the polling function.'''
-        self._is_polling = True
-        print("OK, GO")
-
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
-
-    def stop(self):
-        '''Stop polling'''
-        self._is_polling = False
-        self._handset_is_up = False
-
-    def quit(self):
-        self.stop()
-        self.interrupt_playback()
-        pygame.quit()
-        exit()
-        # time.sleep(self.POLLING_RATE*10)
-        # os.system('cd /home/pi/pifone; git pull; sudo reboot')
+        Thread(target=self.poll_buttons).start()
 
     def poll_buttons(self):
-        '''Check what button was last pushed'''
-        # self._interrupt = False
+        '''Figure out which buttons have been pressed, and if necessary,
+        execute their function'''
 
         # If the cradle is raised, play is True
         self._handset_is_up = not self.cradle_pin.value
@@ -164,7 +125,8 @@ class Listener():
             print("Handset in cradle")
             self._call_seq = True
             self._handset_was_up = False
-            self.interrupt_playback()
+
+            Thread(target=self.interrupt).start()
 
         if not self._handset_is_up:
             self.button_seq = []
@@ -173,7 +135,7 @@ class Listener():
             self._interrupt = True
 
         if not self._handset_was_up and self._handset_is_up:
-            self.handset_lifted()
+            Thread(target=self.handset_lifted).start()
 
         ############################################################
         # # # # Check if any of the buttons have been pushed # # # #
@@ -216,14 +178,11 @@ class Listener():
                 break
         self.grpD_pin.value = False
 
-        if not self._is_polling:
-            button_pressed = None
-
         # If a button was pushed, say so
         if button_pressed is not None:
             if self.last_button is None:
                 self._playing_cummy = False
-                threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
+                Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.button_seq.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self._call_func = True
@@ -231,40 +190,37 @@ class Listener():
         self.last_button = button_pressed
         self.last_button_pressed_at = time.time()
 
-        threading.Thread(target=self.parse_button).start()
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+        Thread(target=self.parse_button).start()
 
-    def sine_wave(self, hz, peak):
-        """Compute N samples of a sine wave with given frequency and peak amplitude.
-        Defaults to one second.
-        """
-        length = self.RATE / float(hz)
-        omega = np.pi * 2 / length
-        xvalues = np.arange(int(length)) * omega
-        onecycle = peak * np.sin(xvalues)
-        return np.resize(onecycle, (self.RATE,2)).astype(np.int16)
+        # Timer(self.POLLING_RATE, self.poll_buttons).start()
+        time.sleep(self.POLLING_RATE)
+        self.poll_buttons()
 
-    def square_wave(self, hz, peak, duty_cycle=.5):
-        """Compute N samples of a sine wave with given frequency and peak amplitude.
-        Defaults to one second.
-        """
-        t = np.linspace(0, 1, 500 * 440/hz, endpoint=False)
-        wave = square(2 * np.pi * 5 * t, duty=duty_cycle)
-        wave = np.resize(wave, (self.RATE,2))
-        return (peak / 2 * wave.astype(np.int16))
+    def handset_lifted(self):
+        self._handset_was_up = True
+        print("Handset lifted!")
+        # Thread(target=self.play_random).start()
+        Timer(0.7, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
-    def play_tone(self, sample, duration):
-        '''duration in ms'''
-        sound = pygame.sndarray.make_sound(sample)
-        sound.play(-1)
-        pygame.time.delay(duration)
-        sound.stop()
+    def start(self):
+        '''Start the polling function.'''
+        print("OK, GO")
 
-    def dialtone(self, button):
-        '''Play a dialtone for the button when it's pushed'''
-        print("Playing a button tone")
+        Timer(self.POLLING_RATE, self.poll_buttons).start()
+
+    def quit(self):
+        self.interrupt()
+        self.player.terminate()
+        exit()
+
+    def interrupt(self):
+        self.player.terminate()
+        self.player = pyaudio.PyAudio()
+
+    def dialtone(self, button, duration=0.1):
+        '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
+        print("Playing a button tone for {}".format(button))
         volume = 4096 * self.VOLUME
-        duration = 100   # in milliseconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
@@ -279,12 +235,29 @@ class Listener():
         if button == 'tone':
             f = 1400.
 
-        sample = self.sine_wave(f, volume)
-        self.play_tone(sample, duration)
+        # generate samples, note conversion to float32 array
+        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
+        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
+        samples = np.sin(2*np.pi*np.arange(int(self.RATE*duration))*f/self.RATE)
 
-    def not_implimented(self):
-        # make this flash an LED or something, just to show the user something was noticed?
-        print("Button does nothing :(")
+        samples *= volume
+
+        samples = samples.astype(np.float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = self.player.open(
+            format=np.float32,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            output=True
+        )
+
+        stream.write(samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        print("Played a dialtone")
 
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
@@ -303,7 +276,7 @@ class Listener():
             print("This button wants to call the function: {}".format(func.__name__))
             print("_call_seq: {}".format(self._call_seq))
             print("--------------------------------------------------")
-            threading.Thread(target=func).start()
+            Thread(target=func).start()
             self._call_func = False
 
     def parse_seq(self):
@@ -311,7 +284,7 @@ class Listener():
         if self.button_seq == self.konami:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.konami_function).start()
+            Thread(target=self.konami_function).start()
 
         if self.button_seq == self.kill_seq:
             self._call_seq = False
@@ -321,12 +294,32 @@ class Listener():
         if self.button_seq == self.cummy:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.play_cummy).start()
+            Thread(target=self.play_cummy).start()
 
         if self.button_seq == self.voyager:
             self._call_seq = False
             self._call_func = False
-            threading.Thread(target=self.play_voyager).start()
+            Thread(target=self.play_voyager).start()
+
+    def not_implimented(self):
+        # make this flash an LED or something, just to show the user something was noticed?
+        print("Button does nothing :(")
+
+    def validate_phone_number(self, num):
+        '''Call to API to check if the number entered is valid'''
+        URL = "http://apilayer.net/api/validate"
+
+        URL += "?access_key={}".format(self.NUMVERIFY_APIKEY)
+        URL += "&number={}".format(num)
+        URL += "&country_code=GB"
+        URL += "&format=1" # return JSON
+
+        resp = post(URL)
+        packet = resp.json()
+
+        isvalid = packet['valid']
+
+        return isvalid
 
     def store_phone_number(self):
         numbers = [0,1,2,3,4,5,6,7,8,9]
@@ -344,7 +337,7 @@ class Listener():
 
     def play_voyager(self):
         '''play a voyager file'''
-        self.interrupt_playback()
+        self.interrupt()
         fnames = [str(f) for f in Path(".").glob("**/VOYAGER/*.wav")]
         if fnames == []:
             print("No files found")
@@ -363,7 +356,7 @@ class Listener():
             return
 
         # Stop current playback
-        self.interrupt_playback()
+        self.interrupt()
 
         while self._handset_is_up and not self._playing and self._playing_cummy:
             playme = random.choice(fnames)
@@ -371,39 +364,15 @@ class Listener():
         self._playing_cummy = False
 
     def konami_function(self):
-        self.interrupt_playback()
+        self.interrupt()
         self.play_clip('AUDIO_FILES/mortal_kombat.wav')
 
-    def validate_phone_number(self, num):
-        '''Call to API to check if the number entered is valid'''
-        URL = "http://apilayer.net/api/validate"
-
-        URL += "?access_key={}".format(self.NUMVERIFY_APIKEY)
-        URL += "&number={}".format(num)
-        URL += "&country_code=GB"
-        URL += "&format=1" # return JSON
-
-        resp = post(URL)
-        packet = resp.json()
-
-        isvalid = packet['valid']
-
-        return isvalid
-
-    def handset_lifted(self):
-        self._handset_was_up = True
-        print("Handset lifted!")
-        # threading.Thread(target=self.play_random).start()
-        threading.Timer(1.0, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
-
     def start_recording(self):
-        self.interrupt_playback()
+        self.interrupt()
         print("#####################################################")
         print("                Starting a recording")
         print("#####################################################")
-        self._is_polling = False
         self.make_recording()
-        self._is_polling = True
 
     def make_recording(self):
         '''Stop current playback, if it's running, play the 'please record a
@@ -444,11 +413,8 @@ class Listener():
         else:
             return
 
-        # Init the audio handler
-        p = pyaudio.PyAudio()
-
         # Start recording, until the cradle is activated
-        stream = p.open(
+        stream = self.player.open(
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -477,15 +443,13 @@ class Listener():
             # Reconstruct the wav, for saving
             waveFile = wave.open(oname, 'wb')
             waveFile.setnchannels(self.CHANNELS)
-            waveFile.setsampwidth(p.get_sample_size(self.FORMAT))
+            waveFile.setsampwidth(self.player.get_sample_size(self.FORMAT))
             waveFile.setframerate(self.RATE)
 
             waveFile.writeframes(b''.join(frames))
             waveFile.close()
 
             print("Finished saving recording to {}".format(oname))
-
-        p.terminate()
 
         # No longer busy
         self._playing = False
@@ -500,38 +464,40 @@ class Listener():
         print("starting new playback")
         self._playing = True
 
-        p = vlc.MediaPlayer(playme)
-        p.play()
+        with wave.open(playme, 'rb') as audio_file:
+            stream = self.player.open(
+                format=self.player.get_format_from_width(audio_file.getsampwidth()),
+                channels=audio_file.getnchannels(),
+                rate=audio_file.getframerate(),
+                output=True,
+                frames_per_buffer=self.CHUNK
+            )
 
-        time.sleep(0.5)
-        print("After playback started: p.is_playing: {}".format(p.is_playing()))
+            data = audio_file.readframes(self.CHUNK)
 
-        flag = True
-        while p.is_playing():
-            if self._interrupt and interruptible:
-                p.stop()
-                print("Interrupted!")
-                print("is p playing? {}".format(p.is_playing()))
-                flag = False
-            if not self._handset_is_up:
-                p.stop()
-                print("Handset put down!")
-                print("is p playing? {}".format(p.is_playing()))
-                flag = False
-            self._playing = p.is_playing()
-        print("Reached the end of the file!")
+            print("About to start playback...")
+            while data and self._handset_is_up and self._playing:
+                print("Writing stream...", end='\r')
+                stream.write(data)
+                print("Reading data...", end='\r')
+                data = audio_file.readframes(self.CHUNK)
+            print()
 
-        p.stop()
+            print("Done with playback!")
 
-        if flag:
-            try:
-                self.dialtone('tone')
-            except: pass
+        #stop stream
+        stream.stop_stream()
+        print("Stopped stream")
+        stream.close()
+        print("Closed stream")
+
+        self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
         self._interrupt = False
         print("Finished playback")
+
 
     def get_audio_files(self):
         fnames = Path('.').glob("**/*.wav")
@@ -553,7 +519,7 @@ class Listener():
         return audio_files
 
     def play_random(self):
-        self.interrupt_playback()
+        self.interrupt()
         print("Getting audio files")
         files = self.get_audio_files()
 
