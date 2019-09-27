@@ -264,7 +264,7 @@ class Listener():
         '''Play a dialtone for the button when it's pushed'''
         print("Playing a button tone")
         volume = 4096 * self.VOLUME
-        duration = 300   # in milliseconds, may be float
+        duration = 100   # in milliseconds, may be float
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
