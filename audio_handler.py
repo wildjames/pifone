@@ -519,6 +519,7 @@ class Listener():
                 print("is p playing? {}".format(p.is_playing()))
                 flag = False
             self._playing = p.is_playing()
+        print("Reached the end of the file!")
 
         p.stop()
 
