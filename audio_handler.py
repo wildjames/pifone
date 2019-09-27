@@ -149,6 +149,7 @@ class Listener():
     def quit(self):
         self.stop()
         self.interrupt_playback()
+        pygame.quit()
         exit()
         # time.sleep(self.POLLING_RATE*10)
         # os.system('cd /home/pi/pifone; git pull; sudo reboot')
