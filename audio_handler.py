@@ -87,7 +87,7 @@ class Listener():
             None:     self.not_implimented,
             'redial': self.start_recording,
             '#': self.play_random,
-            '*': self.store_phone_number,
+            '*': self.play_specific_recording,
             0:   self.not_implimented,
             1:   self.not_implimented,
             2:   self.not_implimented,
@@ -451,11 +451,6 @@ class Listener():
             self._call_seq = False
             self._call_func = False
             Thread(target=self.play_voyager).start()
-
-        if self.button_seq == self.play_recording:
-            self._call_seq = False
-            self._call_func = False
-            Thread(target=self.play_specific_recording).start()
 
     def start_recording(self):
         self.interrupt()
