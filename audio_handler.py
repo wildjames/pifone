@@ -408,8 +408,9 @@ class Listener():
     def handset_lifted(self):
         self._handset_was_up = True
         print("Handset lifted!")
+
         # Thread(target=self.play_random).start()
-        self.play_clip('AUDIO_FILES/operator.wav')
+        Timer(1.0, self.play_clip, args=['AUDIO_FILES/operator.wav']).start()
         self.dialtone('tone')
 
     def interrupt(self):
