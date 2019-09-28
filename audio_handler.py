@@ -28,9 +28,9 @@ class Listener():
     FORBIDDEN_AUDIO = [
         'Intro',
         'Thanks',
-        'VOYAGER',
-        'CUM',
-        'RECORDED.OLD',
+        '/VOYAGER',
+        '/CUM',
+        '/RECORDED.OLD',
         'mortal_kombat',
         'operator'
     ]
