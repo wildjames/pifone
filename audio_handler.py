@@ -160,6 +160,8 @@ class Listener():
 
             print("About to start playback...")
             while data and self._handset_is_up and self._playing:
+                if self._interrupt:
+                    break
                 print("Writing stream...", end='\r')
                 stream.write(data)
                 print("Reading data...", end='\r')
@@ -402,8 +404,7 @@ class Listener():
         self.dialtone('tone')
 
     def interrupt(self):
-        self.player.terminate()
-        self.player = pyaudio.PyAudio()
+        self._interrupt = True
 
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
