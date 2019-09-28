@@ -163,6 +163,12 @@ class Listener():
             rate = audio_file.getframerate()
             duration = frames / rate
 
+            print("The file has the format:")
+            print(fmt)
+            print("It has a rate:")
+            print(rate)
+            print("And it has {} frames.".format(frames))
+
             print("This file is {:.1f}s long".format(duration))
 
             stream = self.player.open(
