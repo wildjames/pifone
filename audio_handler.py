@@ -38,6 +38,8 @@ class Listener():
     def __init__(self):
         # Set up audio player
         self.player = pyaudio.PyAudio()
+        self.dialtone_player = pyaudio.PyAudio()
+
         print(self.player.get_device_count())
         for dev_index in range(self.player.get_device_count()):
             info = self.player.get_device_info_by_index(dev_index)
@@ -306,7 +308,7 @@ class Listener():
         samples = (np.sin(2*np.pi*np.arange(fs*duration)*f/fs)).astype(np.float32)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = self.player.open(
+        stream = self.dialtone_player.open(
             output_device_index=self.DEVICE_INDEX,
             format=pyaudio.paFloat32,
             channels=1,
