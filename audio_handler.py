@@ -114,6 +114,7 @@ class Listener():
         # Button handling flags
         self.last_button = None
         self.last_button_pressed_at = time.time()
+        self.button_seq = []
         self._call_seq = True
         self._call_func = True
 
