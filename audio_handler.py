@@ -39,10 +39,10 @@ class Listener():
         # Set up audio player
         self.player = pyaudio.PyAudio()
         print(self.player.get_device_count())
-        for i in range(self.player.get_device_count()):
-            print(self.player.get_device_info_by_index(i))
-        self.player.terminate()
-        exit()
+        for dev_index in range(self.player.get_device_count()):
+            info = self.player.get_device_info_by_index(i)
+            if info['name'] == 'USB Audio Device: - (hw:1,0)':
+                self.DEVICE_INDEX = dev_index
 
         # I/O Pin setup
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
@@ -144,6 +144,7 @@ class Listener():
             # Use the existing player to open a playback stream
             fmt = self.player.get_format_from_width(audio_file.getsampwidth())
             stream = self.player.open(
+                output_device_index=self.DEVICE_INDEX,
                 format=fmt,
                 channels=audio_file.getnchannels(),
                 rate=audio_file.getframerate(),
