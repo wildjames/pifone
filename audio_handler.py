@@ -575,5 +575,5 @@ class Listener():
         fname = "{:05d}.wav".format(number)
         fname = os.path.join('AUDIO_FILES', 'RECORDED', fname)
 
-        self._interrupt
+        self.interrupt()
         self.play_clip(fname)
