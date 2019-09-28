@@ -146,24 +146,22 @@ class Listener():
         self._playing = True
         self._interrupt = False
 
-        with wave.open(playme, 'rb') as f:
-            frames = f.getnframes()
-            rate = f.getframerate()
-            duration = frames / rate
-            print("This file is {:.1f}s long".format(duration))
-
-            p = pyaudio.PyAudio()
-
-            stream = p.open(
-                format=p.get_format_from_width(f.getsampwidth()),
-                channels=f.getnchannels(),
-                rate=f.getframerate(),
+        with wave.open(playme, 'rb') as audio_file:
+            # Use the existing player to open a playback stream
+            fmt = self.player.get_format_from_width(
+                audio_file.getsampwidth()
+            )
+            rate = audio_file.getframerate()
+            stream = self.player.open(
+                output_device_index=self.DEVICE_INDEX,
+                format=fmt,
+                channels=self.CHANNELS,
+                rate=rate,
                 output=True,
                 frames_per_buffer=self.CHUNK
             )
 
-
-            data = f.readframes(self.CHUNK)
+            data = audio_file.readframes(self.CHUNK)
 
             print("About to start playback...")
             while data and self._handset_is_up and self._playing:
@@ -172,7 +170,7 @@ class Listener():
                 print("Writing stream...", end='\r')
                 stream.write(data)
                 print("Reading data...", end='\r')
-                data = f.readframes(self.CHUNK)
+                data = audio_file.readframes(self.CHUNK)
             print()
 
             print("Done with playback!")
