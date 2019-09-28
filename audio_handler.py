@@ -163,6 +163,8 @@ class Listener():
             rate = audio_file.getframerate()
             duration = frames / rate
 
+            print("The file has samples of width:")
+            print(audio_file.getsampwidth())
             print("The file has the format:")
             print(fmt)
             print("It has a rate:")
