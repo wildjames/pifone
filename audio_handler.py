@@ -107,7 +107,7 @@ class Listener():
 
         # Playback flag
         self._playing = False
-        self._interrupe = False
+        self._interrupt = False
 
         # Cradle handling flags
         self._handset_is_up = False
@@ -561,4 +561,5 @@ class Listener():
         fname = "{:0d5}.wav".format(number)
         fname = os.path.join('AUDIO_FILES', 'RECORDED', fname)
 
+        self._interrupt
         self.play_clip(fname)
