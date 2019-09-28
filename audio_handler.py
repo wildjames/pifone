@@ -38,6 +38,9 @@ class Listener():
     def __init__(self):
         # Set up audio player
         self.player = pyaudio.PyAudio()
+        print(self.player.get_device_info_by_index())
+        self.player.terminate()
+        exit()
 
         # I/O Pin setup
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
@@ -256,7 +259,7 @@ class Listener():
     def dialtone(self, button, duration=0.1):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
-        volume = 4096 * self.VOLUME
+        volume = self.VOLUME
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
