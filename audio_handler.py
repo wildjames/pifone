@@ -269,6 +269,7 @@ class Listener():
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
         volume = self.VOLUME
+        fs = self.RATE
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [697.,  770.,  852.,  941.]
@@ -282,20 +283,6 @@ class Listener():
 
         if button == 'tone':
             f = 1400.
-
-        # generate samples, note conversion to float32 array
-        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
-        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
-        samples = np.sin(2*np.pi*np.arange(int(self.RATE*duration))*f/self.RATE)
-
-        samples *= volume
-
-        samples = samples.astype(np.float32)
-
-        volume = 0.5     # range [0.0, 1.0]
-        fs = 44100       # sampling rate, Hz, must be integer
-        duration = 1.0   # in seconds, may be float
-        f = 440.0        # sine frequency, Hz, may be float
 
         # generate samples, note conversion to float32 array
         samples = (np.sin(2*np.pi*np.arange(fs*duration)*f/fs)).astype(np.float32)
