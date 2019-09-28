@@ -287,6 +287,7 @@ class Listener():
         samples *= volume
 
         samples = samples.astype(np.float32)
+        print(samples)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
