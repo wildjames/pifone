@@ -560,8 +560,9 @@ class Listener():
     def play_specific_recording(self):
         number = self.button_seq
         number = [n for n in number if n in [0,1,2,3,4,5,6,7,8,9]]
+        number = int(number)
 
-        fname = "{:0d5}.wav".format(number)
+        fname = "{:05d}.wav".format(number)
         fname = os.path.join('AUDIO_FILES', 'RECORDED', fname)
 
         self._interrupt
