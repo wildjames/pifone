@@ -31,6 +31,7 @@ class Listener():
         '/VOYAGER',
         '/CUM',
         '/RECORDED.OLD',
+        '/DICTAPHONE_DIARIES',
         'mortal_kombat',
         'operator'
     ]
