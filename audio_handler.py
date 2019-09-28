@@ -40,7 +40,7 @@ class Listener():
         self.player = pyaudio.PyAudio()
         print(self.player.get_device_count())
         for dev_index in range(self.player.get_device_count()):
-            info = self.player.get_device_info_by_index(i)
+            info = self.player.get_device_info_by_index(dev_index)
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
 
