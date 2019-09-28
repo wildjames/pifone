@@ -43,6 +43,7 @@ class Listener():
             info = self.player.get_device_info_by_index(dev_index)
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
+        print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
 
         # I/O Pin setup
         self.cradle_pin  = gpiozero.DigitalInputDevice(pin=22)
@@ -225,7 +226,6 @@ class Listener():
             rate=self.RATE,
             input=True,
             frames_per_buffer=self.CHUNK,
-            # output_device_index=self.device_ID,
         )
         print("Recording...")
         frames = []
