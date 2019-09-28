@@ -18,7 +18,7 @@ class Listener():
 
     CHUNK = 512
     POLLING_RATE = 0.05 #s
-    VOLUME = 0.1
+    VOLUME = 1.0
     RATE = 44100
 
     # Recording settings
@@ -219,6 +219,7 @@ class Listener():
 
         # Start recording, until the cradle is activated
         stream = self.player.open(
+            input_device_index=self.DEVICE_INDEX,
             format=self.FORMAT,
             channels=self.CHANNELS,
             rate=self.RATE,
@@ -289,6 +290,7 @@ class Listener():
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
+            output_device_index=self.DEVICE_INDEX,
             format=pyaudio.paFloat32,
             channels=self.CHANNELS,
             rate=self.RATE,
