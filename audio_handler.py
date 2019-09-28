@@ -107,6 +107,7 @@ class Listener():
 
         # Playback flag
         self._playing = False
+        self._interrupe = False
 
         # Cradle handling flags
         self._handset_is_up = False
@@ -143,6 +144,7 @@ class Listener():
         print("do I want to be interrupted? {}".format(interruptible))
         print("starting new playback")
         self._playing = True
+        self._interrupt = False
 
         with wave.open(playme, 'rb') as audio_file:
             # Use the existing player to open a playback stream
