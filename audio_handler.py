@@ -146,12 +146,23 @@ class Listener():
         self._playing = True
         self._interrupt = False
 
+        if not os.path.isfile(playme):
+            print("File not found!")
+            return
+
         with wave.open(playme, 'rb') as audio_file:
             # Use the existing player to open a playback stream
+
             fmt = self.player.get_format_from_width(
                 audio_file.getsampwidth()
             )
+
+            frames = audio_file.getnframes()
             rate = audio_file.getframerate()
+            duration = frames / rate
+
+            print("This file is {:.1f}s long".format(duration))
+
             stream = self.player.open(
                 output_device_index=self.DEVICE_INDEX,
                 format=fmt,
@@ -441,6 +452,11 @@ class Listener():
             self._call_func = False
             Thread(target=self.play_voyager).start()
 
+        if self.button_seq == self.play_recording:
+            self._call_seq = False
+            self._call_func = False
+            Thread(target=self.play_specific_recording).start()
+
     def start_recording(self):
         self.interrupt()
         print("#####################################################")
@@ -542,3 +558,12 @@ class Listener():
     def konami_function(self):
         self.interrupt()
         self.play_clip('AUDIO_FILES/mortal_kombat.wav')
+
+    def play_specific_recording(self):
+        number = self.button_seq
+        number = [n for n in number if n in [0,1,2,3,4,5,6,7,8,9]]
+
+        fname = "{:0d5}.wav".format(number)
+        fname = os.path.join('AUDIO_FILES', 'RECORDED', fname)
+
+        self.play_clip(fname)
