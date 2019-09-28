@@ -115,7 +115,185 @@ class Listener():
         os.chdir(self.AUDIO_FILES_LOCATION)
         print("Initialised successfully!")
 
-        Thread(target=self.poll_buttons).start()
+        # Thread(target=self.poll_buttons).start()
+
+    def start(self):
+        '''Start the polling function.'''
+        print("OK, GO")
+        Timer(self.POLLING_RATE, self.poll_buttons).start()
+
+    def quit(self):
+        self.interrupt()
+        self.player.terminate()
+        exit()
+
+    def play_clip(self, playme, interruptible=True):
+        if self._playing:
+            print("Already playing")
+            return
+
+        print("starting new playback")
+        self._playing = True
+
+        with wave.open(playme, 'rb') as audio_file:
+            # Use the existing player to open a playback stream
+            fmt = self.player.get_format_from_width(audio_file.getsampwidth())
+            stream = self.player.open(
+                format=fmt,
+                channels=audio_file.getnchannels(),
+                rate=audio_file.getframerate(),
+                output=True,
+                frames_per_buffer=self.CHUNK
+            )
+
+            data = audio_file.readframes(self.CHUNK)
+
+            print("About to start playback...")
+            while data and self._handset_is_up and self._playing:
+                print("Writing stream...", end='\r')
+                stream.write(data)
+                print("Reading data...", end='\r')
+                data = audio_file.readframes(self.CHUNK)
+            print()
+
+            print("Done with playback!")
+
+        #stop stream
+        stream.stop_stream()
+        print("Stopped stream")
+        stream.close()
+        print("Closed stream")
+
+        self.dialtone('tone')
+
+        # I'm no longer playing.
+        self._playing = False
+        self._interrupt = False
+        print("Finished playback")
+
+    def make_recording(self):
+        '''Stop current playback, if it's running, play the 'please record a
+        message' mesasge, and start recording.
+
+        fresh recordings are numbered in ascending order
+        '''
+
+        # Get the name of the new audio file to create
+        audio_files = Path('.').glob("**/RECORDED/*.wav")
+        audio_files = [str(p) for p in audio_files]
+        max_num = 0
+        for a in audio_files:
+            try:
+                a = os.path.split(a)[1]
+                a = a.replace('.wav', '')
+                print(a)
+                a = int(a)
+                if a > max_num:
+                    max_num = a
+            except: pass
+
+        new_file = "{:05d}.wav".format(max_num + 1)
+        new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
+        print("Making a new file: {}".format(new_file))
+
+        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", interruptible=False)
+
+        self.record_clip(new_file)
+
+    def record_clip(self, oname):
+        self._playing = True
+        self._recording = True
+
+        # Play a tone
+        if self._handset_is_up:
+            self.dialtone('tone')
+        else:
+            return
+
+        # Start recording, until the cradle is activated
+        stream = self.player.open(
+            format=self.FORMAT,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            input=True,
+            frames_per_buffer=self.CHUNK,
+            # output_device_index=self.device_ID,
+        )
+        print("Recording...")
+        frames = []
+
+        try:
+            while not self._interrupt:
+                data = stream.read(self.CHUNK)
+                frames.append(data)
+        except Exception as e:
+            print("Crashed during recording")
+            print(e)
+
+        print("Done recording...")
+
+        # Close my stuff
+        stream.stop_stream()
+        stream.close()
+
+        if frames != []:
+            # Reconstruct the wav, for saving
+            waveFile = wave.open(oname, 'wb')
+            waveFile.setnchannels(self.CHANNELS)
+            waveFile.setsampwidth(self.player.get_sample_size(self.FORMAT))
+            waveFile.setframerate(self.RATE)
+
+            waveFile.writeframes(b''.join(frames))
+            waveFile.close()
+
+            print("Finished saving recording to {}".format(oname))
+
+        # No longer busy
+        self._playing  = False
+        self._recording = False
+        self._interrupt = False
+
+    def dialtone(self, button, duration=0.1):
+        '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
+        print("Playing a button tone for {}".format(button))
+        volume = 4096 * self.VOLUME
+
+        freqs_A = [1209., 1336., 1477., 1633.]
+        freqs_B = [697.,  770.,  852.,  941.]
+
+        f_A, f_B = self.button_tones[button]
+
+        f_A = freqs_A[f_A]
+        f_B = freqs_B[f_B]
+
+        f = f_A + f_B
+
+        if button == 'tone':
+            f = 1400.
+
+        # generate samples, note conversion to float32 array
+        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
+        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
+        samples = np.sin(2*np.pi*np.arange(int(self.RATE*duration))*f/self.RATE)
+
+        samples *= volume
+
+        samples = samples.astype(np.float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = self.player.open(
+            format=np.float32,
+            channels=self.CHANNELS,
+            rate=self.RATE,
+            output=True
+        )
+
+        stream.write(samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        print("Played a dialtone")
 
     def poll_buttons(self):
         '''Figure out which buttons have been pressed, and if necessary,
@@ -204,62 +382,9 @@ class Listener():
         # Thread(target=self.play_random).start()
         Timer(0.7, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
 
-    def start(self):
-        '''Start the polling function.'''
-        print("OK, GO")
-
-        Timer(self.POLLING_RATE, self.poll_buttons).start()
-
-    def quit(self):
-        self.interrupt()
-        self.player.terminate()
-        exit()
-
     def interrupt(self):
         self.player.terminate()
         self.player = pyaudio.PyAudio()
-
-    def dialtone(self, button, duration=0.1):
-        '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
-        print("Playing a button tone for {}".format(button))
-        volume = 4096 * self.VOLUME
-
-        freqs_A = [1209., 1336., 1477., 1633.]
-        freqs_B = [697.,  770.,  852.,  941.]
-
-        f_A, f_B = self.button_tones[button]
-
-        f_A = freqs_A[f_A]
-        f_B = freqs_B[f_B]
-
-        f = f_A + f_B
-
-        if button == 'tone':
-            f = 1400.
-
-        # generate samples, note conversion to float32 array
-        # samples =  np.sin(2*np.pi*np.arange(int(fs*duration))*f_A/fs)
-        # samples += np.sin(2*np.pi*np.arange(int(fs*duration))*f_B/fs)
-        samples = np.sin(2*np.pi*np.arange(int(self.RATE*duration))*f/self.RATE)
-
-        samples *= volume
-
-        samples = samples.astype(np.float32)
-
-        # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = self.player.open(
-            format=np.float32,
-            channels=self.CHANNELS,
-            rate=self.RATE,
-            output=True
-        )
-
-        stream.write(samples)
-
-        stream.stop_stream()
-        stream.close()
-
-        print("Played a dialtone")
 
     def parse_button(self):
         '''Print the last button pushed, and when it was pressed. Also
@@ -303,9 +428,45 @@ class Listener():
             self._call_func = False
             Thread(target=self.play_voyager).start()
 
+    def start_recording(self):
+        self.interrupt()
+        print("#####################################################")
+        print("                Starting a recording")
+        print("#####################################################")
+        self.make_recording()
+
+    def get_audio_files(self):
+        fnames = Path('.').glob("**/*.wav")
+
+        audio_files = []
+        for a in fnames:
+            a = str(a)
+            flag = True
+            for banned in self.FORBIDDEN_AUDIO:
+                if banned in a:
+                    flag = False
+            if flag:
+                audio_files.append(a)
+
+        print("I found {} audio files:".format(len(audio_files)))
+        for fn in audio_files:
+            print("- {}".format(fn))
+
+        return audio_files
+
     def not_implimented(self):
         # make this flash an LED or something, just to show the user something was noticed?
         print("Button does nothing :(")
+
+    def play_random(self):
+        self.interrupt()
+        print("Getting audio files")
+        files = self.get_audio_files()
+
+        playme = random.choice(files)
+        print("Playing file:\n{}\n".format(playme))
+
+        self.play_clip(playme)
 
     def validate_phone_number(self, num):
         '''Call to API to check if the number entered is valid'''
@@ -368,164 +529,3 @@ class Listener():
     def konami_function(self):
         self.interrupt()
         self.play_clip('AUDIO_FILES/mortal_kombat.wav')
-
-    def start_recording(self):
-        self.interrupt()
-        print("#####################################################")
-        print("                Starting a recording")
-        print("#####################################################")
-        self.make_recording()
-
-    def make_recording(self):
-        '''Stop current playback, if it's running, play the 'please record a
-        message' mesasge, and start recording.
-
-        fresh recordings are numbered in ascending order
-        '''
-
-        # Get the name of the new audio file to create
-        audio_files = Path('.').glob("**/RECORDED/*.wav")
-        audio_files = [str(p) for p in audio_files]
-        max_num = 0
-        for a in audio_files:
-            try:
-                a = os.path.split(a)[1]
-                a = a.replace('.wav', '')
-                print(a)
-                a = int(a)
-                if a > max_num:
-                    max_num = a
-            except: pass
-
-        new_file = "{:05d}.wav".format(max_num + 1)
-        new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
-        print("Making a new file: {}".format(new_file))
-
-        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", interruptible=False)
-
-        self.record_clip(new_file)
-
-    def record_clip(self, oname):
-        self._playing = True
-        self._recording = True
-
-        # Play a tone
-        if self._handset_is_up:
-            self.dialtone('tone')
-        else:
-            return
-
-        # Start recording, until the cradle is activated
-        stream = self.player.open(
-            format=self.FORMAT,
-            channels=self.CHANNELS,
-            rate=self.RATE,
-            input=True,
-            frames_per_buffer=self.CHUNK,
-            # output_device_index=self.device_ID,
-        )
-        print("Recording...")
-        frames = []
-
-        try:
-            while not self._interrupt:
-                data = stream.read(self.CHUNK)
-                frames.append(data)
-        except Exception as e:
-            print("Crashed during recording")
-            print(e)
-
-        print("Done recording...")
-
-        # Close my stuff
-        stream.stop_stream()
-        stream.close()
-
-        if frames != []:
-            # Reconstruct the wav, for saving
-            waveFile = wave.open(oname, 'wb')
-            waveFile.setnchannels(self.CHANNELS)
-            waveFile.setsampwidth(self.player.get_sample_size(self.FORMAT))
-            waveFile.setframerate(self.RATE)
-
-            waveFile.writeframes(b''.join(frames))
-            waveFile.close()
-
-            print("Finished saving recording to {}".format(oname))
-
-        # No longer busy
-        self._playing = False
-        self._recording = False
-        self._interrupt = False
-
-    def play_clip(self, playme, interruptible=True):
-        if self._playing:
-            print("Already playing")
-            return
-
-        print("starting new playback")
-        self._playing = True
-
-        with wave.open(playme, 'rb') as audio_file:
-            stream = self.player.open(
-                format=self.player.get_format_from_width(audio_file.getsampwidth()),
-                channels=audio_file.getnchannels(),
-                rate=audio_file.getframerate(),
-                output=True,
-                frames_per_buffer=self.CHUNK
-            )
-
-            data = audio_file.readframes(self.CHUNK)
-
-            print("About to start playback...")
-            while data and self._handset_is_up and self._playing:
-                print("Writing stream...", end='\r')
-                stream.write(data)
-                print("Reading data...", end='\r')
-                data = audio_file.readframes(self.CHUNK)
-            print()
-
-            print("Done with playback!")
-
-        #stop stream
-        stream.stop_stream()
-        print("Stopped stream")
-        stream.close()
-        print("Closed stream")
-
-        self.dialtone('tone')
-
-        # I'm no longer playing.
-        self._playing = False
-        self._interrupt = False
-        print("Finished playback")
-
-
-    def get_audio_files(self):
-        fnames = Path('.').glob("**/*.wav")
-
-        audio_files = []
-        for a in fnames:
-            a = str(a)
-            flag = True
-            for banned in self.FORBIDDEN_AUDIO:
-                if banned in a:
-                    flag = False
-            if flag:
-                audio_files.append(a)
-
-        print("I found {} audio files:".format(len(audio_files)))
-        for fn in audio_files:
-            print("- {}".format(fn))
-
-        return audio_files
-
-    def play_random(self):
-        self.interrupt()
-        print("Getting audio files")
-        files = self.get_audio_files()
-
-        playme = random.choice(files)
-        print("Playing file:\n{}\n".format(playme))
-
-        self.play_clip(playme)
