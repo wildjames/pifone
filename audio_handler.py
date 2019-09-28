@@ -282,7 +282,7 @@ class Listener():
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
-            format=np.float32,
+            format=pyaudio.paFloat32,
             channels=self.CHANNELS,
             rate=self.RATE,
             output=True
