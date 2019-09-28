@@ -139,6 +139,8 @@ class Listener():
             print("Already playing")
             return
 
+        print("I want to play the file {}".format(playme))
+        print("do I want to be interrupted? {}".format(interruptible))
         print("starting new playback")
         self._playing = True
 
@@ -171,8 +173,6 @@ class Listener():
         print("Stopped stream")
         stream.close()
         print("Closed stream")
-
-        self.dialtone('tone')
 
         # I'm no longer playing.
         self._playing = False
@@ -390,7 +390,7 @@ class Listener():
         self._handset_was_up = True
         print("Handset lifted!")
         # Thread(target=self.play_random).start()
-        # Timer(0.7, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
+        Timer(0.7, self.play_clip, ['AUDIO_FILES/operator.wav']).start()
         self.dialtone('tone')
 
     def interrupt(self):
