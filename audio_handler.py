@@ -211,7 +211,7 @@ class Listener():
         new_file = os.path.join("AUDIO_FILES", "RECORDED", new_file)
         print("Making a new file: {}".format(new_file))
 
-        self.play_clip("AUDIO_FILES/RECORDED/Intro.wav", interruptible=False)
+        self.play_clip("AUDIO_FILES/Intro.wav", interruptible=False)
 
         self.record_clip(new_file)
 
