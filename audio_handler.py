@@ -283,8 +283,6 @@ class Listener():
 
     def dialtone(self, button, duration=0.1):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
-        if True:
-            return
 
         print("Playing a button tone for {}".format(button))
         volume = self.VOLUME
