@@ -38,7 +38,9 @@ class Listener():
     def __init__(self):
         # Set up audio player
         self.player = pyaudio.PyAudio()
-        print(self.player.get_device_info_by_index())
+        print(self.player.get_device_count())
+        for i in range(self.player.get_device_count()):
+            print(self.player.get_device_info_by_index(i))
         self.player.terminate()
         exit()
 
