@@ -148,7 +148,9 @@ class Listener():
 
         with wave.open(playme, 'rb') as audio_file:
             # Use the existing player to open a playback stream
-            fmt = self.player.get_format_from_width(audio_file.getsampwidth())
+            fmt = self.player.get_format_from_width(
+                audio_file.getsampwidth()
+            )
             stream = self.player.open(
                 output_device_index=self.DEVICE_INDEX,
                 format=fmt,
@@ -283,6 +285,7 @@ class Listener():
 
         if button == 'tone':
             f = 1400.
+        f = float(f)
 
         # generate samples, note conversion to float32 array
         samples = (np.sin(2*np.pi*np.arange(fs*duration)*f/fs)).astype(np.float32)
@@ -381,9 +384,9 @@ class Listener():
 
         Thread(target=self.parse_button).start()
 
-        # Timer(self.POLLING_RATE, self.poll_buttons).start()
-        time.sleep(self.POLLING_RATE)
-        self.poll_buttons()
+        Timer(self.POLLING_RATE, self.poll_buttons).start()
+        # time.sleep(self.POLLING_RATE)
+        # self.poll_buttons()
 
     def handset_lifted(self):
         self._handset_was_up = True
