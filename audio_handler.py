@@ -291,10 +291,8 @@ class Listener():
         self._recording = False
         self._interrupt = False
 
-    def dialtone(self, button, duration=0.1):
-        '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
-        if True:
-            return
+    def dialtone(self, button):
+        '''Play a dialtone, corresponding to <button>'''
 
         print("Playing a button tone for {}".format(button))
 
@@ -307,8 +305,6 @@ class Listener():
             fmt = self.player.get_format_from_width(
                 audio_file.getsampwidth()
             )
-
-            frames = audio_file.getnframes()
             rate = audio_file.getframerate()
 
             stream = self.player.open(
