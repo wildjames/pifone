@@ -419,7 +419,7 @@ class Listener():
         print("Handset lifted!")
 
         # Thread(target=self.play_random).start()
-        Timer(1.0, self.play_clip, args=['AUDIO_FILES/operator.wav']).start()
+        Timer(3.0, self.play_clip, args=['AUDIO_FILES/operator.wav']).start()
         self.dialtone('tone')
 
     def interrupt(self):
@@ -577,6 +577,9 @@ class Listener():
 
         fname = "{:05d}.wav".format(number)
         fname = os.path.join('AUDIO_FILES', 'RECORDED', fname)
+        print("I want to play file:")
+        print("  {}".format(fname))
 
         self.interrupt()
+        time.sleep(3)
         self.play_clip(fname)
