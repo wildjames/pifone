@@ -288,10 +288,20 @@ class Listener():
             print("Audio file params:")
             print(audio_file.getparams())
             print()
-            fmt = self.player.get_format_from_width(
-                audio_file.getsampwidth()
-            )
-            rate = int(audio_file.getframerate()/2)
+
+            frames = audio_file.getnframes()
+            rate = audio_file.getframerate()
+            duration = frames / rate
+
+            print("The file has samples of width:")
+            print(audio_file.getsampwidth())
+            print("The file has the format:")
+            print(fmt)
+            print("It has a rate:")
+            print(rate)
+            print("And it has {} frames.".format(frames))
+
+            print("This file is {:.1f}s long".format(duration))
 
             stream = self.player.open(
                 output_device_index=self.DEVICE_INDEX,
