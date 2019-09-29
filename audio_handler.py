@@ -114,7 +114,7 @@ class Listener():
         '''Start the polling function.'''
         print("OK, GO")
         Timer(self.POLLING_RATE, self.poll_buttons).start()
-        Thread(self.dialtone, args=('tone',))
+        Thread(target=self.dialtone, args=('tone',))
 
     def quit(self):
         self.interrupt()
