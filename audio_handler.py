@@ -285,7 +285,7 @@ class Listener():
 
         with wave.open(fname) as audio_file:
             # Use the existing player to open a playback stream
-
+            print(audio_file.getparams())
             fmt = self.player.get_format_from_width(
                 audio_file.getsampwidth()
             )
