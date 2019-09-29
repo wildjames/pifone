@@ -306,7 +306,7 @@ class Listener():
             fmt = self.player.get_format_from_width(
                 audio_file.getsampwidth()
             )
-            rate = self.RATE
+            rate = audio_file.getframerate()
 
             stream = self.player.open(
                 output_device_index=self.DEVICE_INDEX,
