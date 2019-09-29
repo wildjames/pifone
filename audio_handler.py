@@ -313,16 +313,13 @@ class Listener():
                 channels=self.CHANNELS,
                 rate=rate,
                 output=True,
-                frames_per_buffer=self.CHUNK
+                frames_per_buffer=frames
             )
 
-            data = audio_file.readframes(self.CHUNK)
+            data = audio_file.readframes(frames)
 
             print("About to start playback...")
-            while data:
-                stream.write(data)
-                data = audio_file.readframes(self.CHUNK)
-            print()
+            stream.write(data)
 
             print("Done with playback!")
 
