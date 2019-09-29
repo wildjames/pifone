@@ -146,12 +146,13 @@ class Listener():
         print("I want to play the file {}".format(playme))
         print("do I want to be interrupted? {}".format(interruptible))
         print("starting new playback")
-        self._playing = True
-        self._interrupt = False
 
         if not os.path.isfile(playme):
             print("File not found!")
             return
+
+        self._playing = True
+        self._interrupt = False
 
         with wave.open(playme, 'rb') as audio_file:
             # Use the existing player to open a playback stream
@@ -187,7 +188,7 @@ class Listener():
 
             print("About to start playback...")
             while data and self._handset_is_up and self._playing:
-                if self._interrupt:
+                if self._interrupt and interruptible:
                     break
                 print("Writing stream...", end='\r')
                 stream.write(data)
@@ -296,40 +297,10 @@ class Listener():
             return
 
         print("Playing a button tone for {}".format(button))
-        volume = self.VOLUME
-        fs = self.RATE
 
-        freqs_A = [1209., 1336., 1477., 1633.]
-        freqs_B = [697.,  770.,  852.,  941.]
-
-        f_A, f_B = self.button_tones[button]
-
-        f_A = freqs_A[f_A]
-        f_B = freqs_B[f_B]
-
-        f = f_A + f_B
-
-        if button == 'tone':
-            f = 1400.
-        f = float(f)
-
-        # generate samples, note conversion to float32 array
-        samples = (np.sin(2*np.pi*np.arange(fs*duration)*f/fs)).astype(np.float32)
-
-        # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = self.dialtone_player.open(
-            output_device_index=self.DEVICE_INDEX,
-            format=pyaudio.paFloat32,
-            channels=1,
-            rate=fs,
-            output=True
-        )
-
-        # play. May repeat with different volume values (if done interactively)
-        stream.write(volume*samples)
-
-        stream.stop_stream()
-        stream.close()
+        button_name = str(button) + '.wav'
+        fname = os.path.join("AUDIO_FILES", 'DIALTONES', button_name)
+        self.play_clip(fname, interruptible=False)
 
         print("Played a dialtone")
 
