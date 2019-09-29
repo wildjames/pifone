@@ -291,18 +291,17 @@ class Listener():
             )
             rate = audio_file.getframerate()
 
-            chunk = 1024
             stream = self.player.open(
                 format=fmt,
                 channels=self.CHANNELS,
                 rate=rate,
                 output=True,
-                frames_per_buffer=chunk
+                frames_per_buffer=self.CHUNK
             )
-            data = audio_file.readframes(chunk)
+            data = audio_file.readframes(self.CHUNK)
             while data:
                 stream.write(data)
-                data = audio_file.readframes(chunk)
+                data = audio_file.readframes(self.CHUNK)
 
             print("Done with playback!")
 
