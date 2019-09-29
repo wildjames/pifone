@@ -294,7 +294,7 @@ class Listener():
             chunk = 1024
             stream = self.player.open(
                 format=fmt,
-                channels=2,
+                channels=self.CHANNELS,
                 rate=rate,
                 output=True,
                 frames_per_buffer=chunk
