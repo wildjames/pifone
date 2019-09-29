@@ -289,6 +289,10 @@ class Listener():
             print(audio_file.getparams())
             print()
 
+            fmt = self.player.get_format_from_width(
+                audio_file.getsampwidth()
+            )
+
             frames = audio_file.getnframes()
             rate = audio_file.getframerate()
             duration = frames / rate
