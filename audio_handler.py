@@ -290,7 +290,7 @@ class Listener():
             print()
 
             fmt = self.player.get_format_from_width(
-                audio_file.getsampwidth()
+                1
             )
 
             frames = audio_file.getnframes()
