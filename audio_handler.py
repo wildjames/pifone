@@ -288,38 +288,26 @@ class Listener():
             print("Audio file params:")
             print(audio_file.getparams())
             print()
+            with wave.open('redial.wav', 'rb') as audio_file:
+                print(audio_file.getparams())
 
-            fmt = self.player.get_format_from_width(
-                audio_file.getsampwidth()
-            )
+                fmt = self.player.get_format_from_width(
+                    audio_file.getsampwidth()
+                )
+                rate = audio_file.getframerate()
 
-            frames = audio_file.getnframes()
-            rate = audio_file.getframerate()
-            duration = frames / rate
-
-            print("The file has samples of width:")
-            print(audio_file.getsampwidth())
-            print("The file has the format:")
-            print(fmt)
-            print("It has a rate:")
-            print(rate)
-            print("And it has {} frames.".format(frames))
-
-            print("This file is {:.2f}s long".format(duration))
-
-            stream = self.player.open(
-                output_device_index=self.DEVICE_INDEX,
-                format=fmt,
-                channels=self.CHANNELS,
-                rate=rate,
-                output=True,
-                frames_per_buffer=frames
-            )
-
-            data = audio_file.readframes(frames)
-
-            print("About to start playback...")
-            stream.write(data)
+                chunk = 1024
+                stream = self.player.open(
+                    format=fmt,
+                    channels=2,
+                    rate=rate,
+                    output=True,
+                    frames_per_buffer=chunk
+                )
+                data = audio_file.readframes(chunk)
+                while data:
+                    stream.write(data)
+                    data = audio_file.readframes(chunk)
 
             print("Done with playback!")
 
