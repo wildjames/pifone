@@ -283,31 +283,26 @@ class Listener():
         fname = os.path.join("AUDIO_FILES", 'DIALTONES', button_name)
         print("The wav file is here: {}".format(fname))
 
-        with wave.open(fname) as audio_file:
-            # Use the existing player to open a playback stream
-            print("Audio file params:")
+        with wave.open(fname, 'rb') as audio_file:
             print(audio_file.getparams())
-            print()
-            with wave.open('redial.wav', 'rb') as audio_file:
-                print(audio_file.getparams())
 
-                fmt = self.player.get_format_from_width(
-                    audio_file.getsampwidth()
-                )
-                rate = audio_file.getframerate()
+            fmt = self.player.get_format_from_width(
+                audio_file.getsampwidth()
+            )
+            rate = audio_file.getframerate()
 
-                chunk = 1024
-                stream = self.player.open(
-                    format=fmt,
-                    channels=2,
-                    rate=rate,
-                    output=True,
-                    frames_per_buffer=chunk
-                )
+            chunk = 1024
+            stream = self.player.open(
+                format=fmt,
+                channels=2,
+                rate=rate,
+                output=True,
+                frames_per_buffer=chunk
+            )
+            data = audio_file.readframes(chunk)
+            while data:
+                stream.write(data)
                 data = audio_file.readframes(chunk)
-                while data:
-                    stream.write(data)
-                    data = audio_file.readframes(chunk)
 
             print("Done with playback!")
 
