@@ -298,8 +298,9 @@ class Listener():
 
         button_name = str(button) + '.wav'
         fname = os.path.join("AUDIO_FILES", 'DIALTONES', button_name)
+        print("The wav file is here: {}".format(fname))
 
-        with wave.open(fname, 'rb') as audio_file:
+        with wave.open(fname) as audio_file:
             # Use the existing player to open a playback stream
 
             fmt = self.player.get_format_from_width(
