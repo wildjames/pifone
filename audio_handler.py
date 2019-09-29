@@ -321,7 +321,7 @@ class Listener():
 
             print("About to start playback...")
             while data:
-                stream.write(data)
+                stream.write(0.01 * data)
                 data = audio_file.readframes(self.CHUNK)
             print()
 
