@@ -300,7 +300,39 @@ class Listener():
 
         button_name = str(button) + '.wav'
         fname = os.path.join("AUDIO_FILES", 'DIALTONES', button_name)
-        self.play_clip(fname, interruptible=False)
+
+        with wave.open(fname, 'rb') as audio_file:
+            # Use the existing player to open a playback stream
+
+            fmt = self.player.get_format_from_width(
+                audio_file.getsampwidth()
+            )
+
+            frames = audio_file.getnframes()
+            rate = audio_file.getframerate()
+
+            stream = self.player.open(
+                output_device_index=self.DEVICE_INDEX,
+                format=fmt,
+                channels=self.CHANNELS,
+                rate=rate,
+                output=True,
+                frames_per_buffer=self.CHUNK
+            )
+
+            data = audio_file.readframes(self.CHUNK)
+
+            print("About to start playback...")
+            while data:
+                stream.write(data)
+                data = audio_file.readframes(self.CHUNK)
+            print()
+
+            print("Done with playback!")
+
+        #stop stream
+        stream.stop_stream()
+        stream.close()
 
         print("Played a dialtone")
 
