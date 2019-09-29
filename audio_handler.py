@@ -305,7 +305,7 @@ class Listener():
             print(rate)
             print("And it has {} frames.".format(frames))
 
-            print("This file is {:.1f}s long".format(duration))
+            print("This file is {:.2f}s long".format(duration))
 
             stream = self.player.open(
                 output_device_index=self.DEVICE_INDEX,
