@@ -32,6 +32,7 @@ class Listener():
         '/CUM',
         '/RECORDED.OLD',
         '/DICTAPHONE_DIARIES',
+        '/DIALTONES',
         'mortal_kombat',
         'operator'
     ]
@@ -39,7 +40,6 @@ class Listener():
     def __init__(self):
         # Set up audio player
         self.player = pyaudio.PyAudio()
-        self.dialtone_player = pyaudio.PyAudio()
 
         print(self.player.get_device_count())
         for dev_index in range(self.player.get_device_count()):
@@ -68,29 +68,11 @@ class Listener():
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
-        # Keys for reconstructing the dialtones
-        self.button_tones = {
-            'tone': [2, 2],
-            'redial': [0, 3],
-            '*': [3, 0],
-            '#': [3, 2],
-            0:   [3, 1],
-            1:   [0, 0],
-            2:   [0, 1],
-            3:   [0, 2],
-            4:   [1, 0],
-            5:   [1, 1],
-            6:   [1, 2],
-            7:   [2, 0],
-            8:   [2, 1],
-            9:   [2, 2],
-        }
-
         self.button_functions = {
             None:     self.not_implimented,
             'redial': self.start_recording,
-            '#': self.play_random,
-            '*': self.play_specific_recording,
+            'hash': self.play_random,
+            'star': self.play_specific_recording,
             0:   self.not_implimented,
             1:   self.not_implimented,
             2:   self.not_implimented,
@@ -103,7 +85,7 @@ class Listener():
             9:   self.not_implimented,
         }
 
-        self.konami   = [5, 5, '*', '*', 8, 2, 8, 2, '#', '*', 'redial']
+        self.konami   = [5, 5, 'star', 'star', 8, 2, 8, 2, 'hash', 'star', 'redial']
         self.kill_seq = [4, 2, 8, 6]
         self.cummy    = [2, 1, 0, 8]
         self.voyager  = [1, 9, 7, 7]
@@ -132,6 +114,7 @@ class Listener():
         '''Start the polling function.'''
         print("OK, GO")
         Timer(self.POLLING_RATE, self.poll_buttons).start()
+        Thread(self.dialtone, args=('tone',))
 
     def quit(self):
         self.interrupt()
@@ -321,7 +304,7 @@ class Listener():
 
             print("About to start playback...")
             while data:
-                stream.write(0.01 * data)
+                stream.write(data)
                 data = audio_file.readframes(self.CHUNK)
             print()
 
@@ -362,7 +345,7 @@ class Listener():
 
         # Check the first button group
         self.grpA_pin.value = True
-        outputs = ['redial', '#', 0, '*']
+        outputs = ['redial', 'hash', 0, 'star']
         for i, pin in enumerate(self.inpins):
             if pin.value:
                 button_pressed = outputs[i]
@@ -420,7 +403,6 @@ class Listener():
 
         # Thread(target=self.play_random).start()
         Timer(3.0, self.play_clip, args=['AUDIO_FILES/operator.wav']).start()
-        self.dialtone('tone')
 
     def interrupt(self):
         self._interrupt = True
