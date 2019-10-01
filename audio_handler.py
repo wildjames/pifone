@@ -562,6 +562,7 @@ class Listener():
                         highest = num
                 except:
                     continue
+            number = highest
         else:
             number = ''.join(number)
             number = int(number)
