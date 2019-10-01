@@ -550,7 +550,16 @@ class Listener():
         number = self.button_seq
         number = [str(n) for n in number if n in [0,1,2,3,4,5,6,7,8,9]]
         if number == []:
-            number = len(self.get_audio_files())
+            files = self.get_audio_files()
+            highest = 0
+            for fname in files:
+                f = os.path.split(fname)[-1]
+                try:
+                    num = int(f[:-4])
+                    if num > highest:
+                        highest = num
+                except:
+                    continue
         else:
             number = ''.join(number)
             number = int(number)
