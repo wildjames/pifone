@@ -556,6 +556,7 @@ class Listener():
                 f = os.path.split(fname)[-1]
                 try:
                     num = int(f[:-4])
+                    print("{} : {}".format(f, num))
                     if num > highest:
                         highest = num
                 except:
