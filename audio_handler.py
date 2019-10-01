@@ -553,9 +553,10 @@ class Listener():
             files = self.get_audio_files()
             highest = 0
             for fname in files:
-                f = os.path.split(fname)[-1]
+                f = os.path.split(fname)[1]
+                f = f.replace('.wav', '')
                 try:
-                    num = int(f[:-4])
+                    num = int(f)
                     print("{} : {}".format(f, num))
                     if num > highest:
                         highest = num
