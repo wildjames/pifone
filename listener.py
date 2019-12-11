@@ -2,11 +2,16 @@ import pyaudio
 import wave
 import os
 
+import threading
+
 class Dictaphone(object):
     '''
     This class acts as a dictaphone (obviously). It should have the following capabilities:
       - play a recorded message
       - record a new message
+
+    To make it run in the background, which we definitely want, we need to
+    have it play stuff in a new thread.
 
     How hard can that be?
 
@@ -16,6 +21,7 @@ class Dictaphone(object):
         - The number of bytes of each playback chunk
     '''
     CHUNKSIZE = 1024
+    interrupt = False
 
     def __init__(self, chunk_size=None):
         '''Set up the dictaphone's audio stream'''
@@ -28,6 +34,21 @@ class Dictaphone(object):
         return
 
     def play_file(self, fname):
+        '''
+        Play the audio file, fname, in a thread.
+
+        If, during playback, interrupt becomes True, stop playback
+        '''
+
+        thread = threading.Thread(
+            target=self._play_file,
+            args=(fname,),
+        )
+        thread.start()
+
+        return
+
+    def _play_file(self, fname):
         '''Play the audio file, fname.
         If something is already playing, stop it.
 
@@ -55,7 +76,7 @@ class Dictaphone(object):
         )
 
         data = audio_file.readframes(self.CHUNKSIZE)
-        while data != '':
+        while data != '' and not self.interrupt:
             stream.write(data)
             data = audio_file.readframes(self.CHUNKSIZE)
 
