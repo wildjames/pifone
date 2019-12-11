@@ -1,6 +1,8 @@
 import pyaudio
 import wave
 import os
+from pathlib import Path
+from random import choice
 
 import multiprocessing
 
@@ -22,12 +24,15 @@ class Dictaphone(object):
     '''
     CHUNKSIZE = 1024
     _stop_playback = False
+    LOUD = 4
 
-    def __init__(self, chunk_size=None, **kwargs):
+    def __init__(self, chunk_size=None, audio_dir='.', **kwargs):
         '''Set up the dictaphone's audio stream'''
 
         if chunk_size is not None:
             self.CHUNKSIZE = chunk_size
+
+        self.audio_dir = audio_dir
 
         self.audio_thread = multiprocessing.Process()
 
@@ -54,6 +59,25 @@ class Dictaphone(object):
         )
         self.audio_thread.start()
 
+    def play_random(self):
+        '''Play a random audio file from my audio_files directory.
+        Searches for .wav, recursively
+        '''
+
+        if self.LOUD > 3:
+            print("Files in my audio_dir")
+        files = []
+        for filename in Path(self.audio_dir).rglob('*.wav'):
+            files.append(str(filename))
+
+        if self.LOUD > 3:
+            for f in files:
+                print(f)
+
+        fname = choice(files)
+
+        self.play_file(fname)
+
     def play_file(self, fname):
         '''Play the audio file, fname.
         If something is already playing, stop it.
@@ -64,9 +88,13 @@ class Dictaphone(object):
             - The file to be played
         '''
         self.audio_stream = pyaudio.PyAudio()
-        print("fname:\n'{}'".format(fname))
+
         exists = os.path.isfile(fname)
-        print("Does it exist? {}".format("Yes" if exists else "No"))
+        if self.LOUD > 2:
+            print("fname:\n'{}'".format(fname))
+            print("Does it exist? {}".format("Yes" if exists else "No"))
+        if not exists:
+            return
         audio_file = wave.open(fname, 'rb')
 
         # Get the format of the audio file

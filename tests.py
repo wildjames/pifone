@@ -5,8 +5,11 @@ from listener import Dictaphone
 
 # Play a test file with the dictaphone
 fname = "AUDIO_FILES/mortal_kombat.wav"
-dic = Dictaphone()
-dic.start("play_file", fname)
+dic = Dictaphone(audio_dir='AUDIO_FILES/CUM')
+
+
+print("Playing a random file...")
+dic.start("play_random")
 time.sleep(5)
 
 # Interrupt playback
@@ -25,6 +28,7 @@ time.sleep(10)
 dic.interrupt_playback()
 print("Termination sent!")
 time.sleep(5)
+
 
 
 
