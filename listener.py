@@ -2,7 +2,7 @@ import pyaudio
 import wave
 import os
 
-import threading
+import multiprocessing
 
 class Dictaphone(object):
     '''
@@ -21,34 +21,36 @@ class Dictaphone(object):
         - The number of bytes of each playback chunk
     '''
     CHUNKSIZE = 1024
-    interrupt = False
+    _stop_playback = False
 
-    def __init__(self, chunk_size=None):
+    def __init__(self, chunk_size=None, **kwargs):
         '''Set up the dictaphone's audio stream'''
 
         if chunk_size is not None:
             self.CHUNKSIZE = chunk_size
 
-        self.audio_stream = pyaudio.PyAudio()
+        self.audio_thread = multiprocessing.Process()
 
         return
+
+    def start(self, cmd, *args, **kwargs):
+        '''
+        Run the given class method, with *args and **kwargs.
+
+        Raises an error if it doesn't exist.
+        '''
+
+        target = getattr(self, cmd)
+        args = args
+        kwargs = kwargs
+
+        self.audio_thread = multiprocessing.Process(
+            target=target, args=args, kwargs=kwargs,
+            daemon=True,
+        )
+        self.audio_thread.start()
 
     def play_file(self, fname):
-        '''
-        Play the audio file, fname, in a thread.
-
-        If, during playback, interrupt becomes True, stop playback
-        '''
-
-        thread = threading.Thread(
-            target=self._play_file,
-            args=(fname,),
-        )
-        thread.start()
-
-        return
-
-    def _play_file(self, fname):
         '''Play the audio file, fname.
         If something is already playing, stop it.
 
@@ -57,6 +59,7 @@ class Dictaphone(object):
           - fname, str:
             - The file to be played
         '''
+        self.audio_stream = pyaudio.PyAudio()
         print("fname:\n'{}'".format(fname))
         exists = os.path.isfile(fname)
         print("Does it exist? {}".format("Yes" if exists else "No"))
@@ -76,20 +79,21 @@ class Dictaphone(object):
         )
 
         data = audio_file.readframes(self.CHUNKSIZE)
-        while data != '' and not self.interrupt:
+        while data != '' and not self._stop_playback:
             stream.write(data)
             data = audio_file.readframes(self.CHUNKSIZE)
 
         stream.stop_stream()
         stream.close()
 
-        return
-
-    def terminate(self):
-        '''Gracefully close the stream'''
         self.audio_stream.terminate()
 
         return
+
+    def interrupt_playback(self):
+        self.audio_thread.terminate()
+
+
 
 class PhoneMonitor(object):
     '''
