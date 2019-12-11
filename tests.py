@@ -21,19 +21,19 @@ if test_playback:
 
     # Interrupt playback
     dic.interrupt_playback()
-    print("Interrupt sent - Music should STOP")
+    print("Interrupt sent\n   -> Music should STOP")
     time.sleep(5)
 
-    print("Restarting playback - Music should BEGIN")
+    print("Restarting playback\n   -> Music should BEGIN")
     dic.start("play_file", fname)
     time.sleep(5)
 
-    print("Trying to start playback over previous playback - Music should CONTINUE, NOTHING should begin")
-    dic.start('play_file', fname)
+    print("Trying to start playback over previous playback\n   -> Music should CONTINUE, NOTHING should begin")
+    dic.start('play_random')
     time.sleep(10)
 
     dic.interrupt_playback()
-    print("Termination sent! Music should STOP")
+    print("Termination sent!\n   -> Music should STOP")
     time.sleep(5)
 
 
@@ -49,6 +49,26 @@ if test_recording:
     time.sleep(10)
     dic.stop_recording()
     print("Done!")
+    time.sleep(3)
+
+    print("Playing TEST.wav")
+    dic.start('play_file', 'AUDIO_FILES/RECORDED/TEST.wav')
+    time.sleep(10)
+    print("Done!")
+
+    time.sleep(3)
+
+    print("Starting playback, then a recording.")
+    print("Playback should BEGIN, then when recording starts, playback should STOP")
+    dic.start("play_file", 'AUDIO_FILES/DICTAPHONE_DIARIES/VN860028.wav')
+    time.sleep(5)
+    if os.path.isfile("AUDIO_FILES/RECORDED/TEST2.wav"):
+        os.remove("AUDIO_FILES/RECORDED/TEST2.wav")
+    dic.start("make_recording", "TEST2.wav")
+
+    time.sleep(10)
+    dic.stop_recording()
+    print("Recording over")
 
 print("Done testing.")
 

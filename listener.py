@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 from random import choice
 
-import multiprocessing
 import threading
 
 # Only needed for debugging
@@ -53,9 +52,15 @@ class Dictaphone(object):
 
         self.audio_dir = audio_dir
 
-        # Create blank versions of objects I'll refer to later
-        # self.thread = multiprocessing.Process()
-        self.thread = threading.Thread()
+        # A list of my threads. This is where my dead threads accumulate...
+        self.threads = []
+
+        # # TODO: When all threads are dead, reset the above list to free memory.
+        # # Removing them from the list should delete all references to them,
+        # # then the garbage collector can free the stuff as normal
+        # self.thread_garbage_collector = threading.Timer(
+        #     target=self._reset_threadlist
+        # )
 
         return
 
@@ -66,27 +71,25 @@ class Dictaphone(object):
         Raises an error if it doesn't exist.
         '''
 
-        if self.thread.is_alive():
-            print("Already playing!")
-            return
-
         target = getattr(self, cmd)
         args = args
         kwargs = kwargs
 
         # self.thread = multiprocessing.Process(
-        self.thread = threading.Thread(
-            target=target, args=args, kwargs=kwargs,
-            daemon=True,
+        self.threads.append(
+            threading.Thread(
+                target=target, args=args, kwargs=kwargs,
+                daemon=True,
+            )
         )
-        self.thread.start()
+        self.threads[-1].start()
 
     def play_random(self):
         '''Play a random audio file from my audio_files directory.
         Searches for .wav, recursively
         '''
 
-        if self.LOUD > 3:
+        if self.LOUD > 4:
             print("Files in my audio_dir")
         files = []
         for filename in Path(self.audio_dir).rglob('*.wav'):
@@ -131,6 +134,7 @@ class Dictaphone(object):
         # I'll overwrite the process termination to wait for this flag to become True,
         # so that my file writing always works properly
         self._stop_recording = False
+        self._stop_playback = True
 
         if self.LOUD > 0:
             print("Making a recording, saving to {}".format(oname))
@@ -167,8 +171,12 @@ class Dictaphone(object):
         audio_stream.terminate()
         audio_file.close()
 
-        # Done recording, raise flag
+        if self.LOUD > 0:
+            print("Recording Finished, setting flags to reset interrupts")
+        # Done recording, raise flag.
         self._stop_recording = False
+        # Playback can also resume now
+        self._stop_playback = False
 
     def play_file(self, fname):
         '''Play the audio file, fname.
@@ -218,15 +226,15 @@ class Dictaphone(object):
         stream.close()
         audio_stream.terminate()
 
+        if self.LOUD > 3:
+            print("Setting _stop_playback to False")
         self._stop_playback = False
 
     def interrupt_playback(self):
-        # self.thread.terminate()
         self._stop_playback = True
 
     def stop_recording(self):
         self._stop_recording = True
-        # self.thread.terminate()
 
 
 class PhoneMonitor(object):
