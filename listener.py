@@ -40,6 +40,10 @@ class Dictaphone(object):
         Raises an error if it doesn't exist.
         '''
 
+        if self.audio_thread.is_alive():
+            print("Already playing!")
+            return
+
         target = getattr(self, cmd)
         args = args
         kwargs = kwargs
