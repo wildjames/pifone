@@ -1,3 +1,7 @@
+import pyaudio
+import wave
+import os
+
 class Dictaphone(object):
     '''
     This class acts as a dictaphone (obviously). It should have the following capabilities:
@@ -5,9 +9,66 @@ class Dictaphone(object):
       - record a new message
 
     How hard can that be?
+
+    Inputs
+    ------
+      - chunk_size, int:
+        - The number of bytes of each playback chunk
     '''
+    CHUNKSIZE = 1024
 
+    def __init__(self, chunk_size=None):
+        '''Set up the dictaphone's audio stream'''
 
+        if chunk_size is not None:
+            self.CHUNKSIZE = chunk_size
+
+        self.audio_stream = pyaudio.PyAudio()
+
+        return
+
+    def play_file(self, fname):
+        '''Play the audio file, fname.
+        If something is already playing, stop it.
+
+        Inputs
+        ------
+          - fname, str:
+            - The file to be played
+        '''
+        print("fname:\n'{}'".format(fname))
+        exists = os.path.isfile(fname)
+        print("Does it exist? {}".format("Yes" if exists else "No"))
+        audio_file = wave.open(fname, 'rb')
+
+        # Get the format of the audio file
+        width = audio_file.getsampwidth()
+        fmt = self.audio_stream.get_format_from_width(width)
+        n_channels = audio_file.getnchannels()
+        rate = audio_file.getframerate()
+
+        stream = self.audio_stream.open(
+            format=fmt,
+            channels=n_channels,
+            rate=rate,
+            output=True,
+        )
+
+        data = audio_file.readframes(self.CHUNKSIZE)
+        while data != '':
+            stream.write(data)
+            data = audio_file.readframes(self.CHUNKSIZE)
+
+        stream.stop_stream()
+        stream.close()
+
+        return
+
+    def terminate(self):
+        '''Gracefully close the stream'''
+        self.audio_stream.terminate()
+
+        return
 
 class PhoneMonitor(object):
     '''
