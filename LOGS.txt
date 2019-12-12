@@ -1,2 +1,0 @@
-Successfully initialised cradle to pins 17, 27, 22
-Successfully initialised cradle to pins 5, 6, 13
