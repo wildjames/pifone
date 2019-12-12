@@ -236,6 +236,9 @@ class Dictaphone(object):
     def stop_recording(self):
         self._stop_recording = True
 
+    def stop(self):
+        self.interrupt_playback()
+        self.stop_recording()
 
 class PhoneMonitor(object):
     '''
@@ -249,7 +252,7 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
-    POLLING_RATE = 1.0 #s
+    POLLING_RATE = 0.5 #s
     LOUD = 4
 
     def __init__(self, dummy_mode=False):
@@ -262,7 +265,6 @@ class PhoneMonitor(object):
         self.sequence = []
 
         self._polling = False
-
 
     def poll_buttons(self):
         '''
@@ -278,7 +280,7 @@ class PhoneMonitor(object):
             self.currently_pushed = self.dummy_pressed
 
             if self.LOUD > 3:
-                print("Button pushed is:\n    {}".format(self.currently_pushed))
+                print("Button being pushed is:\n    {}".format(self.currently_pushed))
 
         if self.last_pushed != self.currently_pushed and self.currently_pushed != None:
             self.call_button = self.currently_pushed
@@ -286,6 +288,7 @@ class PhoneMonitor(object):
 
             if self.LOUD > 2:
                 print("I need to call the function for button {}!".format(self.call_button))
+                print("My sequence is now {}".format(self.sequence))
 
         self.last_pushed = self.currently_pushed
 
@@ -325,9 +328,67 @@ class Phone(object):
     can press a button during playback, and a tone should still play OVER the
     existing stream.
     '''
-    def __init__(self, debug=0):
+    POLLING_RATE = 1.0
+    _polling = False
+
+    def __init__(self, audio_dir='.', debug=0):
         '''
         Start up my Dictaphone and Signaller objects, which will handle lower level stuff.
         '''
 
-        pass
+        self.dictaphone = Dictaphone(audio_dir)
+        self.monitor = PhoneMonitor(dummy_mode=True)
+
+        self.button_functions = {
+            'B1': self.not_implimented,
+            'B2': self.not_implimented,
+            'B3': self.not_implimented,
+            'B4': self.not_implimented,
+            'handset': self.handset_replaced,
+        }
+
+    def start(self):
+        '''Start up the monitor, and myself checking for inputs'''
+        if not self._polling:
+            # Start my monitor first
+            self.monitor.start()
+
+            # Then start myself, checking the monitor
+            self._polling = True
+            threading.Thread(target=self.poll_monitor)
+        else:
+            print("Cannot start when I'm already running!")
+
+    def stop(self):
+        '''Stop myself, and my monitor's polling, and my dictaphone's playback'''
+        self._polling = False
+        self.monitor.stop()
+        self.dictaphone.stop()
+
+    def poll_monitor(self):
+        '''If the monitor has picked up on a button that must be evaluated, do that'''
+
+        if self.monitor.call_button is not None:
+            func = self.button_functions[self.monitor.call_button]
+            print("I need to call function {}".format(func.__name__))
+
+            threading.Thread(target=func).start()
+            self.monitor.called_button()
+
+        if self._polling:
+            threading.Timer(self.POLLING_RATE, self.poll_monitor)
+
+    def not_implimented(self):
+        '''Placeholder.'''
+        print("I wanted to call a function, but it has not been implimented yet.")
+
+    def handset_replaced(self):
+        '''
+        The phone's handset has been replaced.
+        Clear the button sequence, and stop any playback or recording.
+        '''
+        # The button sequence is reset
+        self.monitor.clear_sequence()
+        # Playback and recording must stop
+        self.dictaphone.stop()
+

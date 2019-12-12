@@ -1,5 +1,5 @@
 import time
-from listener import Dictaphone, PhoneMonitor
+from listener import Dictaphone, PhoneMonitor, Phone
 import os
 
 
@@ -8,8 +8,10 @@ test_playback = False
 test_recording = False
 
 ###### TEST THE SIGNAL SENDER AND RECIEVER ######
-test_signalman = True
+test_signalman = False
 
+###### TEST THE PHONE OBJECT, WITH BOTH OF THE ABOVE ######
+test_phone = True
 
 # Play a test file with the dictaphone
 fname = "AUDIO_FILES/mortal_kombat.wav"
@@ -125,6 +127,21 @@ if test_signalman:
     signaller.stop()
     time.sleep(5)
 
+
+#### Phone as a whole ####
+if test_phone:
+    phone = Phone("AUDIO_FILES")
+    print("Starting phone. Should have the monitor begin reporting")
+    phone.start()
+    time.sleep(5)
+
+    print("Pressing B1 on the monitor")
+    phone.monitor.dummy_pressed = 'B1'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    phone.stop()
 
 print("Done testing.")
 
