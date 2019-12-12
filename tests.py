@@ -1,11 +1,14 @@
 import time
-from listener import Dictaphone
+from listener import Dictaphone, PhoneMonitor
 import os
 
 
 ###### TEST THE DICTAPHONE OBJECT ######
-test_playback = True
-test_recording = True
+test_playback = False
+test_recording = False
+
+###### TEST THE SIGNAL SENDER AND RECIEVER ######
+test_signalman = True
 
 
 # Play a test file with the dictaphone
@@ -13,7 +16,7 @@ fname = "AUDIO_FILES/mortal_kombat.wav"
 dic = Dictaphone(audio_dir='AUDIO_FILES')
 
 
-#### Playback ####
+#### Playback #####
 if test_playback:
     print("Playing a random file...")
     dic.start("play_random")
@@ -69,6 +72,59 @@ if test_recording:
     time.sleep(10)
     dic.stop_recording()
     print("Recording over")
+
+
+signaller = PhoneMonitor(dummy_mode=True)
+
+#### Signaller ####
+if test_signalman:
+    print("Time to test the signaller")
+
+    print("Starting the signaller. Should start seeing reporting of buttons")
+    signaller.start()
+    time.sleep(5)
+
+    print("Pressing the button B1")
+    signaller.dummy_pressed = 'B1'
+    time.sleep(4)
+
+    print("Un-pressing B1")
+    signaller.dummy_pressed = None
+    time.sleep(4)
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("Sending signal that the button has been handled")
+    signaller.called_button()
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("Testing the signallers' ability to track button sequence. Pressing the buttons B2, B3, B4...")
+    signaller.POLLING_RATE = 0.1
+    for i in range(2, 5):
+        signaller.dummy_pressed = 'B{}'.format(i)
+        time.sleep(0.2)
+        signaller.dummy_pressed = None
+        time.sleep(0.2)
+    print("Reducing verbosity to 3")
+    signaller.LOUD = 3
+    signaller.POLLING_RATE = 1.0
+    print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
+    time.sleep(3)
+
+    print("Sending sequence clear call...")
+    signaller.clear_sequence()
+    time.sleep(2)
+    print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
+
+    time.sleep(2)
+
+    print("Stopping the signaller. Output should cease")
+    signaller.stop()
+    time.sleep(5)
+
 
 print("Done testing.")
 

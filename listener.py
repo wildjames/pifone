@@ -241,7 +241,7 @@ class PhoneMonitor(object):
     '''
     This class should listen for two things:
       - Buttons being pressed currently
-      - If the handset is lifted or not
+      - If the handset is lifted or not (this is just another button)
 
     It should also track a few things:
       - Has the button's corresponding function been called already
@@ -249,7 +249,64 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
+    POLLING_RATE = 1.0 #s
+    LOUD = 4
 
+    def __init__(self, dummy_mode=False):
+        self.dummy_mode = dummy_mode
+        if dummy_mode:
+            self.dummy_pressed = None
+
+        self.last_pushed = None
+        self.call_button = None
+        self.sequence = []
+
+        self._polling = False
+
+
+    def poll_buttons(self):
+        '''
+        Tests each button for being pushed, and sets the internal list of
+        currently pushed buttons
+        '''
+        if not self._polling:
+            return
+
+        self.currently_pushed = None
+
+        if self.dummy_mode:
+            self.currently_pushed = self.dummy_pressed
+
+            if self.LOUD > 3:
+                print("Button pushed is:\n    {}".format(self.currently_pushed))
+
+        if self.last_pushed != self.currently_pushed and self.currently_pushed != None:
+            self.call_button = self.currently_pushed
+            self.sequence.append(self.currently_pushed)
+
+            if self.LOUD > 2:
+                print("I need to call the function for button {}!".format(self.call_button))
+
+        self.last_pushed = self.currently_pushed
+
+        # Start a timer for the next call
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+
+    def clear_sequence(self):
+        '''Clear the recording of which buttons have been pushed'''
+        self.sequence = []
+
+    def called_button(self):
+        '''Reset the call_button flag, telling the signaller that the event has been handled'''
+        self.call_button = None
+
+    def start(self):
+        '''Start the poll_buttons method. That function calls itself, so runs indefinitely.'''
+        self._polling = True
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+
+    def stop(self):
+        self._polling = False
 
 
 class Phone(object):
@@ -268,3 +325,9 @@ class Phone(object):
     can press a button during playback, and a tone should still play OVER the
     existing stream.
     '''
+    def __init__(self, debug=0):
+        '''
+        Start up my Dictaphone and Signaller objects, which will handle lower level stuff.
+        '''
+
+        pass
