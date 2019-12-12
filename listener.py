@@ -274,6 +274,7 @@ class PhoneMonitor(object):
         if not self._polling:
             return
 
+        # Default to None buttons pushed
         self.currently_pushed = None
 
         if self.dummy_mode:
@@ -281,6 +282,12 @@ class PhoneMonitor(object):
 
             if self.LOUD > 3:
                 print("Button being pushed is: {}".format(self.currently_pushed))
+        else:
+            print("I need to check each of the pins to see if they're telling me a button has been pushed.")
+            print("First check that the handset is up or down. If it's up, and wasn't before, set currently_pushed = 'handset_up'")
+            print("If the handset is NOT up, set currently_pushed = 'handset_down'")
+            print("If currently_pushed is still None, check the buttons for depression")
+            print("If one has, set currently pushed to it's name")
 
         # If the handset isn't up, and we've not recorded that it's been lifted, stop now
         if 'handset_up' not in self.sequence:
@@ -292,6 +299,8 @@ class PhoneMonitor(object):
         if self.currently_pushed == 'handset_down':
             self.clear_sequence()
 
+
+        # Actually handle the button, if I need to
         if self.last_pushed != self.currently_pushed:
             if self.currently_pushed != None:
                 self.call_button = self.currently_pushed
