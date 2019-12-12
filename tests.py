@@ -88,6 +88,22 @@ if test_signalman:
 
     print("Pressing the button B1")
     signaller.dummy_pressed = 'B1'
+    time.sleep(2)
+
+    print("Un-pressing B1")
+    signaller.dummy_pressed = None
+    time.sleep(4)
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("\n\nRepeating the above, but lifting the handset first")
+    signaller.dummy_pressed = 'handset_up'
+    time.sleep(1)
+    signaller.dummy_pressed = None
+    time.sleep(2)
+    print("Pressing the button B1")
+    signaller.dummy_pressed = 'B1'
     time.sleep(4)
 
     print("Un-pressing B1")
@@ -116,8 +132,8 @@ if test_signalman:
     print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
     time.sleep(3)
 
-    print("Sending sequence clear call...")
-    signaller.clear_sequence()
+    print("Sending handset down")
+    signaller.dummy_pressed = 'handset_down'
     time.sleep(2)
     print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
 
@@ -131,12 +147,31 @@ if test_signalman:
 #### Phone as a whole ####
 if test_phone:
     phone = Phone("AUDIO_FILES")
-    print("Starting phone. Should have the monitor begin reporting")
+    print("\n\n\nStarting phone. Should have the monitor begin reporting")
     phone.start()
     time.sleep(5)
 
     print("Pressing B1 on the monitor")
     phone.monitor.dummy_pressed = 'B1'
+    time.sleep(2)
+    print("Releasing B1 on the monitor")
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Lifting handset")
+    phone.monitor.dummy_pressed = 'handset_up'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Pressing B1 on the monitor")
+    phone.monitor.dummy_pressed = 'B1'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Replacing handset")
+    phone.monitor.dummy_pressed = 'handset_down'
     time.sleep(2)
     phone.monitor.dummy_pressed = None
     time.sleep(5)

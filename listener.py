@@ -253,7 +253,7 @@ class PhoneMonitor(object):
     The button sequence should be cleared when the handset is set down.
     '''
     POLLING_RATE = 0.5 #s
-    LOUD = 4
+    LOUD = 3
 
     def __init__(self, dummy_mode=False):
         self.dummy_mode = dummy_mode
@@ -280,16 +280,28 @@ class PhoneMonitor(object):
             self.currently_pushed = self.dummy_pressed
 
             if self.LOUD > 3:
-                print("Button being pushed is:\n    {}".format(self.currently_pushed))
+                print("Button being pushed is: {}".format(self.currently_pushed))
 
-        if self.last_pushed != self.currently_pushed and self.currently_pushed != None:
-            self.call_button = self.currently_pushed
-            self.sequence.append(self.currently_pushed)
+        # If the handset isn't up, and we've not recorded that it's been lifted, stop now
+        if 'handset_up' not in self.sequence:
+            if self.currently_pushed != 'handset_up':
+                self.clear_sequence()
+                threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+                return
 
-            if self.LOUD > 2:
-                print("I need to call the function for button {}!".format(self.call_button))
-                print("My sequence is now {}".format(self.sequence))
+        if self.currently_pushed == 'handset_down':
+            self.clear_sequence()
 
+        if self.last_pushed != self.currently_pushed:
+            if self.currently_pushed != None:
+                self.call_button = self.currently_pushed
+                self.sequence.append(self.currently_pushed)
+
+                if self.LOUD > 2:
+                    print("I need to call the function for button {}!".format(self.call_button))
+                    print("My sequence is now {}".format(self.sequence))
+
+        # Update the last pushed button
         self.last_pushed = self.currently_pushed
 
         # Start a timer for the next call
@@ -330,6 +342,7 @@ class Phone(object):
     '''
     POLLING_RATE = 1.0
     _polling = False
+    loud = 4
 
     def __init__(self, audio_dir='.', debug=0):
         '''
@@ -344,7 +357,8 @@ class Phone(object):
             'B2': self.not_implimented,
             'B3': self.not_implimented,
             'B4': self.not_implimented,
-            'handset': self.handset_replaced,
+            'handset_up': self.play_intro,
+            'handset_down': self.handset_replaced,
         }
 
     def start(self):
@@ -355,7 +369,7 @@ class Phone(object):
 
             # Then start myself, checking the monitor
             self._polling = True
-            threading.Thread(target=self.poll_monitor)
+            threading.Thread(target=self.poll_monitor).start()
         else:
             print("Cannot start when I'm already running!")
 
@@ -367,7 +381,7 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
-
+        # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor.call_button is not None:
             func = self.button_functions[self.monitor.call_button]
             print("I need to call function {}".format(func.__name__))
@@ -376,7 +390,7 @@ class Phone(object):
             self.monitor.called_button()
 
         if self._polling:
-            threading.Timer(self.POLLING_RATE, self.poll_monitor)
+            threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
 
     def not_implimented(self):
         '''Placeholder.'''
@@ -387,8 +401,13 @@ class Phone(object):
         The phone's handset has been replaced.
         Clear the button sequence, and stop any playback or recording.
         '''
+        if self.loud > 0:
+            print("Handset replaced! Stopping playback")
         # The button sequence is reset
         self.monitor.clear_sequence()
         # Playback and recording must stop
         self.dictaphone.stop()
+
+    def play_intro(self):
+        self.dictaphone.start("play_file", "AUDIO_FILES/mortal_kombat.wav")
 
