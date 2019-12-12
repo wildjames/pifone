@@ -179,7 +179,7 @@ class Dictaphone(object):
         self._stop_playback = False
 
     def play_file(self, fname):
-        '''Play the audio file, fname.
+        '''Play the audio file, fname. Relative path to where the script was run from.
         If something is already playing, stop it.
 
         Inputs
@@ -231,12 +231,15 @@ class Dictaphone(object):
         self._stop_playback = False
 
     def interrupt_playback(self):
+        '''Stop playback'''
         self._stop_playback = True
 
     def stop_recording(self):
+        '''Stop recording'''
         self._stop_recording = True
 
     def stop(self):
+        '''Stops both recording, and playback'''
         self.interrupt_playback()
         self.stop_recording()
 
@@ -252,7 +255,7 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
-    POLLING_RATE = 0.5 #s
+    POLLING_RATE = 0.1 #s
     LOUD = 3
 
     def __init__(self, dummy_mode=False):
@@ -265,6 +268,13 @@ class PhoneMonitor(object):
         self.sequence = []
 
         self._polling = False
+
+    def check_buttons(self):
+            print("I need to check each of the pins to see if they're telling me a button has been pushed.")
+            print("First check that the handset is up or down. If it's up, and wasn't before, set currently_pushed = 'handset_up'")
+            print("If the handset is NOT up, set currently_pushed = 'handset_down'")
+            print("If currently_pushed is still None, check the buttons for depression")
+            print("If one has, set currently pushed to it's name")
 
     def poll_buttons(self):
         '''
@@ -283,11 +293,7 @@ class PhoneMonitor(object):
             if self.LOUD > 3:
                 print("Button being pushed is: {}".format(self.currently_pushed))
         else:
-            print("I need to check each of the pins to see if they're telling me a button has been pushed.")
-            print("First check that the handset is up or down. If it's up, and wasn't before, set currently_pushed = 'handset_up'")
-            print("If the handset is NOT up, set currently_pushed = 'handset_down'")
-            print("If currently_pushed is still None, check the buttons for depression")
-            print("If one has, set currently pushed to it's name")
+            self.check_buttons()
 
         # If the handset isn't up, and we've not recorded that it's been lifted, stop now
         if 'handset_up' not in self.sequence:
@@ -349,7 +355,7 @@ class Phone(object):
     can press a button during playback, and a tone should still play OVER the
     existing stream.
     '''
-    POLLING_RATE = 1.0
+    POLLING_RATE = 0.1
     _polling = False
     loud = 4
 
@@ -362,8 +368,8 @@ class Phone(object):
         self.monitor = PhoneMonitor(dummy_mode=True)
 
         self.button_functions = {
-            'B1': self.not_implimented,
-            'B2': self.not_implimented,
+            'B1': self.begin_recording,
+            'B2': self.play_random,
             'B3': self.not_implimented,
             'B4': self.not_implimented,
             'handset_up': self.play_intro,
@@ -420,3 +426,10 @@ class Phone(object):
     def play_intro(self):
         self.dictaphone.start("play_file", "AUDIO_FILES/mortal_kombat.wav")
 
+    def begin_recording(self):
+        self.dictaphone.start('make_recording')
+
+    def play_random(self):
+        self.dictaphone.stop()
+        time.sleep(10*self.dictaphone.CHUNKSIZE/self.dictaphone.RATE)
+        self.dictaphone.start('play_random')
