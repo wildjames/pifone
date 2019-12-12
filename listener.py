@@ -242,6 +242,7 @@ class Dictaphone(object):
         '''Stops both recording, and playback'''
         self.interrupt_playback()
         self.stop_recording()
+        time.sleep(10*self.CHUNKSIZE/self.RATE)
 
 class PhoneMonitor(object):
     '''
@@ -431,5 +432,4 @@ class Phone(object):
 
     def play_random(self):
         self.dictaphone.stop()
-        time.sleep(10*self.dictaphone.CHUNKSIZE/self.dictaphone.RATE)
         self.dictaphone.start('play_random')
