@@ -1,19 +1,24 @@
 import time
-from listener import Dictaphone
+from listener import Dictaphone, PhoneMonitor, Phone
 import os
 
 
 ###### TEST THE DICTAPHONE OBJECT ######
-test_playback = True
-test_recording = True
+test_playback = False
+test_recording = False
 
+###### TEST THE SIGNAL SENDER AND RECIEVER ######
+test_signalman = False
+
+###### TEST THE PHONE OBJECT, WITH BOTH OF THE ABOVE ######
+test_phone = True
 
 # Play a test file with the dictaphone
 fname = "AUDIO_FILES/mortal_kombat.wav"
 dic = Dictaphone(audio_dir='AUDIO_FILES')
 
 
-#### Playback ####
+#### Playback #####
 if test_playback:
     print("Playing a random file...")
     dic.start("play_random")
@@ -69,6 +74,109 @@ if test_recording:
     time.sleep(10)
     dic.stop_recording()
     print("Recording over")
+
+
+signaller = PhoneMonitor(dummy_mode=True)
+
+#### Signaller ####
+if test_signalman:
+    print("Time to test the signaller")
+
+    print("Starting the signaller. Should start seeing reporting of buttons")
+    signaller.start()
+    time.sleep(5)
+
+    print("Pressing the button B1")
+    signaller.dummy_pressed = 'B1'
+    time.sleep(2)
+
+    print("Un-pressing B1")
+    signaller.dummy_pressed = None
+    time.sleep(4)
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("\n\nRepeating the above, but lifting the handset first")
+    signaller.dummy_pressed = 'handset_up'
+    time.sleep(1)
+    signaller.dummy_pressed = None
+    time.sleep(2)
+    print("Pressing the button B1")
+    signaller.dummy_pressed = 'B1'
+    time.sleep(4)
+
+    print("Un-pressing B1")
+    signaller.dummy_pressed = None
+    time.sleep(4)
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("Sending signal that the button has been handled")
+    signaller.called_button()
+
+    print("The signaller needs to handle functions for the following button:")
+    print(signaller.call_button)
+
+    print("Testing the signallers' ability to track button sequence. Pressing the buttons B2, B3, B4...")
+    signaller.POLLING_RATE = 0.1
+    for i in range(2, 5):
+        signaller.dummy_pressed = 'B{}'.format(i)
+        time.sleep(0.2)
+        signaller.dummy_pressed = None
+        time.sleep(0.2)
+    print("Reducing verbosity to 3")
+    signaller.LOUD = 3
+    signaller.POLLING_RATE = 1.0
+    print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
+    time.sleep(3)
+
+    print("Sending handset down")
+    signaller.dummy_pressed = 'handset_down'
+    time.sleep(2)
+    print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
+
+    time.sleep(2)
+
+    print("Stopping the signaller. Output should cease")
+    signaller.stop()
+    time.sleep(5)
+
+
+#### Phone as a whole ####
+if test_phone:
+    phone = Phone("AUDIO_FILES")
+    print("\n\n\nStarting phone. Should have the monitor begin reporting")
+    phone.start()
+    time.sleep(5)
+
+    print("Pressing B1 on the monitor")
+    phone.monitor.dummy_pressed = 'B1'
+    time.sleep(2)
+    print("Releasing B1 on the monitor")
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Lifting handset")
+    phone.monitor.dummy_pressed = 'handset_up'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Pressing B1 on the monitor")
+    phone.monitor.dummy_pressed = 'B1'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    print("Replacing handset")
+    phone.monitor.dummy_pressed = 'handset_down'
+    time.sleep(2)
+    phone.monitor.dummy_pressed = None
+    time.sleep(5)
+
+    phone.stop()
 
 print("Done testing.")
 
