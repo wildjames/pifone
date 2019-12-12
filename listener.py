@@ -239,6 +239,7 @@ class Dictaphone(object):
     def stop(self):
         self.interrupt_playback()
         self.stop_recording()
+        time.sleep(10*self.CHUNKSIZE/self.RATE)
 
 class PhoneMonitor(object):
     '''
@@ -420,3 +421,9 @@ class Phone(object):
     def play_intro(self):
         self.dictaphone.start("play_file", "AUDIO_FILES/mortal_kombat.wav")
 
+    def begin_recording(self):
+        self.dictaphone.start('make_recording')
+
+    def play_random(self):
+        self.dictaphone.stop()
+        self.dictaphone.start('play_random')
