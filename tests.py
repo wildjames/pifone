@@ -151,10 +151,10 @@ if test_phone:
     phone.start()
     time.sleep(5)
 
-    print("Pressing B1 on the monitor")
-    phone.monitor.dummy_pressed = 'B1'
+    print("Pressing B2 on the monitor")
+    phone.monitor.dummy_pressed = 'B2'
     time.sleep(2)
-    print("Releasing B1 on the monitor")
+    print("Releasing B2 on the monitor")
     phone.monitor.dummy_pressed = None
     time.sleep(5)
 
@@ -164,8 +164,8 @@ if test_phone:
     phone.monitor.dummy_pressed = None
     time.sleep(5)
 
-    print("Pressing B1 on the monitor")
-    phone.monitor.dummy_pressed = 'B1'
+    print("Pressing B2 on the monitor")
+    phone.monitor.dummy_pressed = 'B2'
     time.sleep(2)
     phone.monitor.dummy_pressed = None
     time.sleep(5)
