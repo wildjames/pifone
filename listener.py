@@ -461,6 +461,8 @@ class Phone(object):
 
             threading.Thread(target=func).start()
             self.monitor.called_button()
+        else:
+            print("Button {} is not known! Type {}".format(self.monitor.call_button, type(self.monitor.call_button)))
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
