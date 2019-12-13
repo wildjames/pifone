@@ -332,20 +332,14 @@ class PhoneMonitor(object):
         '''Reset the call_button flag, telling the signaller that the event has been handled'''
         self.call_button = None
 
-    def poll_buttons(self):
-        '''Figure out which buttons have been pressed, and set the 'call me' variable'''
-        ############################################################
-        # # # # Check if any of the buttons have been pushed # # # #
-        ############################################################
-        button_pressed = None
-
+    def ping_buttons(self):
         # Check the first button group
         self.grpA_pin.value = True
         outputs = ['redial', 'hash', 0, 'star']
         for i, pin in enumerate(self.inpins):
             if pin.value:
-                button_pressed = outputs[i]
-                break
+                self.grpA_pin.value = False
+                return outputs[i]
         self.grpA_pin.value = False
 
         # Check the second group
@@ -353,8 +347,8 @@ class PhoneMonitor(object):
         outputs = [None, 9, 8, 7]
         for i, pin in enumerate(self.inpins):
             if pin.value:
-                button_pressed = outputs[i]
-                break
+                self.grpB_pin.value = False
+                return outputs[i]
         self.grpB_pin.value = False
 
         # Check the Third group
@@ -362,8 +356,8 @@ class PhoneMonitor(object):
         outputs = [None, 6, 5, 4]
         for i, pin in enumerate(self.inpins):
             if pin.value:
-                button_pressed = outputs[i]
-                break
+                self.grpC_pin.value = False
+                return outputs[i]
         self.grpC_pin.value = False
 
         # Check the fourth group
@@ -371,12 +365,18 @@ class PhoneMonitor(object):
         outputs = [None, 3, 2, 1]
         for i, pin in enumerate(self.inpins):
             if pin.value:
-                button_pressed = outputs[i]
-                break
+                self.grpD_pin.value = False
+                return outputs[i]
         self.grpD_pin.value = False
 
-        ###########################################################
-        ###########################################################
+        return None
+
+    def poll_buttons(self):
+        '''Figure out which buttons have been pressed, and set the 'call me' variable'''
+        ############################################################
+        # # # # Check if any of the buttons have been pushed # # # #
+        ############################################################
+        button_pressed = self.ping_buttons()
 
         # If a button was pushed, say so
         if button_pressed is not None:
