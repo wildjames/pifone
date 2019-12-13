@@ -376,6 +376,9 @@ class PhoneMonitor(object):
         ############################################################
         # # # # Check if any of the buttons have been pushed # # # #
         ############################################################
+        if not self._handset_raised:
+            return
+
         button_pressed = self.ping_buttons()
 
         # If a button was pushed, say so
