@@ -264,7 +264,7 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
-    POLLING_RATE = 0.05
+    POLLING_RATE = 0.1
     LOUD = 3
 
     def __init__(self, handset_pin=22, dummy_mode=False):
