@@ -383,15 +383,12 @@ class PhoneMonitor(object):
 
         # If a button was pushed, say so
         if button_pressed is not None:
-            print("last button pressed was {}".format(self.last_button))
             if self.last_button is None:
                 print("Detected button {}".format(button_pressed))
                 # threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.sequence.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self.call_button = button_pressed
-        else:
-            print("No button currently pressed")
 
         # Update the last button to be pushed
         self.last_button = button_pressed
@@ -428,12 +425,7 @@ class Phone(object):
         self.monitor = PhoneMonitor(dummy_mode=True)
 
         self.button_functions = {
-            'GPIO1': self.begin_recording,
-            'GPIO2': self.play_random,
-            'GPIO3': self.not_implimented,
-            'GPIO4': self.not_implimented,
-            'GPIO5': self.play_intro,
-            'GPIO6': self.not_implimented,
+            self.play_intro
         }
 
     def start(self):
