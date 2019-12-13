@@ -264,7 +264,7 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
-    POLLING_RATE = 0.1
+    POLLING_RATE = 0.05
     LOUD = 3
 
     def __init__(self, handset_pin=22, dummy_mode=False):
@@ -386,6 +386,8 @@ class PhoneMonitor(object):
                 self.sequence.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
                 self.call_button = button_pressed
+        else:
+            print("No button currently pressed")
 
         # Update the last button to be pushed
         self.last_button = button_pressed
