@@ -1,15 +1,14 @@
-import pyaudio
-import wave
 import os
-from pathlib import Path
-from random import choice
-
 import threading
-
 # Only needed for debugging
 import time
+import wave
+from pathlib import Path
 from pprint import pprint
+from random import choice
 
+import gpiozero
+import pyaudio
 
 
 class Dictaphone(object):
@@ -188,6 +187,8 @@ class Dictaphone(object):
             - The file to be played
         '''
 
+        print("stop playback? {}".format(self._stop_playback))
+
         # Open audio stream for reading
         audio_stream = pyaudio.PyAudio()
 
@@ -227,8 +228,14 @@ class Dictaphone(object):
         audio_stream.terminate()
 
         if self.LOUD > 3:
+            print("Finished with playback")
             print("Setting _stop_playback to False")
         self._stop_playback = False
+
+    def enable_playback(self):
+        '''Set the flag to enable playback'''
+        self._stop_playback = False
+        self._stop_recording = False
 
     def interrupt_playback(self):
         '''Stop playback'''
@@ -240,6 +247,7 @@ class Dictaphone(object):
 
     def stop(self):
         '''Stops both recording, and playback'''
+        print("Stop all signal recieved")
         self.interrupt_playback()
         self.stop_recording()
         time.sleep(10*self.CHUNKSIZE/self.RATE)
@@ -256,72 +264,65 @@ class PhoneMonitor(object):
 
     The button sequence should be cleared when the handset is set down.
     '''
-    POLLING_RATE = 0.1 #s
+    POLLING_RATE = 0.05
     LOUD = 3
 
-    def __init__(self, dummy_mode=False):
-        self.dummy_mode = dummy_mode
+    def __init__(self, handset_pin=22, dummy_mode=False):
         if dummy_mode:
-            self.dummy_pressed = None
+            from gpiozero.pins.mock import MockFactory
+            gpiozero.Device.pin_factory = MockFactory()
 
-        self.last_pushed = None
+        # The buttons are separated into groups.
+        # These are one side of the buttons, which will have a voltage applied
+        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=12, initial_value=False)
+        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=11, initial_value=False)
+        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=10, initial_value=False)
+        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=9, initial_value=False)
+        print("Initialised Output pins")
+
+        # These are the input pins. I need to check which circuit is closed.
+        self.outA_pin = gpiozero.DigitalInputDevice(pin=8)
+        self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
+        self.outC_pin = gpiozero.DigitalInputDevice(pin=6)
+        self.outD_pin = gpiozero.DigitalInputDevice(pin=5)
+        self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
+        print("Initialised Input pins")
+
+        # This variable holds the name of a button if it's function needs to be called
         self.call_button = None
+        # Last button that was pushed
+        self.last_button = None
+        # Button press history, since handset was raised
         self.sequence = []
 
         self._polling = False
 
-    def check_buttons(self):
-            print("I need to check each of the pins to see if they're telling me a button has been pushed.")
-            print("First check that the handset is up or down. If it's up, and wasn't before, set currently_pushed = 'handset_up'")
-            print("If the handset is NOT up, set currently_pushed = 'handset_down'")
-            print("If currently_pushed is still None, check the buttons for depression")
-            print("If one has, set currently pushed to it's name")
+        # True only while the handset is up
+        self._handset_raised = False
 
-    def poll_buttons(self):
-        '''
-        Tests each button for being pushed, and sets the internal list of
-        currently pushed buttons
-        '''
-        if not self._polling:
-            return
+        self.handset_button = gpiozero.Button(handset_pin)
+        self.handset_button.when_pressed = self.handset_up
+        self.handset_button.when_released = self.handset_down
 
-        # Default to None buttons pushed
-        self.currently_pushed = None
+        if dummy_mode:
+            self.mock_pins = []
+            self.mock_pins.append(gpiozero.Device.pin_factory.pin(handset_pin))
+            for btn_pin in [8,7,6,5]:
+                self.mock_pins.append(
+                    gpiozero.Device.pin_factory.pin(btn_pin)
+                )
+                print("Created dummy pin {}".format(btn_pin))
 
-        if self.dummy_mode:
-            self.currently_pushed = self.dummy_pressed
+        threading.Thread(target=self.poll_buttons, daemon=True).start()
 
-            if self.LOUD > 3:
-                print("Button being pushed is: {}".format(self.currently_pushed))
-        else:
-            self.check_buttons()
+    def handset_up(self):
+        print("Handset rasied. Now accepting button presses")
+        self._handset_raised = True
 
-        # If the handset isn't up, and we've not recorded that it's been lifted, stop now
-        if 'handset_up' not in self.sequence:
-            if self.currently_pushed != 'handset_up':
-                self.clear_sequence()
-                threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
-                return
-
-        if self.currently_pushed == 'handset_down':
-            self.clear_sequence()
-
-
-        # Actually handle the button, if I need to
-        if self.last_pushed != self.currently_pushed:
-            if self.currently_pushed != None:
-                self.call_button = self.currently_pushed
-                self.sequence.append(self.currently_pushed)
-
-                if self.LOUD > 2:
-                    print("I need to call the function for button {}!".format(self.call_button))
-                    print("My sequence is now {}".format(self.sequence))
-
-        # Update the last pushed button
-        self.last_pushed = self.currently_pushed
-
-        # Start a timer for the next call
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
+    def handset_down(self):
+        print("Handset replaced. Resetting sequence, and no longer accepting buttons")
+        self._handset_raised = False
+        self.clear_sequence()
 
     def clear_sequence(self):
         '''Clear the recording of which buttons have been pushed'''
@@ -331,13 +332,66 @@ class PhoneMonitor(object):
         '''Reset the call_button flag, telling the signaller that the event has been handled'''
         self.call_button = None
 
-    def start(self):
-        '''Start the poll_buttons method. That function calls itself, so runs indefinitely.'''
-        self._polling = True
-        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
-    def stop(self):
-        self._polling = False
+    def poll_buttons(self):
+        '''Figure out which buttons have been pressed, and set the 'call me' variable'''
+        ############################################################
+        # # # # Check if any of the buttons have been pushed # # # #
+        ############################################################
+        button_pressed = None
+
+        # Check the first button group
+        self.grpA_pin.value = True
+        outputs = ['redial', 'hash', 0, 'star']
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpA_pin.value = False
+
+        # Check the second group
+        self.grpB_pin.value = True
+        outputs = [None, 9, 8, 7]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpB_pin.value = False
+
+        # Check the Third group
+        self.grpC_pin.value = True
+        outputs = [None, 6, 5, 4]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpC_pin.value = False
+
+        # Check the fourth group
+        self.grpD_pin.value = True
+        outputs = [None, 3, 2, 1]
+        for i, pin in enumerate(self.inpins):
+            if pin.value:
+                button_pressed = outputs[i]
+                break
+        self.grpD_pin.value = False
+
+        ###########################################################
+        ###########################################################
+
+        # If a button was pushed, say so
+        if button_pressed is not None:
+            if self.last_button is None:
+                self._playing_cummy = False
+                # threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
+                self.sequence.append(button_pressed)
+                # Raise a flag to call this button's function, if it has one
+                self.call_button = button_pressed
+
+        # Update the last button to be pushed
+        self.last_button = button_pressed
+
+        threading.Timer(self.POLLING_RATE, self.poll_buttons).start()
 
 
 class Phone(object):
@@ -369,21 +423,18 @@ class Phone(object):
         self.monitor = PhoneMonitor(dummy_mode=True)
 
         self.button_functions = {
-            'B1': self.begin_recording,
-            'B2': self.play_random,
-            'B3': self.not_implimented,
-            'B4': self.not_implimented,
-            'handset_up': self.play_intro,
-            'handset_down': self.handset_replaced,
+            'GPIO1': self.begin_recording,
+            'GPIO2': self.play_random,
+            'GPIO3': self.not_implimented,
+            'GPIO4': self.not_implimented,
+            'GPIO5': self.play_intro,
+            'GPIO6': self.not_implimented,
         }
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
         if not self._polling:
-            # Start my monitor first
-            self.monitor.start()
-
-            # Then start myself, checking the monitor
+            # Start myself checking the monitor
             self._polling = True
             threading.Thread(target=self.poll_monitor).start()
         else:
@@ -392,18 +443,18 @@ class Phone(object):
     def stop(self):
         '''Stop myself, and my monitor's polling, and my dictaphone's playback'''
         self._polling = False
-        self.monitor.stop()
         self.dictaphone.stop()
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
         # Only execute the button if the handset_up is recorded in the sequence
-        if self.monitor.call_button is not None:
-            func = self.button_functions[self.monitor.call_button]
-            print("I need to call function {}".format(func.__name__))
+        if self.monitor._handset_raised:
+            if self.monitor.call_button is not None:
+                func = self.button_functions[self.monitor.call_button]
+                print("I need to call function {}".format(func.__name__))
 
-            threading.Thread(target=func).start()
-            self.monitor.called_button()
+                threading.Thread(target=func).start()
+                self.monitor.called_button()
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()

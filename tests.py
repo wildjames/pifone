@@ -13,9 +13,12 @@ test_signalman = False
 ###### TEST THE PHONE OBJECT, WITH BOTH OF THE ABOVE ######
 test_phone = True
 
-# Play a test file with the dictaphone
-fname = "AUDIO_FILES/mortal_kombat.wav"
-dic = Dictaphone(audio_dir='AUDIO_FILES')
+if test_playback or test_recording:
+    fname = "AUDIO_FILES/mortal_kombat.wav"
+    dic = Dictaphone(audio_dir='AUDIO_FILES')
+
+if test_signalman:
+    signaller = PhoneMonitor(dummy_mode=True)
 
 
 #### Playback #####
@@ -76,39 +79,31 @@ if test_recording:
     print("Recording over")
 
 
-signaller = PhoneMonitor(dummy_mode=True)
 
 #### Signaller ####
 if test_signalman:
     print("Time to test the signaller")
 
-    print("Starting the signaller. Should start seeing reporting of buttons")
-    signaller.start()
-    time.sleep(5)
+    print("Pressing the button 1")
+    signaller.mock_pins[1].drive_low()
+    time.sleep(0.1)
 
-    print("Pressing the button B1")
-    signaller.dummy_pressed = 'B1'
+    print("Un-pressing 1")
+    signaller.mock_pins[1].drive_high()
     time.sleep(2)
-
-    print("Un-pressing B1")
-    signaller.dummy_pressed = None
-    time.sleep(4)
 
     print("The signaller needs to handle functions for the following button:")
     print(signaller.call_button)
 
     print("\n\nRepeating the above, but lifting the handset first")
-    signaller.dummy_pressed = 'handset_up'
-    time.sleep(1)
-    signaller.dummy_pressed = None
+    signaller.mock_pins[22].drive_low()
     time.sleep(2)
-    print("Pressing the button B1")
-    signaller.dummy_pressed = 'B1'
-    time.sleep(4)
-
-    print("Un-pressing B1")
-    signaller.dummy_pressed = None
-    time.sleep(4)
+    print("Pressing the button 1")
+    signaller.mock_pins[1].drive_low()
+    time.sleep(0.5)
+    print("Un-pressing 1")
+    signaller.mock_pins[1].drive_high()
+    time.sleep(5)
 
     print("The signaller needs to handle functions for the following button:")
     print(signaller.call_button)
@@ -120,12 +115,14 @@ if test_signalman:
     print(signaller.call_button)
 
     print("Testing the signallers' ability to track button sequence. Pressing the buttons B2, B3, B4...")
-    signaller.POLLING_RATE = 0.1
-    for i in range(2, 5):
-        signaller.dummy_pressed = 'B{}'.format(i)
-        time.sleep(0.2)
-        signaller.dummy_pressed = None
-        time.sleep(0.2)
+    for i in range(2, 11):
+        signaller.mock_pins[i].drive_low()
+        time.sleep(0.1)
+        signaller.mock_pins[i].drive_high()
+        time.sleep(0.1)
+
+    print("The signaller wants us to parse the function for button {}".format(signaller.call_button))
+
     print("Reducing verbosity to 3")
     signaller.LOUD = 3
     signaller.POLLING_RATE = 1.0
@@ -133,15 +130,13 @@ if test_signalman:
     time.sleep(3)
 
     print("Sending handset down")
-    signaller.dummy_pressed = 'handset_down'
+    signaller.mock_pins[0].drive_high()
     time.sleep(2)
     print("The signaller recorded the sequence:\n    {}".format(signaller.sequence))
 
     time.sleep(2)
+    print("Done testing signaller")
 
-    print("Stopping the signaller. Output should cease")
-    signaller.stop()
-    time.sleep(5)
 
 
 #### Phone as a whole ####
@@ -149,31 +144,27 @@ if test_phone:
     phone = Phone("AUDIO_FILES")
     print("\n\n\nStarting phone. Should have the monitor begin reporting")
     phone.start()
-    time.sleep(5)
+    time.sleep(3)
 
     print("Pressing B2 on the monitor")
-    phone.monitor.dummy_pressed = 'B2'
+    phone.monitor.mock_pins[2].drive_low()
     time.sleep(2)
     print("Releasing B2 on the monitor")
-    phone.monitor.dummy_pressed = None
+    phone.monitor.mock_pins[2].drive_high()
     time.sleep(5)
 
     print("Lifting handset")
-    phone.monitor.dummy_pressed = 'handset_up'
+    phone.monitor.mock_pins[0].drive_low()
     time.sleep(2)
-    phone.monitor.dummy_pressed = None
-    time.sleep(5)
 
     print("Pressing B2 on the monitor")
-    phone.monitor.dummy_pressed = 'B2'
+    phone.monitor.mock_pins[2].drive_low()
     time.sleep(2)
-    phone.monitor.dummy_pressed = None
+    phone.monitor.mock_pins[2].drive_high()
     time.sleep(5)
 
     print("Replacing handset")
-    phone.monitor.dummy_pressed = 'handset_down'
-    time.sleep(2)
-    phone.monitor.dummy_pressed = None
+    phone.monitor.mock_pins[0].drive_high()
     time.sleep(5)
 
     phone.stop()
