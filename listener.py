@@ -337,7 +337,7 @@ class ButtonMonitor(object):
     def ping_buttons(self):
         # Check the first button group
         self.grpA_pin.value = True
-        outputs = ['redial', 'hash', 0, 'star']
+        outputs = ['redial', '#', 0, '*']
         for i, pin in enumerate(self.inpins):
             if pin.value:
                 self.grpA_pin.value = False
@@ -436,6 +436,8 @@ class Phone(object):
         }
 
         self.start()
+
+        print("Ready to go!!")
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
