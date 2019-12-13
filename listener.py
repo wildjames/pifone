@@ -423,7 +423,7 @@ class Phone(object):
         '''
 
         self.dictaphone = Dictaphone(audio_dir)
-        self.monitor = ButtonMonitor(dummy_mode=True)
+        self.monitor = ButtonMonitor()
 
         self.button_functions = {
             'handset_lifted': self.handset_up
