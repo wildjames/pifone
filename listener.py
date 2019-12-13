@@ -433,7 +433,7 @@ class Phone(object):
             'redial': self.begin_recording,
             '*': self.play_random,
             '#': self.play_most_recent,
-            '1': self.play_cummy,
+            1: self.play_cummy,
         }
 
 
