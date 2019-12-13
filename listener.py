@@ -155,11 +155,8 @@ class Dictaphone(object):
         # TODO:  (SAFE ON RPI???)
         # Record all the frames we want, writing them as we go
         while not self._stop_recording:
-            try:
-                frame = rec_stream.read(self.CHUNKSIZE)
-                audio_file.writeframes(frame)
-            except:
-                break
+            frame = rec_stream.read(self.CHUNKSIZE)
+            audio_file.writeframes(frame)
 
         # Close the stream
         rec_stream.stop_stream()
