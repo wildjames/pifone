@@ -378,6 +378,7 @@ class ButtonMonitor(object):
         # # # # Check if any of the buttons have been pushed # # # #
         ############################################################
         if self._handset_raised:
+            print("Pinging buttons")
             button_pressed = self.ping_buttons()
         else:
             button_pressed = None
