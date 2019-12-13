@@ -389,6 +389,8 @@ class ButtonMonitor(object):
                 print("Detected button {}".format(button_pressed))
                 # threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.sequence.append(button_pressed)
+
+                print("Sequence is now: \n   {}".format(self.sequence))
                 # Raise a flag to call this button's function, if it has one
                 self.call_button = button_pressed
 
@@ -428,7 +430,9 @@ class Phone(object):
 
         self.button_functions = {
             'handset_lifted': self.handset_up,
-            'handset_down': self.handset_down
+            'handset_down': self.handset_down,
+            'redial': self.begin_recording,
+            '*': self.play_random,
         }
 
         self.start()
