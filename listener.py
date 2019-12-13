@@ -300,7 +300,7 @@ class PhoneMonitor(object):
         # True only while the handset is up
         self._handset_raised = False
 
-        self.handset_button = gpiozero.Button(handset_pin)
+        self.handset_button = gpiozero.Button(handset_pin, pull_up=False)
         self.handset_button.when_pressed = self.handset_up
         self.handset_button.when_released = self.handset_down
 
