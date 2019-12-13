@@ -252,7 +252,7 @@ class Dictaphone(object):
         self.stop_recording()
         time.sleep(10*self.CHUNKSIZE/self.RATE)
 
-class PhoneMonitor(object):
+class ButtonMonitor(object):
     '''
     This class should listen for two things:
       - Buttons being pressed currently
@@ -416,17 +416,24 @@ class Phone(object):
     _polling = False
     loud = 4
 
-    def __init__(self, audio_dir='.', debug=0):
+    def __init__(self, audio_dir='.', handset_pin=22, debug=0):
         '''
         Start up my Dictaphone and Signaller objects, which will handle lower level stuff.
         '''
 
         self.dictaphone = Dictaphone(audio_dir)
-        self.monitor = PhoneMonitor(dummy_mode=True)
+        self.monitor = ButtonMonitor(dummy_mode=True)
 
         self.button_functions = {
-            self.play_intro
         }
+
+
+        # True only while the handset is up
+        self._handset_raised = False
+
+        self.handset_button = gpiozero.Button(handset_pin, pull_up=False)
+        self.handset_button.when_pressed = self.handset_down
+        self.handset_button.when_released = self.handset_up
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
@@ -460,17 +467,20 @@ class Phone(object):
         '''Placeholder.'''
         print("I wanted to call a function, but it has not been implimented yet.")
 
-    def handset_replaced(self):
+    def handset_down(self):
         '''
         The phone's handset has been replaced.
         Clear the button sequence, and stop any playback or recording.
         '''
         if self.loud > 0:
             print("Handset replaced! Stopping playback")
-        # The button sequence is reset
-        self.monitor.clear_sequence()
         # Playback and recording must stop
         self.dictaphone.stop()
+
+    def handset_up(self):
+        '''The phone's handset was lifted. Start the intro file'''
+        print("Phone object dected the handset being lifted.")
+        self.play_intro()
 
     def play_intro(self):
         self.dictaphone.start("play_file", "AUDIO_FILES/mortal_kombat.wav")
