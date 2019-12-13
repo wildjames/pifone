@@ -324,6 +324,7 @@ class ButtonMonitor(object):
         print("Handset replaced. Resetting sequence, and no longer accepting buttons")
         self._handset_raised = False
         self.clear_sequence()
+        self.call_button = 'handset_down'
 
     def clear_sequence(self):
         '''Clear the recording of which buttons have been pushed'''
@@ -430,9 +431,7 @@ class Phone(object):
             'handset_lifted': self.handset_up
         }
 
-
-        # True only while the handset is up
-        self._handset_raised = False
+        self.start()
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
