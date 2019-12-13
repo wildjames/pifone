@@ -332,7 +332,6 @@ class PhoneMonitor(object):
         '''Reset the call_button flag, telling the signaller that the event has been handled'''
         self.call_button = None
 
-
     def poll_buttons(self):
         '''Figure out which buttons have been pressed, and set the 'call me' variable'''
         ############################################################
@@ -382,7 +381,7 @@ class PhoneMonitor(object):
         # If a button was pushed, say so
         if button_pressed is not None:
             if self.last_button is None:
-                self._playing_cummy = False
+                print("Detected button {}".format(button_pushed))
                 # threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.sequence.append(button_pressed)
                 # Raise a flag to call this button's function, if it has one
