@@ -450,13 +450,12 @@ class Phone(object):
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
         # Only execute the button if the handset_up is recorded in the sequence
-        if self.monitor._handset_raised:
-            if self.monitor.call_button in self.button_functions.keys():
-                func = self.button_functions[self.monitor.call_button]
-                print("I need to call function {}".format(func.__name__))
+        if self.monitor.call_button in self.button_functions.keys():
+            func = self.button_functions[self.monitor.call_button]
+            print("I need to call function {}".format(func.__name__))
 
-                threading.Thread(target=func).start()
-                self.monitor.called_button()
+            threading.Thread(target=func).start()
+            self.monitor.called_button()
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
