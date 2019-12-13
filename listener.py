@@ -322,6 +322,7 @@ class ButtonMonitor(object):
     def handset_down(self):
         print("Handset replaced. Resetting sequence, and no longer accepting buttons")
         self._handset_raised = False
+        self.call_button = 'handset_lifted'
         self.clear_sequence()
 
     def clear_sequence(self):
@@ -425,6 +426,7 @@ class Phone(object):
         self.monitor = ButtonMonitor(dummy_mode=True)
 
         self.button_functions = {
+            'handset_lifted': self.handset_up
         }
 
 
