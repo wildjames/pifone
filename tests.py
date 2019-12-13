@@ -82,6 +82,7 @@ if test_recording:
 
 #### Signaller ####
 if test_signalman:
+    print("THIS IS ALL OUTDATED AND NO LONGER TESTS ANYTHING!!!")
     print("Time to test the signaller")
 
     print("Pressing the button 1")

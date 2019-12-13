@@ -435,9 +435,6 @@ class Phone(object):
             '*': self.play_random,
         }
 
-        self.start()
-
-        print("Ready to go!!")
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
@@ -447,6 +444,7 @@ class Phone(object):
             threading.Thread(target=self.poll_monitor).start()
         else:
             print("Cannot start when I'm already running!")
+        print("Ready to go!!")
 
     def stop(self):
         '''Stop myself, and my monitor's polling, and my dictaphone's playback'''
