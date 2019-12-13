@@ -237,17 +237,18 @@ class Dictaphone(object):
     def interrupt_playback(self):
         '''Stop playback'''
         self._stop_playback = True
+        time.sleep(10*self.CHUNKSIZE/self.RATE)
 
     def stop_recording(self):
         '''Stop recording'''
         self._stop_recording = True
+        time.sleep(10*self.CHUNKSIZE/self.RATE)
 
     def stop(self):
         '''Stops both recording, and playback'''
         print("Stop all signal recieved")
         self.interrupt_playback()
         self.stop_recording()
-        time.sleep(10*self.CHUNKSIZE/self.RATE)
 
 
 class ButtonMonitor(object):
