@@ -379,7 +379,6 @@ class ButtonMonitor(object):
         # # # # Check if any of the buttons have been pushed # # # #
         ############################################################
         if self._handset_raised:
-            print("Pinging buttons")
             button_pressed = self.ping_buttons()
         else:
             button_pressed = None
@@ -429,6 +428,7 @@ class Phone(object):
 
         self.button_functions = {
             'handset_lifted': self.handset_up
+            'handset_down': self.handset_down
         }
 
         self.start()
@@ -451,7 +451,7 @@ class Phone(object):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
         # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor._handset_raised:
-            if self.monitor.call_button is not None:
+            if self.monitor.call_button in self.button_functions.keys():
                 func = self.button_functions[self.monitor.call_button]
                 print("I need to call function {}".format(func.__name__))
 
