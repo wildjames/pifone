@@ -266,6 +266,7 @@ class ButtonMonitor(object):
 
     def __init__(self, handset_pin=22, dummy_mode=False):
         if dummy_mode:
+            print("Using the dummy mode pins")
             from gpiozero.pins.mock import MockFactory
             gpiozero.Device.pin_factory = MockFactory()
 
