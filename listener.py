@@ -1,10 +1,7 @@
 import os
 import threading
-# Only needed for debugging
-import time
 import wave
 from pathlib import Path
-from pprint import pprint
 from random import choice
 
 import gpiozero
