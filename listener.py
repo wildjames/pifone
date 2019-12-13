@@ -238,11 +238,13 @@ class Dictaphone(object):
         '''Stop playback'''
         self._stop_playback = True
         time.sleep(10*self.CHUNKSIZE/self.RATE)
+        self._stop_playback = False
 
     def stop_recording(self):
         '''Stop recording'''
         self._stop_recording = True
         time.sleep(10*self.CHUNKSIZE/self.RATE)
+        self._stop_recording = False
 
     def stop(self):
         '''Stops both recording, and playback'''
