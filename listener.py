@@ -523,8 +523,11 @@ class Phone(object):
         print("Playing a random cum file")
         self.dictaphone.stop()
 
+        cumdir = os.path.join(self.dictaphone.audio_dir,'CUM')
+        print("Cumdir: {}".format(cumdir))
+
         fnames = []
-        for fname in Path(os.path.join(self.dictaphone.audio_dir,'CUM')).rglob("*.wav"):
+        for fname in Path(cumdir).rglob("*.wav"):
             fnames.append(fname)
         fname = choice(fnames)
 
