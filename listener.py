@@ -464,7 +464,7 @@ class Phone(object):
 
             threading.Thread(target=func).start()
             self.monitor.called_button()
-        else:
+        elif self.monitor.call_button is not None:
             print("Button {} is not known! Type {}".format(self.monitor.call_button, type(self.monitor.call_button)))
 
         if self._polling:
@@ -528,7 +528,7 @@ class Phone(object):
 
         fnames = []
         for fname in Path(cumdir).rglob("*.wav"):
-            fnames.append(fname)
+            fnames.append(str(fname))
         fname = choice(fnames)
 
         self.dictaphone.start("play_file", fname)
