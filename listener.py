@@ -47,6 +47,7 @@ class Dictaphone(object):
             self.FORMAT = rec_format
 
         self.audio_dir = audio_dir
+        self.rec_dir = os.path.join(self.audio_dir, 'RECORDED')
 
         # A list of my threads. This is where my dead threads accumulate...
         self.threads = []
@@ -104,12 +105,11 @@ class Dictaphone(object):
         Create a recording in the directory: <self.audio_dir>/RECORDED
         with the filename specified. If none is given, the
         '''
-        rec_dir = os.path.join(self.audio_dir, 'RECORDED')
 
         if fname == '':
             # get the highest filename number in the recording dir
             max_num = 0
-            for filename in Path(rec_dir).rglob('*.wav'):
+            for filename in Path(self.rec_dir).rglob('*.wav'):
                 filename = os.path.split(filename)[-1]
                 file_num = os.path.splitext(filename)[0]
 
@@ -119,10 +119,10 @@ class Dictaphone(object):
                         max_num = file_num + 1
 
             oname = "{:>04d}.wav".format(max_num)
-            oname = os.path.join(rec_dir, oname)
+            oname = os.path.join(self.rec_dir, oname)
 
         else:
-            oname = os.path.join(rec_dir, fname)
+            oname = os.path.join(self.rec_dir, fname)
         if os.path.isfile(oname):
             print("File '{}' already exists! Not recording over it.".format(oname))
             return
@@ -248,6 +248,7 @@ class Dictaphone(object):
         self.interrupt_playback()
         self.stop_recording()
         time.sleep(10*self.CHUNKSIZE/self.RATE)
+
 
 class ButtonMonitor(object):
     '''
@@ -431,6 +432,8 @@ class Phone(object):
             'handset_down': self.handset_down,
             'redial': self.begin_recording,
             '*': self.play_random,
+            '#': self.play_most_recent,
+            '1': self.play_cummy,
         }
 
 
@@ -490,3 +493,32 @@ class Phone(object):
     def play_random(self):
         self.dictaphone.stop()
         self.dictaphone.start('play_random')
+
+    def play_most_recent(self):
+        self.dictaphone.stop()
+
+        # get the highest filename number in the recording dir
+        max_num = 0
+        for filename in Path(self.dictaphone.rec_dir).rglob('*.wav'):
+            filename = os.path.split(filename)[-1]
+            file_num = os.path.splitext(filename)[0]
+
+            if file_num.isdigit():
+                file_num = int(file_num)
+                if file_num >= max_num:
+                    max_num = file_num + 1
+
+        oname = "{:>04d}.wav".format(max_num)
+        oname = os.path.join(self.dictaphone.rec_dir, oname)
+
+        self.dictaphone.start('play_file', oname)
+
+    def play_cummy(self):
+        self.dictaphone.stop()
+
+        fnames = []
+        for fname in Path(self.dictaphone.audio_dir+'/CUM/').rglob("*.wav"):
+            fnames.append(fname)
+        fname = choice(fnames)
+
+        self.dictaphone.start("play_file", fname)
