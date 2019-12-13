@@ -427,7 +427,7 @@ class Phone(object):
         self.monitor = ButtonMonitor()
 
         self.button_functions = {
-            'handset_lifted': self.handset_up
+            'handset_lifted': self.handset_up,
             'handset_down': self.handset_down
         }
 
