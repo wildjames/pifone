@@ -388,8 +388,8 @@ class ButtonMonitor(object):
                 print("Detected button {}".format(button_pressed))
                 # threading.Thread(target=self.dialtone, args=(button_pressed,)).start()
                 self.sequence.append(button_pressed)
-
                 print("Sequence is now: \n   {}".format(self.sequence))
+
                 # Raise a flag to call this button's function, if it has one
                 self.call_button = button_pressed
 
@@ -495,6 +495,7 @@ class Phone(object):
         self.dictaphone.start('play_random')
 
     def play_most_recent(self):
+        print("Playing most recent recording")
         self.dictaphone.stop()
 
         # get the highest filename number in the recording dir
@@ -506,7 +507,7 @@ class Phone(object):
             if file_num.isdigit():
                 file_num = int(file_num)
                 if file_num >= max_num:
-                    max_num = file_num + 1
+                    max_num = file_num
 
         oname = "{:>04d}.wav".format(max_num)
         oname = os.path.join(self.dictaphone.rec_dir, oname)
@@ -514,10 +515,11 @@ class Phone(object):
         self.dictaphone.start('play_file', oname)
 
     def play_cummy(self):
+        print("Playing a random cum file")
         self.dictaphone.stop()
 
         fnames = []
-        for fname in Path(self.dictaphone.audio_dir+'/CUM/').rglob("*.wav"):
+        for fname in Path(os.path.join(self.dictaphone.audio_dir,'CUM')).rglob("*.wav"):
             fnames.append(fname)
         fname = choice(fnames)
 
