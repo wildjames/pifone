@@ -156,7 +156,6 @@ class Dictaphone(object):
         # Close the stream
         rec_stream.stop_stream()
         rec_stream.close()
-        self.player.terminate()
         audio_file.close()
 
         if self.LOUD > 0:
@@ -218,7 +217,6 @@ class Dictaphone(object):
         # close stuff gracefully.
         stream.stop_stream()
         stream.close()
-        self.player.terminate()
 
         if self.LOUD > 3:
             print("Finished with playback")
