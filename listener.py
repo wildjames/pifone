@@ -232,6 +232,7 @@ class Dictaphone(object):
             stream.write(frame)
             if self._stop_playback:
                 break
+            input("> ")
 
         # close stuff gracefully.
         stream.stop_stream()
