@@ -114,7 +114,12 @@ class Dictaphone(object):
         samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE)
         samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE)
         samples = samples.astype(float32)
-        print(samples)
+        print("DIALTONE DEBUGGING:")
+        print("Freqs: {} ~~ {}".format(f_A, f_B))
+        print("Samples has the shape {}".format(samples.shape))
+        print("samples:")
+        print(samples.tolist())
+
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
