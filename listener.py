@@ -101,35 +101,29 @@ class Dictaphone(object):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
         volume = 1.0
-        fs = self.RATE
 
         freqs_A = [1209., 1336., 1477., 1633.]
-        freqs_B = [697.,  770.,  852.,  941.]
+        freqs_B = [ 697.,  770.,  852.,  941.]
 
         f_A, f_B = self.button_tones[button]
 
         f_A = freqs_A[f_A]
         f_B = freqs_B[f_B]
 
-        f = f_A + f_B
-
-        if button == 'tone':
-            f = 1400.
-        f = float(f)
-
         # generate samples, note conversion to float32 array
-        samples = (sin(2*pi*arange(fs*duration)*f/fs)).astype(float32)
+        samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE)
+        samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE)
+        samples = samples.astype(float32)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
             output_device_index=self.DEVICE_INDEX,
             format=pyaudio.paFloat32,
             channels=1,
-            rate=fs,
-            output=True
+            rate=self.RATE,
+            output=True,
         )
 
-        # play. May repeat with different volume values (if done interactively)
         stream.write(volume*samples)
 
         stream.stop_stream()
