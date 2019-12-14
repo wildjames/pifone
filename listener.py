@@ -139,7 +139,7 @@ class Dictaphone(object):
             rate=self.RATE,
             frames_per_buffer=self.CHUNKSIZE,
             input=True,
-            # output_device_index=self.DEVICE_INDEX,
+            output_device_index=self.DEVICE_INDEX,
         )
 
         # Write the data to a file
@@ -206,7 +206,7 @@ class Dictaphone(object):
             rate=rate,
             output=True,
             frames_per_buffer=4*self.CHUNKSIZE,
-            # output_device_index=self.DEVICE_INDEX,
+            output_device_index=self.DEVICE_INDEX,
         )
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
