@@ -209,6 +209,7 @@ class Dictaphone(object):
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
         # Loop through, reading the data and playing it.
+        i = 0
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
             t0 = time.perf_counter()
@@ -216,7 +217,10 @@ class Dictaphone(object):
             t1 = time.perf_counter()
             data = audio_file.readframes(self.CHUNKSIZE)
             t2 = time.perf_counter()
+            if t1-t0 < 0.8 * self.CHUNKSIZE/self.RATE:
+                print("BAD CHUNK AT LOOP {}!".format(i))
             print("Took {:> 7.5f}s to write the chunk to stream, {:> 7.5f}s to read it from file\r".format(t1-t0, t2-t1), end='')
+            i += 1
 
         # close stuff gracefully.
         stream.stop_stream()
