@@ -461,11 +461,10 @@ class Phone(object):
         if self.monitor.call_button in self.button_functions.keys():
             func = self.button_functions[self.monitor.call_button]
             print("I need to call function {}".format(func.__name__))
-
-            threading.Thread(target=func).start()
-            self.monitor.called_button()
         elif self.monitor.call_button is not None:
-            print("Button {} is not known! Type {}".format(self.monitor.call_button, type(self.monitor.call_button)))
+            func = self.not_implimented
+        threading.Thread(target=func).start()
+        self.monitor.called_button()
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
@@ -473,6 +472,7 @@ class Phone(object):
     def not_implimented(self):
         '''Placeholder.'''
         print("I wanted to call a function, but it has not been implimented yet.")
+        self.monitor.called_button()
 
     def handset_down(self):
         '''
