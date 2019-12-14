@@ -1,11 +1,13 @@
 import os
 import threading
+import time
 import wave
 from pathlib import Path
 from random import choice
-import time
+
 import gpiozero
 import pyaudio
+from numpy import arange, float32, pi, sin
 
 
 class Dictaphone(object):
@@ -59,12 +61,32 @@ class Dictaphone(object):
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
 
+        # Keys for reconstructing the dialtones
+        self.button_tones = {
+            'tone': [2, 2],
+            'redial': [0, 3],
+            '*': [3, 0],
+            '#': [3, 2],
+            0:   [3, 1],
+            1:   [0, 0],
+            2:   [0, 1],
+            3:   [0, 2],
+            4:   [1, 0],
+            5:   [1, 1],
+            6:   [1, 2],
+            7:   [2, 0],
+            8:   [2, 1],
+            9:   [2, 2],
+        }
+
     def start(self, cmd, *args, **kwargs):
         '''
         Run the given class method, with *args and **kwargs.
 
         Raises an error if it doesn't exist.
         '''
+        if self.LOUD > 1:
+            print("Starting the dictaphone")
 
         target = getattr(self, cmd)
         args = args
@@ -74,6 +96,46 @@ class Dictaphone(object):
             target=target, args=args, kwargs=kwargs,
             daemon=True,
         ).start()
+
+    def dialtone(self, button, duration=0.1):
+        '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
+        print("Playing a button tone for {}".format(button))
+        volume = 1.0
+        fs = self.RATE
+
+        freqs_A = [1209., 1336., 1477., 1633.]
+        freqs_B = [697.,  770.,  852.,  941.]
+
+        f_A, f_B = self.button_tones[button]
+
+        f_A = freqs_A[f_A]
+        f_B = freqs_B[f_B]
+
+        f = f_A + f_B
+
+        if button == 'tone':
+            f = 1400.
+        f = float(f)
+
+        # generate samples, note conversion to float32 array
+        samples = (sin(2*pi*arange(fs*duration)*f/fs)).astype(float32)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        stream = self.player.open(
+            output_device_index=self.DEVICE_INDEX,
+            format=pyaudio.paFloat32,
+            channels=1,
+            rate=fs,
+            output=True
+        )
+
+        # play. May repeat with different volume values (if done interactively)
+        stream.write(volume*samples)
+
+        stream.stop_stream()
+        stream.close()
+
+        print("Played a dialtone")
 
     def play_random(self):
         '''Play a random audio file from my audio_files directory.
@@ -171,12 +233,9 @@ class Dictaphone(object):
           - fname, str:
             - The file to be played
         '''
-
-        print("stop playback? {}".format(self._stop_playback))
-
         # Check the audio file exists. If it does, open it for reading
         exists = os.path.isfile(fname)
-        if self.LOUD > 2:
+        if self.LOUD > 0:
             print("fname:\n'{}'".format(fname))
             print("Does it exist? {}".format("Yes" if exists else "No"))
         if not exists:
@@ -189,11 +248,12 @@ class Dictaphone(object):
         n_channels = audio_file.getnchannels()
         rate = audio_file.getframerate()
 
-        print("width: {}".format(width))
-        print("format: {}".format(fmt))
-        print("{} channels".format(n_channels))
-        print("rate: {}".format(rate))
-        print("Device index: {}".format(self.DEVICE_INDEX))
+        if self.LOUD > 2:
+            print("width: {}".format(width))
+            print("format: {}".format(fmt))
+            print("{} channels".format(n_channels))
+            print("rate: {}".format(rate))
+            print("Device index: {}".format(self.DEVICE_INDEX))
 
         # Begin stream. This gets written to like a sdtout, only it comes
         # out of your speakers not your terminal
@@ -206,7 +266,6 @@ class Dictaphone(object):
             output_device_index=self.DEVICE_INDEX,
         )
 
-        print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
         # Loop through, reading the data and playing it.
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
@@ -217,7 +276,7 @@ class Dictaphone(object):
         stream.stop_stream()
         stream.close()
 
-        if self.LOUD > 3:
+        if self.LOUD > 0:
             print("Finished with playback")
             print("Setting _stop_playback to False")
         self._stop_playback = False
@@ -241,7 +300,8 @@ class Dictaphone(object):
 
     def stop(self):
         '''Stops both recording, and playback'''
-        print("Stop all signal recieved")
+        if self.LOUD > 2:
+            print("Stop all signal recieved")
         self.interrupt_playback()
         self.stop_recording()
 
@@ -309,6 +369,8 @@ class ButtonMonitor(object):
                 print("Created dummy pin {}".format(btn_pin))
 
         threading.Thread(target=self.poll_buttons, daemon=True).start()
+
+        print("Button monitor working!")
 
     def handset_up(self):
         print("Handset rasied. Now accepting button presses")
@@ -448,6 +510,13 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
+        # Play the dialtone for the button
+        if self.monitor.call_button in self.dictaphone.button_tones.keys():
+            threading.Thread(
+                target=self.dictaphone.dialtone,
+                args=(self.monitor.call_button,)
+            ).start()
+
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor.call_button in self.button_functions.keys():
