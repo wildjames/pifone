@@ -214,7 +214,7 @@ class Dictaphone(object):
             t1 = time.perf_counter()
             data = audio_file.readframes(self.CHUNKSIZE)
             t2 = time.perf_counter()
-            print("Took {:>5.3f}s to read chunk from file, {:>5.3f}s to write it to stream\r".format(t1-t0), end='')
+            print("Took {:>5.3f}s to read chunk from file, {:>5.3f}s to write it to stream\r".format(t1-t0, t2-t1), end='')
 
         # close stuff gracefully.
         stream.stop_stream()
