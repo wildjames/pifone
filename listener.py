@@ -49,26 +49,16 @@ class Dictaphone(object):
         self.audio_dir = audio_dir
         self.rec_dir = os.path.join(self.audio_dir, 'RECORDED')
 
-        # A list of my threads. This is where my dead threads accumulate...
-        self.threads = []
-
-        # # TODO: When all threads are dead, reset the above list to free memory.
-        # # Removing them from the list should delete all references to them,
-        # # then the garbage collector can free the stuff as normal
-        # self.thread_garbage_collector = threading.Timer(
-        #     target=self._reset_threadlist
-        # )
-
         # Set up audio player
-        player = pyaudio.PyAudio()
+        self.player = pyaudio.PyAudio()
 
-        print(player.get_device_count())
-        for dev_index in range(player.get_device_count()):
-            info = player.get_device_info_by_index(dev_index)
+        print(self.player.get_device_count())
+        for dev_index in range(self.player.get_device_count()):
+            info = self.player.get_device_info_by_index(dev_index)
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
-        player.terminate()
+        self.player.terminate()
 
         return
 
@@ -143,9 +133,7 @@ class Dictaphone(object):
             print("Making a recording, saving to {}".format(oname))
 
         # Open an audio stream for recording
-        audio_stream = pyaudio.PyAudio()
-
-        rec_stream = audio_stream.open(
+        rec_stream = self.player.open(
             format=self.FORMAT,
             channels=self.N_CHANNELS,
             rate=self.RATE,
@@ -157,10 +145,9 @@ class Dictaphone(object):
         # Write the data to a file
         audio_file = wave.open(oname, 'wb')
         audio_file.setnchannels(self.N_CHANNELS)
-        audio_file.setsampwidth(audio_stream.get_sample_size(self.FORMAT))
+        audio_file.setsampwidth(self.player.get_sample_size(self.FORMAT))
         audio_file.setframerate(self.RATE)
 
-        # TODO:  (SAFE ON RPI???)
         # Record all the frames we want, writing them as we go
         while not self._stop_recording:
             frame = rec_stream.read(self.CHUNKSIZE)
@@ -169,7 +156,7 @@ class Dictaphone(object):
         # Close the stream
         rec_stream.stop_stream()
         rec_stream.close()
-        audio_stream.terminate()
+        self.player.terminate()
         audio_file.close()
 
         if self.LOUD > 0:
@@ -191,9 +178,6 @@ class Dictaphone(object):
 
         print("stop playback? {}".format(self._stop_playback))
 
-        # Open audio stream for reading
-        audio_stream = pyaudio.PyAudio()
-
         # Check the audio file exists. If it does, open it for reading
         exists = os.path.isfile(fname)
         if self.LOUD > 2:
@@ -205,13 +189,13 @@ class Dictaphone(object):
 
         # Get the format of the audio file, number of channels (L,R speakers?), and framerate
         width = audio_file.getsampwidth()
-        fmt = audio_stream.get_format_from_width(width)
+        fmt = self.player.get_format_from_width(width)
         n_channels = audio_file.getnchannels()
         rate = audio_file.getframerate()
 
         # Begin stream. This gets written to like a sdtout, only it comes
         # out of your speakers not your terminal
-        stream = audio_stream.open(
+        stream = self.player.open(
             format=fmt,
             channels=n_channels,
             rate=rate,
@@ -234,7 +218,7 @@ class Dictaphone(object):
         # close stuff gracefully.
         stream.stop_stream()
         stream.close()
-        audio_stream.terminate()
+        self.player.terminate()
 
         if self.LOUD > 3:
             print("Finished with playback")
