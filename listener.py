@@ -114,6 +114,7 @@ class Dictaphone(object):
         samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE)
         samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE)
         samples = samples.astype(float32)
+        print(samples)
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
@@ -122,6 +123,7 @@ class Dictaphone(object):
             channels=1,
             rate=self.RATE,
             output=True,
+            frames_per_buffer=4*self.CHUNKSIZE,
         )
 
         stream.write(volume*samples)
