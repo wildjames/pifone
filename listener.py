@@ -207,6 +207,7 @@ class Dictaphone(object):
             # device_id=1,
         )
 
+        print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
         # Loop through, reading the data and playing it.
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
