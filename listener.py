@@ -113,6 +113,7 @@ class Dictaphone(object):
         # generate samples, note conversion to float32 array
         samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE) / 2.0
         samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE) / 2.0
+        samples *= volume
         samples = samples.astype(float32)
         print("DIALTONE DEBUGGING:")
         print("Freqs: {} ~~ {}".format(f_A, f_B))
