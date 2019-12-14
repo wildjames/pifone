@@ -72,14 +72,10 @@ class Dictaphone(object):
         args = args
         kwargs = kwargs
 
-        # self.thread = multiprocessing.Process(
-        self.threads.append(
-            threading.Thread(
-                target=target, args=args, kwargs=kwargs,
-                daemon=True,
-            )
-        )
-        self.threads[-1].start()
+        threading.Thread(
+            target=target, args=args, kwargs=kwargs,
+            daemon=True,
+        ).start()
 
     def play_random(self):
         '''Play a random audio file from my audio_files directory.
@@ -212,8 +208,11 @@ class Dictaphone(object):
 
         # Loop through, reading the data and playing it.
         data = audio_file.readframes(self.CHUNKSIZE)
-        while data != '' and not self._stop_playback:
+        while data and not self._stop_playback:
+            t0 = time.perf_counter()
             stream.write(data)
+            t1 = time.perf_counter()
+            print("Took {:6.3f}s to read chunk from file".format(t1-t0))
             data = audio_file.readframes(self.CHUNKSIZE)
 
         # close stuff gracefully.
