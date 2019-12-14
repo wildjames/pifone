@@ -192,6 +192,11 @@ class Dictaphone(object):
         n_channels = audio_file.getnchannels()
         rate = audio_file.getframerate()
 
+        print("width: {}".format(width))
+        print("format: {}".format(fmt))
+        print("{} channels".format(n_channels))
+        print("rate: {}".format(rate))
+
         # Begin stream. This gets written to like a sdtout, only it comes
         # out of your speakers not your terminal
         stream = self.player.open(
