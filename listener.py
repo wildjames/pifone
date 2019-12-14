@@ -136,7 +136,7 @@ class Dictaphone(object):
             rate=self.RATE,
             frames_per_buffer=self.CHUNKSIZE,
             input=True,
-            output_device_index=self.DEVICE_INDEX,
+            input_device_index=self.DEVICE_INDEX,
         )
 
         # Write the data to a file
