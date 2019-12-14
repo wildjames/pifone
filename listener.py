@@ -114,7 +114,9 @@ class Dictaphone(object):
         samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE) / 2.0
         samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE) / 2.0
         samples *= volume
+
         samples = samples.astype(float32)
+
         print("DIALTONE DEBUGGING:")
         print("Freqs: {} ~~ {}".format(f_A, f_B))
         print("Samples has the shape {}".format(samples.shape))
@@ -129,10 +131,10 @@ class Dictaphone(object):
             channels=1,
             rate=self.RATE,
             output=True,
-            frames_per_buffer=4*self.CHUNKSIZE,
+            frames_per_buffer=self.CHUNKSIZE,
         )
 
-        stream.write(volume*samples)
+        stream.write(samples)
 
         stream.stop_stream()
         stream.close()
