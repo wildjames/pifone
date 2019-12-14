@@ -139,7 +139,7 @@ class Dictaphone(object):
             rate=self.RATE,
             frames_per_buffer=self.CHUNKSIZE,
             input=True,
-            output_device_index=self.DEVICE_INDEX,
+            # output_device_index=self.DEVICE_INDEX,
         )
 
         # Write the data to a file
@@ -205,8 +205,8 @@ class Dictaphone(object):
             channels=n_channels,
             rate=rate,
             output=True,
-            output_device_index=self.DEVICE_INDEX,
             frames_per_buffer=4*self.CHUNKSIZE,
+            # output_device_index=self.DEVICE_INDEX,
         )
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
@@ -428,7 +428,7 @@ class Phone(object):
         '''
 
         self.dictaphone = Dictaphone(audio_dir)
-        self.monitor = ButtonMonitor()
+        self.monitor = ButtonMonitor(handset_pin=handset_pin)
 
         self.button_functions = {
             'handset_lifted': self.handset_up,
