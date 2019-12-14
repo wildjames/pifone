@@ -204,6 +204,7 @@ class Dictaphone(object):
             channels=n_channels,
             rate=rate,
             output=True,
+            device_id=1,
         )
 
         # Loop through, reading the data and playing it.
