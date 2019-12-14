@@ -100,7 +100,7 @@ class Dictaphone(object):
     def dialtone(self, button, duration=0.1):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
-        volume = 1.0
+        volume = 256.0
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [ 697.,  770.,  852.,  941.]
@@ -111,8 +111,8 @@ class Dictaphone(object):
         f_B = freqs_B[f_B]
 
         # generate samples, note conversion to float32 array
-        samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE)
-        samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE)
+        samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE) / 2.0
+        samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE) / 2.0
         samples = samples.astype(float32)
         print("DIALTONE DEBUGGING:")
         print("Freqs: {} ~~ {}".format(f_A, f_B))
