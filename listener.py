@@ -219,14 +219,7 @@ class Dictaphone(object):
             t1 = time.perf_counter()
             data = audio_file.readframes(self.CHUNKSIZE)
             t2 = time.perf_counter()
-            print("Took {:> 7.5f}s to write the chunk to stream, {:> 7.5f}s to read it from file\r".format(t1-t0, t2-t1), end='')
-            readtimes.append(t2-t1)
-            writetimes.append(t1-t0)
-        import matplotlib.pyplot as plt
-        fig, ax = plt.subplots()
-        ax.scatter(readtimes,  color='red',   label='readtimes', marker='x')
-        ax.scatter(writetimes, color='black', label='writetimes', marker='x')
-        plt.savefig("Sample times.pdf")
+            print("Took {:> 7.5f}s to write the chunk to stream, {:> 7.5f}s to read it from file".format(t1-t0, t2-t1))
 
         # close stuff gracefully.
         stream.stop_stream()

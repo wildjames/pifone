@@ -1,16 +1,10 @@
-import os
 import wave
 import pyaudio
 
 fname = 'AUDIO_FILES/mortal_kombat.wav'
 
-# Open audio stream for reading
+# Open audio stream for writing and file for reading
 audio_stream = pyaudio.PyAudio()
-
-# Check the audio file exists. If it does, open it for reading
-exists = os.path.isfile(fname)
-if not exists:
-    exit()
 audio_file = wave.open(fname, 'rb')
 
 # Get the format of the audio file, number of channels (L,R speakers?), and framerate
