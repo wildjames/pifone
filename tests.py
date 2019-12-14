@@ -5,7 +5,7 @@ import os
 
 ###### TEST THE DICTAPHONE OBJECT ######
 test_playback = True
-test_recording = True
+test_recording = False
 
 ###### TEST THE SIGNAL SENDER AND RECIEVER ######
 test_signalman = False

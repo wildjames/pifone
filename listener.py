@@ -58,9 +58,6 @@ class Dictaphone(object):
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
-        # self.player.terminate()
-
-        return
 
     def start(self, cmd, *args, **kwargs):
         '''
@@ -337,6 +334,7 @@ class ButtonMonitor(object):
         self.call_button = None
 
     def ping_buttons(self):
+        ''' Check if any of the buttons have been pushed '''
         # Check the first button group
         self.grpA_pin.value = True
         outputs = ['redial', '#', 0, '*']
@@ -377,9 +375,6 @@ class ButtonMonitor(object):
 
     def poll_buttons(self):
         '''Figure out which buttons have been pressed, and set the 'call me' variable'''
-        ############################################################
-        # # # # Check if any of the buttons have been pushed # # # #
-        ############################################################
         if self._handset_raised:
             button_pressed = self.ping_buttons()
         else:
@@ -457,14 +452,17 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
+        func = None
         # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor.call_button in self.button_functions.keys():
             func = self.button_functions[self.monitor.call_button]
             print("I need to call function {}".format(func.__name__))
         elif self.monitor.call_button is not None:
             func = self.not_implimented
-        threading.Thread(target=func).start()
-        self.monitor.called_button()
+
+        if func is not None:
+            threading.Thread(target=func).start()
+            self.monitor.called_button()
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
