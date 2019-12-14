@@ -226,6 +226,7 @@ class Dictaphone(object):
         fig, ax = plt.subplots()
         ax.scatter(readtimes,  color='red',   label='readtimes', marker='x')
         ax.scatter(writetimes, color='black', label='writetimes', marker='x')
+        plt.savefig("Sample times.pdf")
 
         # close stuff gracefully.
         stream.stop_stream()
