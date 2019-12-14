@@ -226,7 +226,8 @@ class Dictaphone(object):
         data = audio_file.readframes(self.CHUNKSIZE)
         frames = []
         while data:
-            frames.append(audio_file.readframes(self.CHUNKSIZE))
+            frames.append(data)
+            data = audio_file.readframes(self.CHUNKSIZE)
         for frame in frames:
             stream.write(frame)
             if self._stop_playback:
