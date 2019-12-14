@@ -59,6 +59,17 @@ class Dictaphone(object):
         #     target=self._reset_threadlist
         # )
 
+        # Set up audio player
+        player = pyaudio.PyAudio()
+
+        print(player.get_device_count())
+        for dev_index in range(player.get_device_count()):
+            info = player.get_device_info_by_index(dev_index)
+            if info['name'] == 'USB Audio Device: - (hw:1,0)':
+                self.DEVICE_INDEX = dev_index
+        print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
+        player.terminate()
+
         return
 
     def start(self, cmd, *args, **kwargs):
@@ -204,14 +215,11 @@ class Dictaphone(object):
             channels=n_channels,
             rate=rate,
             output=True,
-            # device_id=1,
+            output_device_index=self.DEVICE_INDEX,
         )
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
         # Loop through, reading the data and playing it.
-        i = 0
-        readtimes = []
-        writetimes = []
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
             t0 = time.perf_counter()
