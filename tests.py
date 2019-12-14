@@ -1,17 +1,17 @@
 import time
-from listener import Dictaphone, PhoneMonitor, Phone
+from listener import Dictaphone, ButtonMonitor, Phone
 import os
 
 
 ###### TEST THE DICTAPHONE OBJECT ######
-test_playback = False
-test_recording = False
+test_playback = True
+test_recording = True
 
 ###### TEST THE SIGNAL SENDER AND RECIEVER ######
 test_signalman = False
 
 ###### TEST THE PHONE OBJECT, WITH BOTH OF THE ABOVE ######
-test_phone = True
+test_phone = False
 
 if test_playback or test_recording:
     fname = "AUDIO_FILES/mortal_kombat.wav"
