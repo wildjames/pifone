@@ -18,7 +18,7 @@ if test_playback or test_recording:
     dic = Dictaphone(audio_dir='AUDIO_FILES')
 
 if test_signalman:
-    signaller = PhoneMonitor(dummy_mode=True)
+    signaller = ButtonMonitor(dummy_mode=True)
 
 
 #### Playback #####
