@@ -134,7 +134,7 @@ class Dictaphone(object):
             format=self.FORMAT,
             channels=self.N_CHANNELS,
             rate=self.RATE,
-            frames_per_buffer=self.CHUNKSIZE,
+            frames_per_buffer=4*self.CHUNKSIZE,
             input=True,
             input_device_index=self.DEVICE_INDEX,
         )
