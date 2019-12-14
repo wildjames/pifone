@@ -58,7 +58,6 @@ class Dictaphone(object):
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
-        self.player.terminate()
 
         return
 
@@ -205,8 +204,8 @@ class Dictaphone(object):
             channels=n_channels,
             rate=rate,
             output=True,
-            output_device_index=self.DEVICE_INDEX,
             frames_per_buffer=4*self.CHUNKSIZE,
+            output_device_index=self.DEVICE_INDEX,
         )
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
@@ -337,6 +336,7 @@ class ButtonMonitor(object):
         self.call_button = None
 
     def ping_buttons(self):
+        ''' Check if any of the buttons have been pushed '''
         # Check the first button group
         self.grpA_pin.value = True
         outputs = ['redial', '#', 0, '*']
@@ -377,9 +377,6 @@ class ButtonMonitor(object):
 
     def poll_buttons(self):
         '''Figure out which buttons have been pressed, and set the 'call me' variable'''
-        ############################################################
-        # # # # Check if any of the buttons have been pushed # # # #
-        ############################################################
         if self._handset_raised:
             button_pressed = self.ping_buttons()
         else:
@@ -428,7 +425,7 @@ class Phone(object):
         '''
 
         self.dictaphone = Dictaphone(audio_dir)
-        self.monitor = ButtonMonitor()
+        self.monitor = ButtonMonitor(handset_pin=handset_pin)
 
         self.button_functions = {
             'handset_lifted': self.handset_up,
@@ -457,15 +454,18 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
+        func = None
         # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor.call_button in self.button_functions.keys():
             func = self.button_functions[self.monitor.call_button]
             print("I need to call function {}".format(func.__name__))
 
+        elif self.monitor.call_button is not None:
+            func = self.not_implimented
+
+        if func is not None:
             threading.Thread(target=func).start()
             self.monitor.called_button()
-        elif self.monitor.call_button is not None:
-            print("Button {} is not known! Type {}".format(self.monitor.call_button, type(self.monitor.call_button)))
 
         if self._polling:
             threading.Timer(self.POLLING_RATE, self.poll_monitor).start()
@@ -473,6 +473,7 @@ class Phone(object):
     def not_implimented(self):
         '''Placeholder.'''
         print("I wanted to call a function, but it has not been implimented yet.")
+        self.monitor.called_button()
 
     def handset_down(self):
         '''
