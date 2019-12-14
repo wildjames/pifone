@@ -58,7 +58,7 @@ class Dictaphone(object):
             if info['name'] == 'USB Audio Device: - (hw:1,0)':
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
-        self.player.terminate()
+        # self.player.terminate()
 
         return
 
