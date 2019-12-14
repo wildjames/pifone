@@ -198,13 +198,6 @@ class Dictaphone(object):
         print("rate: {}".format(rate))
         print("Device index: {}".format(self.DEVICE_INDEX))
 
-        for dev_index in range(self.player.get_device_count()):
-            info = self.player.get_device_info_by_index(dev_index)
-            print(info)
-            if info['name'] == 'USB Audio Device: - (hw:1,0)':
-                self.DEVICE_INDEX = dev_index
-            print("\n\n")
-
         # Begin stream. This gets written to like a sdtout, only it comes
         # out of your speakers not your terminal
         stream = self.player.open(
