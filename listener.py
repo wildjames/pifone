@@ -216,6 +216,7 @@ class Dictaphone(object):
             rate=rate,
             output=True,
             output_device_index=self.DEVICE_INDEX,
+            frames_per_buffer=self.CHUNKSIZE,
         )
 
         print("We expect writing to the stream to take {:>.5f}s".format(self.CHUNKSIZE/self.RATE))
