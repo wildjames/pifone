@@ -224,8 +224,8 @@ class Dictaphone(object):
             writetimes.append(t1-t0)
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()
-        ax.scatter(readtimes,  color='red',   label='readtimes')
-        ax.scatter(writetimes, color='black', label='writetimes')
+        ax.scatter(readtimes,  color='red',   label='readtimes', marker='x')
+        ax.scatter(writetimes, color='black', label='writetimes', marker='x')
 
         # close stuff gracefully.
         stream.stop_stream()
