@@ -36,7 +36,7 @@ class Dictaphone(object):
 
     LOUD = 4
 
-    def __init__(self, audio_dir='.', rate=None, rec_format=None, chunk_size=None, n_channels=None, **kwargs):
+    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, **kwargs):
         '''Set up the dictaphone's audio stream'''
 
         if rate is not None:
@@ -57,7 +57,7 @@ class Dictaphone(object):
         print(self.player.get_device_count())
         for dev_index in range(self.player.get_device_count()):
             info = self.player.get_device_info_by_index(dev_index)
-            if info['name'] == 'USB Audio Device: - (hw:1,0)':
+            if info['name'] == audio_device:
                 self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
 
@@ -97,10 +97,10 @@ class Dictaphone(object):
             daemon=True,
         ).start()
 
-    def dialtone(self, button, duration=0.1):
+    def dialtone(self, button, duration=0.15):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
-        volume = 256.0
+        volume = 150 / 2
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [ 697.,  770.,  852.,  941.]
@@ -111,29 +111,25 @@ class Dictaphone(object):
         f_B = freqs_B[f_B]
 
         # generate samples, note conversion to float32 array
-        samples = sin(2*pi*arange(self.RATE*duration)*f_A/self.RATE) / 2.0
-        samples += sin(2*pi*arange(self.RATE*duration)*f_B/self.RATE) / 2.0
+        phi = arange(0.0, duration, step=1/self.RATE)
+        samples = sin(phi*f_A*2.*pi)
+        samples += sin(phi*f_B*2.*pi)
         samples *= volume
 
-        samples = samples.astype(float32)
+        samples = samples.astype(float32).tobytes()
 
         print("DIALTONE DEBUGGING:")
         print("Freqs: {} ~~ {}".format(f_A, f_B))
-        print("Samples has the shape {}".format(samples.shape))
-        print("samples:")
-        print(samples.tolist())
-
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
         stream = self.player.open(
-            output_device_index=self.DEVICE_INDEX,
             format=pyaudio.paFloat32,
-            channels=1,
+            channels=self.N_CHANNELS,
             rate=self.RATE,
             output=True,
             frames_per_buffer=self.CHUNKSIZE,
+            output_device_index=self.DEVICE_INDEX,
         )
-
         stream.write(samples)
 
         stream.stop_stream()
