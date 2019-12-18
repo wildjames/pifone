@@ -118,7 +118,7 @@ class Dictaphone(object):
         phi = arange(0.0, duration, step=1/self.RATE)
         samples = sin(phi*f_A*2.*pi)
         samples += sin(phi*f_B*2.*pi)
-        # samples *= volume
+        samples *= volume
 
         samples = samples.astype(float32).tobytes()
 
