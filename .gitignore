@@ -4,3 +4,5 @@ Dictophone/
 **/*.wav
 __pycache__
 .DS_Store
+listener.pyc
+.vscode
