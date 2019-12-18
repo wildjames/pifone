@@ -34,7 +34,11 @@ class Dictaphone(object):
     _stop_playback = False
     _stop_recording = False
 
+    # Debugging verbosity
     LOUD = 4
+
+    # Dialtone volume
+    VOLUME = 0.5
 
     def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, **kwargs):
         '''Set up the dictaphone's audio stream'''
@@ -100,7 +104,7 @@ class Dictaphone(object):
     def dialtone(self, button, duration=0.15):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
-        volume = 150 / 2
+        volume = self.VOLUME / 2
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [ 697.,  770.,  852.,  941.]
@@ -114,7 +118,7 @@ class Dictaphone(object):
         phi = arange(0.0, duration, step=1/self.RATE)
         samples = sin(phi*f_A*2.*pi)
         samples += sin(phi*f_B*2.*pi)
-        samples *= volume
+        # samples *= volume
 
         samples = samples.astype(float32).tobytes()
 
