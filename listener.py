@@ -127,7 +127,6 @@ class Dictaphone(object):
             channels=self.N_CHANNELS,
             rate=self.RATE,
             output=True,
-            frames_per_buffer=self.CHUNKSIZE,
             output_device_index=self.DEVICE_INDEX,
         )
         stream.write(samples)
