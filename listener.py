@@ -126,14 +126,19 @@ class Dictaphone(object):
         print("Freqs: {} ~~ {}".format(f_A, f_B))
 
         # for paFloat32 sample values must be in range [-1.0, 1.0]
-        stream = self.player.open(
-            format=pyaudio.paFloat32,
-            channels=self.N_CHANNELS,
-            rate=self.RATE,
-            output=True,
-            output_device_index=self.DEVICE_INDEX,
-        )
-        stream.write(samples)
+        while True:
+            try:
+                stream = self.player.open(
+                    format=pyaudio.paFloat32,
+                    channels=self.N_CHANNELS,
+                    rate=self.RATE,
+                    output=True,
+                    output_device_index=self.DEVICE_INDEX,
+                )
+                stream.write(samples)
+                break
+            except:
+                continue
 
         stream.stop_stream()
         stream.close()
