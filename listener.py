@@ -141,9 +141,6 @@ class Dictaphone(object):
                 break
             except:
                 continue
-            finally:
-                stream.stop_stream()
-                stream.close()
 
         stream.stop_stream()
         stream.close()
