@@ -118,14 +118,16 @@ class Dictaphone(object):
         phi = arange(0.0, duration, step=1/self.RATE)
         samples = sin(phi*f_A*2.*pi)
         samples += sin(phi*f_B*2.*pi)
+
+        # for paFloat32 sample values must be in range [-1.0, 1.0]
         samples *= volume
 
         samples = samples.astype(float32).tobytes()
 
-        print("DIALTONE DEBUGGING:")
-        print("Freqs: {} ~~ {}".format(f_A, f_B))
-
-        # for paFloat32 sample values must be in range [-1.0, 1.0]
+        # This frequently crashes if it tries to start a new stream exactly while
+        # another stream is writing [[[UNVERIFIED!]]]. Repeatedly attempt to
+        # play the tone until it sucessfully reaches the break statement,
+        # then continue
         while True:
             try:
                 stream = self.player.open(
@@ -139,6 +141,9 @@ class Dictaphone(object):
                 break
             except:
                 continue
+            finally:
+                stream.stop_stream()
+                stream.close()
 
         stream.stop_stream()
         stream.close()
