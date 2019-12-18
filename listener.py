@@ -37,7 +37,7 @@ class Dictaphone(object):
     # Debugging verbosity
     LOUD = 4
 
-    # Dialtone volume
+    # Dialtone volume
     VOLUME = 0.5
 
     def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, **kwargs):
@@ -193,8 +193,8 @@ class Dictaphone(object):
             print("File '{}' already exists! Not recording over it.".format(oname))
             return
 
-        # I'll overwrite the process termination to wait for this flag to become True,
-        # so that my file writing always works properly
+        # I'll overwrite the process termination to wait for this flag to become True,
+        # so that my file writing always works properly
         self._stop_recording = False
         self._stop_playback = True
 
@@ -217,7 +217,7 @@ class Dictaphone(object):
         audio_file.setsampwidth(self.player.get_sample_size(self.FORMAT))
         audio_file.setframerate(self.RATE)
 
-        # Record all the frames we want, writing them as we go
+        # Record all the frames we want, writing them as we go
         while not self._stop_recording:
             frame = rec_stream.read(self.CHUNKSIZE)
             audio_file.writeframes(frame)
@@ -252,7 +252,7 @@ class Dictaphone(object):
             return
         audio_file = wave.open(fname, 'rb')
 
-        # Get the format of the audio file, number of channels (L,R speakers?), and framerate
+        # Get the format of the audio file, number of channels (L,R speakers?), and framerate
         width = audio_file.getsampwidth()
         fmt = self.player.get_format_from_width(width)
         n_channels = audio_file.getnchannels()
@@ -353,11 +353,11 @@ class ButtonMonitor(object):
         self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
         print("Initialised Input pins")
 
-        # This variable holds the name of a button if it's function needs to be called
+        # This variable holds the name of a button if it's function needs to be called
         self.call_button = None
         # Last button that was pushed
         self.last_button = None
-        # Button press history, since handset was raised
+        # Button press history, since handset was raised
         self.sequence = []
 
         self._polling = False
@@ -520,7 +520,7 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
-        # Play the dialtone for the button
+        # Play the dialtone for the button
         if self.monitor.call_button in self.dictaphone.button_tones.keys():
             threading.Thread(
                 target=self.dictaphone.dialtone,
@@ -528,7 +528,7 @@ class Phone(object):
             ).start()
 
         func = None
-        # Only execute the button if the handset_up is recorded in the sequence
+        # Only execute the button if the handset_up is recorded in the sequence
         if self.monitor.call_button in self.button_functions.keys():
             func = self.button_functions[self.monitor.call_button]
             print("I need to call function {}".format(func.__name__))
@@ -554,7 +554,7 @@ class Phone(object):
         '''
         if self.loud > 0:
             print("Handset replaced! Stopping playback")
-        # Playback and recording must stop
+        # Playback and recording must stop
         self.dictaphone.stop()
 
     def handset_up(self):
