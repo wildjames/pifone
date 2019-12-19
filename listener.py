@@ -522,6 +522,7 @@ class Phone(object):
 
     def exit(self):
         self.stop()
+        self.handset_down()
 
         raise SystemExit()
 
