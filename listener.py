@@ -480,7 +480,7 @@ class Phone(object):
     can press a button during playback, and a tone should still play OVER the
     existing stream.
     '''
-    POLLING_RATE = 0.1
+    POLLING_RATE = 0.5
     _polling = False
     loud = 4
 
@@ -521,11 +521,11 @@ class Phone(object):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
         # Play the dialtone for the button
         if self.monitor.call_button in self.dictaphone.button_tones.keys():
-            # threading.Thread(
-            #     target=self.dictaphone.dialtone,
-            #     args=(self.monitor.call_button,)
-            # ).start()
-            self.dictaphone.dialtone(self.monitor.call_button)
+            threading.Thread(
+                target=self.dictaphone.dialtone,
+                args=(self.monitor.call_button,)
+            ).start()
+            # self.dictaphone.dialtone(self.monitor.call_button)
 
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
