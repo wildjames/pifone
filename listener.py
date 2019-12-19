@@ -128,25 +128,23 @@ class Dictaphone(object):
         # another stream is writing [[[UNVERIFIED!]]]. Repeatedly attempt to
         # play the tone until it sucessfully reaches the break statement,
         # then continue
-        while True:
-            try:
-                stream = self.player.open(
-                    format=pyaudio.paFloat32,
-                    channels=self.N_CHANNELS,
-                    rate=self.RATE,
-                    output=True,
-                    frames_per_buffer=self.CHUNKSIZE,
-                    output_device_index=self.DEVICE_INDEX,
-                )
-                stream.write(samples)
-                break
-            except:
-                continue
+        try:
+            stream = self.player.open(
+                format=pyaudio.paFloat32,
+                channels=self.N_CHANNELS,
+                rate=self.RATE,
+                output=True,
+                # frames_per_buffer=self.CHUNKSIZE,
+                output_device_index=self.DEVICE_INDEX,
+            )
+            stream.write(samples)
+            stream.stop_stream()
+            stream.close()
+            print("Played a dialtone")
+        except:
+            print("Failed to play a dialtone")
 
-        stream.stop_stream()
-        stream.close()
 
-        print("Played a dialtone")
 
     def play_random(self):
         '''Play a random audio file from my audio_files directory.
