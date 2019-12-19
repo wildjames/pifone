@@ -8,6 +8,7 @@ from random import choice
 import gpiozero
 import pyaudio
 from numpy import arange, float32, pi, sin
+from sys import exit
 
 
 class Dictaphone(object):
@@ -140,7 +141,6 @@ class Dictaphone(object):
         stream.stop_stream()
         stream.close()
         print("Played a dialtone")
-
 
 
     def play_random(self):
@@ -497,6 +497,10 @@ class Phone(object):
             '#': self.play_most_recent,
         }
 
+        self.sequences = {
+            [4,6,8,0]: exit,
+        }
+
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
@@ -522,6 +526,9 @@ class Phone(object):
                 args=(self.monitor.call_button,)
             ).start()
             # self.dictaphone.dialtone(self.monitor.call_button)
+
+        if self.monitor.sequence in self.sequences.keys():
+            self.sequences[self.monitor.sequence]()
 
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
