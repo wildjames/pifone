@@ -498,7 +498,6 @@ class Phone(object):
             'redial': self.begin_recording,
             '*': self.play_random,
             '#': self.play_most_recent,
-            1: self.play_cummy,
         }
 
 
@@ -591,17 +590,3 @@ class Phone(object):
         oname = os.path.join(self.dictaphone.rec_dir, oname)
 
         self.dictaphone.start('play_file', oname)
-
-    def play_cummy(self):
-        print("Playing a random cum file")
-        self.dictaphone.stop()
-
-        cumdir = os.path.join(self.dictaphone.audio_dir,'CUM')
-        print("Cumdir: {}".format(cumdir))
-
-        fnames = []
-        for fname in Path(cumdir).rglob("*.wav"):
-            fnames.append(str(fname))
-        fname = choice(fnames)
-
-        self.dictaphone.start("play_file", fname)
