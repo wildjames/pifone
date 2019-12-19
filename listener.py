@@ -608,7 +608,7 @@ class Phone(object):
 
             if file_num.isdigit():
                 file_num = int(file_num)
-                if file_num >= max_num:
+                if file_num >= nops:
                     max_num = file_num + 1
 
         os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
