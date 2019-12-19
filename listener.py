@@ -532,6 +532,7 @@ class Phone(object):
         seq = ''.join([str(i) for i in self.monitor.sequence])
         if seq in self.sequences.keys():
             self.sequences[seq]()
+            self.monitor.clear_sequence()
 
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
