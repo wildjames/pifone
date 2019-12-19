@@ -529,8 +529,9 @@ class Phone(object):
             ).start()
             # self.dictaphone.dialtone(self.monitor.call_button)
 
-        if ''.join(self.monitor.sequence) in self.sequences.keys():
-            self.sequences[''.join(self.monitor.sequence)]()
+        seq = ''.join([str(i) for i in self.monitor.sequence])
+        if seq in self.sequences.keys():
+            self.sequences[seq]()
 
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
@@ -602,7 +603,7 @@ class Phone(object):
 
         nops = 0
         op_loc = os.path.split(self.operator_fname)[0]
-        for filename in Path(op_loc).rglob('operator.wav.OLD*'):
+        for _ in Path(op_loc).rglob('operator.wav.OLD*'):
             nops += 1
 
         print("I have {} prior operator recordings")
