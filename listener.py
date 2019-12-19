@@ -607,6 +607,8 @@ class Phone(object):
             nops += 1
 
         print("I have {} prior operator recordings".format(nops))
-        os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
+        if os.path.isfile(self.operator_fname):
+            os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
 
-        # self.dictaphone.start('make_recording', self.operator_fname)
+        self.dictaphone.play_file('AUDIO_FILES/operator_preamble.wav')
+        self.dictaphone.start('make_recording', self.operator_fname)
