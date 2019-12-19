@@ -498,7 +498,7 @@ class Phone(object):
         }
 
         self.sequences = {
-            '4860': exit,
+            '4860': self.exit,
             '9453': self.record_operator,
         }
 
@@ -519,6 +519,11 @@ class Phone(object):
         '''Stop myself, and my monitor's polling, and my dictaphone's playback'''
         self._polling = False
         self.dictaphone.stop()
+
+    def exit(self):
+        self.stop()
+
+        raise SystemExit()
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
