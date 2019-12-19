@@ -608,4 +608,4 @@ class Phone(object):
         print("I have {} prior operator recordings")
         os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
 
-        self.dictaphone.start('make_recording', self.operator_fname)
+        # self.dictaphone.start('make_recording', self.operator_fname)
