@@ -603,14 +603,9 @@ class Phone(object):
         nops = 0
         op_loc = os.path.split(self.operator_fname)[0]
         for filename in Path(op_loc).rglob('operator.wav.OLD*'):
-            filename = os.path.split(filename)[-1]
-            file_num = filename.replace("operator.wav.OLD", "")
+            nops += 1
 
-            if file_num.isdigit():
-                file_num = int(file_num)
-                if file_num >= nops:
-                    max_num = file_num + 1
-
+        print("I have {} prior operator recordings")
         os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
 
         self.dictaphone.start('make_recording', self.operator_fname)
