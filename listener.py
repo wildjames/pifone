@@ -498,7 +498,7 @@ class Phone(object):
         }
 
         self.sequences = {
-            [4,6,8,0]: exit,
+            '4860': exit,
         }
 
 
@@ -527,8 +527,8 @@ class Phone(object):
             ).start()
             # self.dictaphone.dialtone(self.monitor.call_button)
 
-        if self.monitor.sequence in self.sequences.keys():
-            self.sequences[self.monitor.sequence]()
+        if ''.join(self.monitor.sequence) in self.sequences.keys():
+            self.sequences[''.join(self.monitor.sequence)]()
 
         func = None
         # Only execute the button if the handset_up is recorded in the sequence
