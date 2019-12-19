@@ -142,7 +142,6 @@ class Dictaphone(object):
         stream.close()
         print("Played a dialtone")
 
-
     def play_random(self):
         '''Play a random audio file from my audio_files directory.
         Searches for .wav, recursively
@@ -499,7 +498,10 @@ class Phone(object):
 
         self.sequences = {
             '4860': exit,
+            '9453': self.record_operator,
         }
+
+        self.operator_fname = "AUDIO_FILES/operator.wav"
 
 
     def start(self):
@@ -566,7 +568,7 @@ class Phone(object):
         self.play_intro()
 
     def play_intro(self):
-        self.dictaphone.start("play_file", "AUDIO_FILES/mortal_kombat.wav")
+        self.dictaphone.start("play_file", self.operator_fname)
 
     def begin_recording(self):
         self.dictaphone.start('make_recording')
@@ -594,3 +596,21 @@ class Phone(object):
         oname = os.path.join(self.dictaphone.rec_dir, oname)
 
         self.dictaphone.start('play_file', oname)
+
+    def record_operator(self):
+        self.dictaphone.stop()
+
+        nops = 0
+        op_loc = os.path.split(self.operator_fname)[0]
+        for filename in Path(op_loc).rglob('operator.wav.OLD*'):
+            filename = os.path.split(filename)[-1]
+            file_num = filename.replace("operator.wav.OLD", "")
+
+            if file_num.isdigit():
+                file_num = int(file_num)
+                if file_num >= max_num:
+                    max_num = file_num + 1
+
+        os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
+
+        self.dictaphone.start('make_recording', self.operator_fname)
