@@ -183,7 +183,8 @@ class Dictaphone(object):
             oname = os.path.join(self.rec_dir, oname)
 
         else:
-            oname = os.path.join(self.rec_dir, fname)
+            # oname = os.path.join(self.rec_dir, fname)
+            oname = fname
         if os.path.isfile(oname):
             print("File '{}' already exists! Not recording over it.".format(oname))
             return
