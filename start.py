@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 from subprocess import Popen
 
-filename = 'pifone.py'
+filename = '/home/pi/pifone/pifone.py'
 while True:
     print("\nStarting " + filename)
-    try:
-        p = Popen("python3 " + filename, shell=True)
-        p.wait()
-    except SystemExit:
-        break
+
+    p = Popen("python3 " + filename, shell=True)
+    p.wait()
