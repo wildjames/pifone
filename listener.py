@@ -606,7 +606,7 @@ class Phone(object):
         for _ in Path(op_loc).rglob('operator.wav.OLD*'):
             nops += 1
 
-        print("I have {} prior operator recordings")
+        print("I have {} prior operator recordings".format(nops))
         os.rename(self.operator_fname, self.operator_fname+".OLD{}".format(nops))
 
         # self.dictaphone.start('make_recording', self.operator_fname)
