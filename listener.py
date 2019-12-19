@@ -477,7 +477,7 @@ class Phone(object):
     can press a button during playback, and a tone should still play OVER the
     existing stream.
     '''
-    POLLING_RATE = 0.5
+    POLLING_RATE = 0.25
     _polling = False
     loud = 4
 
