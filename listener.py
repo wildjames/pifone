@@ -21,6 +21,7 @@ def get_drive_path():
     '''Return the path to the first usb drive. There should only ever be one maximum!'''
     context = pyudev.Context()
 
+    # Get a list of removable devices, i.e. usb drives. Should only be one!
     removable = [device for device in context.list_devices(subsystem='block', DEVTYPE='disk') if device.attributes.asstring('removable') == "1"]
     for device in removable:
         partitions = [device.device_node for device in context.list_devices(subsystem='block', DEVTYPE='partition', parent=device)]
@@ -29,6 +30,8 @@ def get_drive_path():
         for p in psutil.disk_partitions():
             if p.device in partitions:
                 print("  {}: {}".format(p.device, p.mountpoint))
+
+                # Return the first one, and stop.
                 return p.mountpoint
 
 class Dictaphone(object):
