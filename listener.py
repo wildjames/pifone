@@ -41,7 +41,7 @@ class Dictaphone(object):
     # Dialtone volume
     VOLUME = 0.5
 
-    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, **kwargs):
+    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, indicator_pin=13, **kwargs):
         '''Set up the dictaphone's audio stream'''
 
         if rate is not None:
@@ -83,6 +83,10 @@ class Dictaphone(object):
             8:   [2, 1],
             9:   [2, 2],
         }
+
+        self.LED = gpiozero.PWMLED(pin=indicator_pin, initial_value=False)
+
+        self.LED.blink(on_time=0.1, off_time=0.1, n=50)
 
     def start(self, cmd, *args, **kwargs):
         '''
@@ -194,6 +198,10 @@ class Dictaphone(object):
         self._stop_recording = False
         self._stop_playback = True
 
+        # Start pulsing the LED
+        # self.LED.blink(on_time=3, off_time=3, fade_in_time=1, fade_out_time=1)
+        self.LED.pulse(2.5, 2.5)
+
         if self.LOUD > 0:
             print("Making a recording, saving to {}".format(oname))
 
@@ -229,6 +237,9 @@ class Dictaphone(object):
         self._stop_recording = False
         # Playback can also resume now
         self._stop_playback = False
+
+        # Stop the LED
+        self.LED.off()
 
     def play_file(self, fname):
         '''Play the audio file, fname. Relative path to where the script was run from.
@@ -286,6 +297,9 @@ class Dictaphone(object):
             print("Finished with playback")
             print("Setting _stop_playback to False")
         self._stop_playback = False
+
+        # Flash the LED to say that playback is done
+        self.LED.blink(on_time=0.1, off_time=0.1, n=3)
 
     def enable_playback(self):
         '''Set the flag to enable playback'''
