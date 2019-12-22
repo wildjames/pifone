@@ -1,15 +1,35 @@
 import os
+import shutil
 import threading
 import time
 import wave
+from glob import glob
 from pathlib import Path
 from random import choice
-
-import gpiozero
-import pyaudio
-from numpy import arange, float32, pi, sin
+from subprocess import CalledProcessError, check_output
 from sys import exit
 
+import gpiozero
+import psutil
+import pyaudio
+from numpy import arange, float32, pi, sin
+
+import pyudev
+
+
+def get_drive_path():
+    '''Return the path to the first usb drive. There should only ever be one maximum!'''
+    context = pyudev.Context()
+
+    removable = [device for device in context.list_devices(subsystem='block', DEVTYPE='disk') if device.attributes.asstring('removable') == "1"]
+    for device in removable:
+        partitions = [device.device_node for device in context.list_devices(subsystem='block', DEVTYPE='partition', parent=device)]
+        print("All removable partitions: {}".format(", ".join(partitions)))
+        print("Mounted removable partitions:")
+        for p in psutil.disk_partitions():
+            if p.device in partitions:
+                print("  {}: {}".format(p.device, p.mountpoint))
+                return p.mountpoint
 
 class Dictaphone(object):
     '''
@@ -634,3 +654,24 @@ class Phone(object):
 
         self.dictaphone.play_file('AUDIO_FILES/operator_preamble.wav')
         self.dictaphone.start('make_recording', self.operator_fname)
+
+    def dump_to_drive(self):
+        '''Get the USB drive ridectory.
+        Create a folder called CREATIONS_WILD, and copy AUDIO_FILES/RECORDED
+        to it'''
+        self.handset_down()
+
+        drive_loc = get_drive_path()
+        dump_loc = os.path.join(drive_loc, 'CreationsWild')
+
+        if not os.path.isdir(dump_loc):
+            os.mkdir(dump_loc)
+
+        # Blink the LED while it's copying
+        try:
+            self.dictaphone.LED.pulse(0.5, 0.5)
+            shutil.copytree(self.dictaphone.rec_dir, dump_loc)
+            self.dictaphone.LED.blink(1.0, 0.3, n=5)
+        except:
+            self.dictaphone.LED.blink(0.15, 0.15, n=30)
+
