@@ -109,7 +109,7 @@ class Dictaphone(object):
 
         self.LED = gpiozero.LED(pin=indicator_pin, initial_value=False)
 
-        self.LED.blink(on_time=0.1, off_time=0.1, n=50)
+        self.LED.blink(on_time=0.1, off_time=0.1, n=20)
 
     def start(self, cmd, *args, **kwargs):
         '''
@@ -222,8 +222,7 @@ class Dictaphone(object):
         self._stop_playback = True
 
         # Start pulsing the LED
-        self.LED.blink(on_time=3, off_time=3)
-        # self.LED.pulse(2.5, 2.5)
+        self.LED.on()
 
         if self.LOUD > 0:
             print("Making a recording, saving to {}".format(oname))
@@ -672,7 +671,7 @@ class Phone(object):
 
         # Blink the LED while it's copying
         try:
-            self.dictaphone.LED.blink(0.5, 0.5)
+            self.dictaphone.LED.on()
             shutil.copytree(self.dictaphone.rec_dir, dump_loc)
             self.dictaphone.LED.blink(1.0, 0.3, n=5)
         except:
