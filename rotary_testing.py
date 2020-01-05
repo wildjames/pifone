@@ -9,9 +9,12 @@ counter_pin = 27
 N_PULSES = 0
 def trigger_activated():
     print("Trigger activated!")
+
+    global N_PULSES
     N_PULSES = 0
 
 def add_pulse():
+    global N_PULSES
     N_PULSES += 1
     print("SAW A PULSE: Now at {}".format(N_PULSES))
 
