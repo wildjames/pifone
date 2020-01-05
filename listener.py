@@ -397,6 +397,7 @@ class ButtonMonitor(object):
             pulse_button.when_deactivated = self.add_pulse
 
             trigger_button.when_activated = self.trigger_activated
+            trigger_button.when_deactivated = self.trigger_deactivated
 
             # There is no such thing as zero pulses from the rotary dial.
             self.rotary_buttons = [None,'*','#','redial',4,5,6,7,8,9,0]
@@ -456,8 +457,14 @@ class ButtonMonitor(object):
     def trigger_activated(self):
         self.N_PULSES = 0
 
+    def trigger_deactivated(self):
+        self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
+
     def rotary_ping(self):
-        return self.rotary_buttons[self.N_PULSES]
+        button = self._rotary_pressed
+        self._rotary_pressed = None
+        print("Detected button {} dialled".format(button))
+        return button
 
     def button_dialling(self):
         ''' Check if any of the buttons have been pushed '''
