@@ -5,8 +5,10 @@ import gpiozero
 trigger_pin = 2
 counter_pin = 3
 
+def trigger_activated():
+    print("Trigger activated!")
 
-trigger_button = gpiozero.Button(trigger_pin)
+trigger_button = gpiozero.Button(trigger_pin, active_state=True)
 
 print("OK, go!")
 
