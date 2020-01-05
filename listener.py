@@ -398,7 +398,8 @@ class ButtonMonitor(object):
 
             trigger_button.when_activated = self.trigger_activated
 
-            self.rotary_buttons = [1,2,3,4,5,6,7,8,9,0]
+            # There is no such thing as zero pulses from the rotary dial.
+            self.rotary_buttons = [None,1,2,3,4,5,6,7,8,9,0]
             self.ping_buttons = self.rotary_ping
 
         # This variable holds the name of a button if it's function needs to be called
