@@ -419,8 +419,8 @@ class ButtonMonitor(object):
         self._handset_raised = False
 
         self.handset_button = gpiozero.Button(handset_pin, pull_up=False)
-        self.handset_button.when_pressed = self.handset_down
-        self.handset_button.when_released = self.handset_up
+        self.handset_button.when_pressed = self.handset_up
+        self.handset_button.when_released = self.handset_down
 
         if dummy_mode:
             self.mock_pins = []
