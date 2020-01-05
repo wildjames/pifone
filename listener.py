@@ -363,27 +363,43 @@ class ButtonMonitor(object):
     POLLING_RATE = 0.05
     LOUD = 3
 
-    def __init__(self, handset_pin=22, dummy_mode=False):
+    def __init__(self, handset_pin=22, dummy_mode=False, dial_mode='buttons'):
         if dummy_mode:
             print("Using the dummy mode pins")
             from gpiozero.pins.mock import MockFactory
             gpiozero.Device.pin_factory = MockFactory()
+        elif dial_mode == 'buttons':
+            self.ping_buttons = self.button_dialling
 
-        # The buttons are separated into groups.
-        # These are one side of the buttons, which will have a voltage applied
-        self.grpA_pin = gpiozero.DigitalOutputDevice(pin=12, initial_value=False)
-        self.grpB_pin = gpiozero.DigitalOutputDevice(pin=11, initial_value=False)
-        self.grpC_pin = gpiozero.DigitalOutputDevice(pin=10, initial_value=False)
-        self.grpD_pin = gpiozero.DigitalOutputDevice(pin=9, initial_value=False)
-        print("Initialised Output pins")
+            # The buttons are separated into groups.
+            # These are one side of the buttons, which will have a voltage applied
+            self.grpA_pin = gpiozero.DigitalOutputDevice(pin=12, initial_value=False)
+            self.grpB_pin = gpiozero.DigitalOutputDevice(pin=11, initial_value=False)
+            self.grpC_pin = gpiozero.DigitalOutputDevice(pin=10, initial_value=False)
+            self.grpD_pin = gpiozero.DigitalOutputDevice(pin=9, initial_value=False)
+            print("Initialised Output pins")
 
-        # These are the input pins. I need to check which circuit is closed.
-        self.outA_pin = gpiozero.DigitalInputDevice(pin=8)
-        self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
-        self.outC_pin = gpiozero.DigitalInputDevice(pin=6)
-        self.outD_pin = gpiozero.DigitalInputDevice(pin=5)
-        self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
-        print("Initialised Input pins")
+            # These are the input pins. I need to check which circuit is closed.
+            self.outA_pin = gpiozero.DigitalInputDevice(pin=8)
+            self.outB_pin = gpiozero.DigitalInputDevice(pin=7)
+            self.outC_pin = gpiozero.DigitalInputDevice(pin=6)
+            self.outD_pin = gpiozero.DigitalInputDevice(pin=5)
+            self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
+            print("Initialised Input pins")
+        elif dial_mode == 'rotary':
+            trigger_pin = 17
+            counter_pin = 27
+
+            trigger_button = gpiozero.Button(trigger_pin, pull_up=False)
+            pulse_button = gpiozero.Button(counter_pin, pull_up=False)
+            self.N_PULSES = 0
+
+            pulse_button.when_deactivated = self.add_pulse
+
+            trigger_button.when_activated = self.trigger_activated
+
+            self.rotary_buttons = [1,2,3,4,5,6,7,8,9,0]
+            self.ping_buttons = self.rotary_ping
 
         # This variable holds the name of a button if it's function needs to be called
         self.call_button = None
@@ -433,7 +449,16 @@ class ButtonMonitor(object):
         '''Reset the call_button flag, telling the signaller that the event has been handled'''
         self.call_button = None
 
-    def ping_buttons(self):
+    def add_pulse(self):
+        self.N_PULSES += 1
+
+    def trigger_activated(self):
+        self.N_PULSES = 0
+
+    def rotary_ping(self):
+        return self.rotary_buttons[self.N_PULSES]
+
+    def button_dialling(self):
         ''' Check if any of the buttons have been pushed '''
         # Check the first button group
         self.grpA_pin.value = True
