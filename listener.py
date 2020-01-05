@@ -369,6 +369,7 @@ class ButtonMonitor(object):
             from gpiozero.pins.mock import MockFactory
             gpiozero.Device.pin_factory = MockFactory()
         elif dial_mode == 'buttons':
+            print("Using button dialling!")
             self.ping_buttons = self.button_dialling
 
             # The buttons are separated into groups.
@@ -394,6 +395,7 @@ class ButtonMonitor(object):
             trigger_button = gpiozero.Button(trigger_pin, pull_up=False)
             pulse_button = gpiozero.Button(counter_pin, pull_up=False)
             self.N_PULSES = 0
+            self._rotary_pressed = None
 
             pulse_button.when_deactivated = self.add_pulse
 
