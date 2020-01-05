@@ -456,8 +456,10 @@ class ButtonMonitor(object):
 
     def add_pulse(self):
         self.N_PULSES += 1
+        print("Adding a pulse. Now on {}".format(self.N_PULSES))
 
     def trigger_activated(self):
+        print("Trigger activated")
         self.N_PULSES = 0
 
     def trigger_deactivated(self):
