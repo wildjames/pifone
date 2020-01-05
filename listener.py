@@ -469,7 +469,7 @@ class ButtonMonitor(object):
     def rotary_ping(self):
         button = self._rotary_pressed
         self._rotary_pressed = None
-        if buttons is not None:
+        if button is not None:
             print("Detected button {} dialled".format(button))
         return button
 
