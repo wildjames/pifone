@@ -8,7 +8,7 @@ counter_pin = 27
 def trigger_activated():
     print("Trigger activated!")
 
-trigger_button = gpiozero.Button(trigger_pin)
+trigger_button = gpiozero.Button(trigger_pin, pull_up=False)
 
 print("OK, go!")
 
