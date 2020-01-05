@@ -387,6 +387,7 @@ class ButtonMonitor(object):
             self.inpins = [self.outA_pin, self.outB_pin, self.outC_pin, self.outD_pin]
             print("Initialised Input pins")
         elif dial_mode == 'rotary':
+            print("Using rotary dialling!")
             trigger_pin = 17
             counter_pin = 27
 
