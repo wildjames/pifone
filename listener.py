@@ -392,15 +392,15 @@ class ButtonMonitor(object):
             trigger_pin = 17
             counter_pin = 27
 
-            trigger_button = gpiozero.Button(trigger_pin, pull_up=False)
-            pulse_button = gpiozero.Button(counter_pin, pull_up=False)
+            self.trigger_button = gpiozero.Button(trigger_pin, pull_up=False)
+            self.pulse_button = gpiozero.Button(counter_pin, pull_up=False)
             self.N_PULSES = 0
             self._rotary_pressed = None
 
-            pulse_button.when_deactivated = self.add_pulse
+            self.pulse_button.when_deactivated = self.add_pulse
 
-            trigger_button.when_activated = self.trigger_activated
-            trigger_button.when_deactivated = self.trigger_deactivated
+            self.trigger_button.when_activated = self.trigger_activated
+            self.trigger_button.when_deactivated = self.trigger_deactivated
 
             # There is no such thing as zero pulses from the rotary dial.
             self.rotary_buttons = [None,'*','#','redial',4,5,6,7,8,9,0]
