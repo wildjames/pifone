@@ -459,6 +459,7 @@ class ButtonMonitor(object):
 
     def trigger_deactivated(self):
         self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
+        print("Trigger dropped. Dialled {}".format(self.N_PULSES))
 
     def rotary_ping(self):
         button = self._rotary_pressed
