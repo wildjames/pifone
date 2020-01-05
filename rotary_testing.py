@@ -1,4 +1,5 @@
 import gpiozero
+from time import sleep
 
 
 trigger_pin = 17
@@ -13,4 +14,4 @@ print("OK, go!")
 
 trigger_button.when_activated = trigger_activated
 
-print("Trigger initiated!")
+sleep(60)
