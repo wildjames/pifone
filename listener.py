@@ -579,8 +579,8 @@ class Phone(object):
         }
 
         self.sequences = {
-            '4860': self.exit,
-            '9453': self.record_operator,
+            '4868': self.exit,
+            '9458': self.record_operator,
         }
 
         self.operator_fname = "AUDIO_FILES/operator.wav"
