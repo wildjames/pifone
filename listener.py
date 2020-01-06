@@ -463,7 +463,12 @@ class ButtonMonitor(object):
         self.N_PULSES = 0
 
     def trigger_deactivated(self):
-        self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
+        try:
+            self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
+        except IndexError:
+            # The user can muck about with the rotary and dial an arbitrary
+            # number of pulses, if they're being a dick. Catch that.
+            self._rotary_pressed = None
         print("Trigger dropped. Dialled {}".format(self.N_PULSES))
 
     def rotary_ping(self):
