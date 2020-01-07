@@ -403,7 +403,7 @@ class ButtonMonitor(object):
             self.trigger_button.when_deactivated = self.trigger_deactivated
 
             # There is no such thing as zero pulses from the rotary dial.
-            self.rotary_buttons = [None,'*','#','redial',4,5,6,7,8,9,0]
+            self.rotary_buttons = [None,'*','#',3,4,5,6,7,8,9,'redial']
             self.ping_buttons = self.rotary_ping
 
         # This variable holds the name of a button if it's function needs to be called
@@ -580,7 +580,7 @@ class Phone(object):
 
         self.sequences = {
             '4868': self.exit,
-            '9458': self.record_operator,
+            '0458': self.record_operator,
         }
 
         self.operator_fname = "AUDIO_FILES/operator.wav"
