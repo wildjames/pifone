@@ -743,8 +743,8 @@ class Phone(object):
             self.dictaphone.LED.blink(0.1, 0.4)
             # shutil.copytree(self.dictaphone.rec_dir, dump_loc)
             sync(self.dictaphone.rec_dir, dump_loc, 'sync')
-            self.dictaphone.LED.blink(1.0, 0.3, n=5)
+            self.dictaphone.LED.blink(0.1, 0.1, n=5)
         except:
             print("Failed to copy the files!!")
-            self.dictaphone.LED.blink(0.15, 0.15, n=30)
+            self.dictaphone.LED.blink(0.15, 0.05, n=30)
 
