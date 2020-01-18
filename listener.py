@@ -720,6 +720,10 @@ class Phone(object):
         dump_loc = os.path.join(drive_loc, 'CreationsWild/')
         print("I will dump my files to {}".format(dump_loc))
 
+        if not os.path.isdir(dump_loc):
+            print("Path doesn't exist. Creating it now!")
+            os.mkdir(dump_loc)
+
         # Blink the LED while it's copying
         try:
             self.dictaphone.LED.on()
