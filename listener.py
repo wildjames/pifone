@@ -721,7 +721,12 @@ class Phone(object):
         print("I will dump my files to {}".format(dump_loc))
 
         if not os.path.isdir(dump_loc):
-            print("Path doesn't exist. Creating it now!")
+            print("CreationsWild directory doesn't exist. Creating it now!")
+            os.mkdir(dump_loc)
+
+        dump_loc = os.path.join(dump_loc, 'RECORDED')
+        if not os.path.isdir(dump_loc):
+            print("RECORDED directory doesn't exist. Creating it now!")
             os.mkdir(dump_loc)
 
         # Blink the LED while it's copying
