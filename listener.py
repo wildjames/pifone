@@ -1,5 +1,6 @@
 import os
-import shutil
+# import shutil
+from dirsync import sync
 import threading
 import time
 import wave
@@ -450,6 +451,7 @@ class ButtonMonitor(object):
     def clear_sequence(self):
         '''Clear the recording of which buttons have been pushed'''
         self.sequence = []
+        self.call_button = None
 
     def called_button(self):
         '''Reset the call_button flag, telling the signaller that the event has been handled'''
@@ -715,18 +717,14 @@ class Phone(object):
         if drive_loc is None:
             print("No usb drive inserted!")
             return
-        dump_loc = os.path.join(drive_loc, 'CreationsWild')
+        dump_loc = os.path.join(drive_loc, 'CreationsWild/')
         print("I will dump my files to {}".format(dump_loc))
-
-        if not os.path.isdir(dump_loc):
-            print("Creating that directory...")
-            os.mkdir(dump_loc)
-            print("Done!")
 
         # Blink the LED while it's copying
         try:
             self.dictaphone.LED.on()
-            shutil.copytree(self.dictaphone.rec_dir, dump_loc)
+            # shutil.copytree(self.dictaphone.rec_dir, dump_loc)
+            sync(self.dictaphone.rec_dir, dump_loc, 'sync')
             self.dictaphone.LED.blink(1.0, 0.3, n=5)
         except:
             print("Failed to copy the files!!")
