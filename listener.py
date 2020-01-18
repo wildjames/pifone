@@ -33,6 +33,7 @@ def get_drive_path():
 
                 # Return the first one, and stop.
                 return p.mountpoint
+    return None
 
 class Dictaphone(object):
     '''
@@ -710,6 +711,8 @@ class Phone(object):
         self.handset_down()
 
         drive_loc = get_drive_path()
+        if drive_loc is None:
+            return
         dump_loc = os.path.join(drive_loc, 'CreationsWild')
 
         if not os.path.isdir(dump_loc):
