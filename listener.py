@@ -711,7 +711,9 @@ class Phone(object):
         self.handset_down()
 
         drive_loc = get_drive_path()
+        print("Drive loc is '{}'".format(drive_loc))
         if drive_loc is None:
+            print("No usb drive inserted!")
             return
         dump_loc = os.path.join(drive_loc, 'CreationsWild')
 
