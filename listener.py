@@ -581,6 +581,7 @@ class Phone(object):
         self.sequences = {
             '4868': self.exit,
             '9458': self.record_operator,
+            '97531': self.dump_to_drive,
         }
 
         self.operator_fname = "AUDIO_FILES/operator.wav"
