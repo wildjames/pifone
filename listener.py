@@ -716,9 +716,12 @@ class Phone(object):
             print("No usb drive inserted!")
             return
         dump_loc = os.path.join(drive_loc, 'CreationsWild')
+        print("I will dump my files to {}".format(dump_loc))
 
         if not os.path.isdir(dump_loc):
+            print("Creating that directory...")
             os.mkdir(dump_loc)
+            print("Done!")
 
         # Blink the LED while it's copying
         try:
@@ -726,5 +729,6 @@ class Phone(object):
             shutil.copytree(self.dictaphone.rec_dir, dump_loc)
             self.dictaphone.LED.blink(1.0, 0.3, n=5)
         except:
+            print("Failed to copy the files!!")
             self.dictaphone.LED.blink(0.15, 0.15, n=30)
 
