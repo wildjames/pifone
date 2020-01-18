@@ -66,7 +66,9 @@ class Dictaphone(object):
     # Dialtone volume
     VOLUME = 0.5
 
-    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)', rate=None, rec_format=None, chunk_size=None, n_channels=None, indicator_pin=18, **kwargs):
+    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)',
+        rate=None, rec_format=None, chunk_size=None, n_channels=None,
+        indicator_pin=18, **kwargs):
         '''Set up the dictaphone's audio stream'''
 
         if rate is not None:
@@ -737,7 +739,8 @@ class Phone(object):
 
         # Blink the LED while it's copying
         try:
-            self.dictaphone.LED.on()
+            print("Dumping files...")
+            self.dictaphone.LED.blink(0.1, 0.4)
             # shutil.copytree(self.dictaphone.rec_dir, dump_loc)
             sync(self.dictaphone.rec_dir, dump_loc, 'sync')
             self.dictaphone.LED.blink(1.0, 0.3, n=5)
