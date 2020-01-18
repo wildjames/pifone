@@ -611,26 +611,26 @@ class Phone(object):
 
     def poll_monitor(self):
         '''If the monitor has picked up on a button that must be evaluated, do that'''
-        # Play the dialtone for the button
+
+        func = None
 
         seq = ''.join([str(i) for i in self.monitor.sequence])
         if seq in self.sequences.keys():
             self.sequences[seq]()
             self.monitor.clear_sequence()
-
-        func = None
-        # Only execute the button if the handset_up is recorded in the sequence
-        if self.monitor.call_button in self.button_functions.keys():
-            if self.monitor.call_button in self.dictaphone.button_tones.keys():
-                threading.Thread(
-                    target=self.dictaphone.dialtone,
-                    args=(self.monitor.call_button,)
-                ).start()
-                # self.dictaphone.dialtone(self.monitor.call_button)
-            func = self.button_functions[self.monitor.call_button]
-            print("I need to call function {}".format(func.__name__))
-        elif self.monitor.call_button is not None:
-            func = self.not_implimented
+        else:
+            # Only execute the button if the handset_up is recorded in the sequence
+            if self.monitor.call_button in self.button_functions.keys():
+                if self.monitor.call_button in self.dictaphone.button_tones.keys():
+                    threading.Thread(
+                        target=self.dictaphone.dialtone,
+                        args=(self.monitor.call_button,)
+                    ).start()
+                    # self.dictaphone.dialtone(self.monitor.call_button)
+                func = self.button_functions[self.monitor.call_button]
+                print("I need to call function {}".format(func.__name__))
+            elif self.monitor.call_button is not None:
+                func = self.not_implimented
 
         if func is not None:
             threading.Thread(target=func).start()
