@@ -16,12 +16,12 @@ Then bolt on the USB hat, and plug in the sound card & female port. Then, arrang
   
 Software will need loading onto the Pi;
   - `sudo apt-get update && sudo apt-get upgrade -y`
-  - `sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy`
+  - `sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev`
   - `git clone https://github.com/wildjames/pifone`
   - `cd pifone`
   - `pip3 install -r requirements.txt`
   - Disable the built-in sound card for the pi
-  - Add the start script to the boot rc.local
+  - Add the start script to the boot `/etc/rc.local`
     - `/home/pi/pifone/start.py > null`
     
     
