@@ -88,7 +88,7 @@ class Dictaphone(object):
 
         print(self.player.get_device_count())
         if self.player.get_device_count() > 0:
-            with open("CARDS.txt", 'a+') as f:
+            with open("/home/pi/CARDS.txt", 'a+') as f:
                 for dev_index in range(self.player.get_device_count()):
                     info = self.player.get_device_info_by_index(dev_index)
                     f.write(info)
