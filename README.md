@@ -31,14 +31,14 @@ After=multi-user.target
 [Service]
 Type=idle
 ExecStart=/home/pi/pifone/start.py
-RootDirectory="/home/pi/pifone"
-WorkingDirectory="/home/pi/pifone"
+RootDirectory=/home/pi/pifone/
+WorkingDirectory=/home/pi/pifone/
 User=pi
 
 [Install]
 WantedBy=multi-user.target
-
 ```
+
     - `sudo chmod 644 /lib/systemd/system/pifone.service`
     - `sudo systemctl daemon-reload`
     - `sudo systemctl enable pifone.service`
