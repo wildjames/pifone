@@ -17,12 +17,16 @@ You'll need to connect up the correct pins to the relevant contacts.
 
 Then bolt on the USB hat, and plug in the sound card & female port. Then, arrange inside the casing and glue down!
   
+### Disk image
+
+Flash the latest raspbian image. Then `touch /Volumes/boot/ssh`. After that, enable USB gadget mode by adding 
+  
 ### Software will need loading onto the Pi
 
 We need to grab a load of python gubbins
 ```
 sudo apt-get update && sudo apt-get upgrade -y
-sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev
+sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev alsa-utils
 git clone https://github.com/wildjames/pifone
 cd pifone
 sudo -H pip3 install -r requirements.txt
@@ -31,19 +35,17 @@ This installs the modules as root, for the service later. Then:
 
 ### Disable the built-in sound card for the pi
 
-[from here](https://superuser.com/questions/989385/how-to-make-raspberry-pi-use-an-external-usb-sound-card-as-a-default)
+[from here](https://www.instructables.com/id/Disable-the-Built-in-Sound-Card-of-Raspberry-Pi/)
 
-If you don't need the onboard audio chip (i.e. analog output or hdmi audio), disable it and then the USB audio device can become the primary device:
+Create a blacklist file and add the soundcard to it:
+```
+echo "blacklist snd_bcm2835" >> alsa-blacklist.conf
+sudo mv alsa-blacklist.conf /etc/modprobe.d/
+```
 
-  - Disable onboard audio.
-    - Open /etc/modprobe.d/raspi-blacklist.conf and add blacklist snd_bcm2835.
-    - Allow the USB audio device to be the default device.
-    - Open /lib/modprobe.d/aliases.conf and comment out the line options snd-usb-audio index=-2
-  - Reboot
-    - sudo reboot
-  - Test it out.
-    - `$aplay /usr/share/sounds/alsa/Front_Center.wav`
+#### If on a zero W
 
+you can ssh in over wifi, and connect while the dongle is in. At this point, test that the pifone works by just running `start.py` in the pifone directory, as the user `pi`.
 
 ### Add the `start.py` script to the boot services
 
