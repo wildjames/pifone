@@ -21,8 +21,23 @@ Software will need loading onto the Pi;
   - `cd pifone`
   - `pip3 install -r requirements.txt`
   - Disable the built-in sound card for the pi
-  - Add the start script to the boot `/etc/rc.local`
-    - `/home/pi/pifone/start.py > null`
+  - Add the start script to the boot scripts
+    - `sudo nano /lib/systemd/system/pifone.service` and add this to it:
+```
+ [Unit]
+ Description=PiFone
+ After=multi-user.target
+ 
+ [Service]
+ Type=idle
+ ExecStart=/usr/bin/python3 /home/pi/pifone/start.py
+ 
+ [Install]
+ WantedBy=multi-user.target
+```
+    - `sudo chmod 644 /lib/systemd/system/pifone.service`
+    - `sudo systemctl daemon-reload`
+    - `sudo systemctl enable pifone.service`
     
     
 TODO: Create a disk image I can burn that already has all this done.
