@@ -94,7 +94,6 @@ class Dictaphone(object):
                 f.write("\n\n\n\n")
                 if audio_device in info['name']:
                     self.DEVICE_INDEX = dev_index
-            exit()
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
 
         # Keys for reconstructing the dialtones
