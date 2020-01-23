@@ -87,10 +87,13 @@ class Dictaphone(object):
         self.player = pyaudio.PyAudio()
 
         print(self.player.get_device_count())
-        for dev_index in range(self.player.get_device_count()):
-            info = self.player.get_device_info_by_index(dev_index)
-            if info['name'] == audio_device:
-                self.DEVICE_INDEX = dev_index
+        with open("CARDS.txt", 'w') as f:
+            for dev_index in range(self.player.get_device_count()):
+                info = self.player.get_device_info_by_index(dev_index)
+                f.write(info)
+                f.write("\n\n\n\n")
+                if info['name'] == audio_device:
+                    self.DEVICE_INDEX = dev_index
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
 
         # Keys for reconstructing the dialtones
