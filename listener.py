@@ -66,7 +66,7 @@ class Dictaphone(object):
     # Dialtone volume
     VOLUME = 0.5
 
-    def __init__(self, audio_dir='.', audio_device='USB Audio Device: - (hw:1,0)',
+    def __init__(self, audio_dir='.', audio_device='C-MEDIA ELECTRONICS INC',
         rate=None, rec_format=None, chunk_size=None, n_channels=None,
         indicator_pin=18, **kwargs):
         '''Set up the dictaphone's audio stream'''
@@ -92,7 +92,7 @@ class Dictaphone(object):
                 info = self.player.get_device_info_by_index(dev_index)
                 f.write(info)
                 f.write("\n\n\n\n")
-                if info['name'] == audio_device:
+                if audio_device in info['name']:
                     self.DEVICE_INDEX = dev_index
             exit()
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
