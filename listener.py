@@ -87,14 +87,13 @@ class Dictaphone(object):
         self.player = pyaudio.PyAudio()
 
         print(self.player.get_device_count())
-        if self.player.get_device_count() > 0:
-            with open("/home/pi/CARDS.txt", 'a+') as f:
-                for dev_index in range(self.player.get_device_count()):
-                    info = self.player.get_device_info_by_index(dev_index)
-                    f.write(info)
-                    f.write("\n\n\n\n")
-                    if info['name'] == audio_device:
-                        self.DEVICE_INDEX = dev_index
+        with open("/home/pi/CARDS.txt", 'a+') as f:
+            for dev_index in range(self.player.get_device_count()):
+                info = self.player.get_device_info_by_index(dev_index)
+                f.write(info)
+                f.write("\n\n\n\n")
+                if info['name'] == audio_device:
+                    self.DEVICE_INDEX = dev_index
         else:
             exit()
         print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
