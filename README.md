@@ -14,14 +14,17 @@ You'll need to connect up the correct pins to the relevant contacts.
   - Indicator LED
 Then bolt on the USB hat, and plug in the sound card & female port. Then, arrange inside the casing and glue down!
   
-Software will need loading onto the Pi;
-  - `sudo apt-get update && sudo apt-get upgrade -y`
-  - `sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev`
-  - `git clone https://github.com/wildjames/pifone`
-  - `cd pifone`
-  - `sudo -H pip3 install -r requirements.txt` - This installs the modules as root, for the service later
+  - Software will need loading onto the Pi;
+```bash
+sudo apt-get update && sudo apt-get upgrade -y
+sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev
+git clone https://github.com/wildjames/pifone
+cd pifone
+sudo -H pip3 install -r requirements.txt
+```
+This installs the modules as root, for the service later. Then:
   - Disable the built-in sound card for the pi
-  - Add the start script to the boot scripts
+  - Add the `start.py` script to the boot services
     - `sudo nano /lib/systemd/system/pifone.service` and add this to it:
 ```
 [Unit]
@@ -39,9 +42,12 @@ User=pi
 WantedBy=multi-user.target
 ```
 
-    - `sudo chmod 644 /lib/systemd/system/pifone.service`
-    - `sudo systemctl daemon-reload`
-    - `sudo systemctl enable pifone.service`
+Then:
+```
+sudo chmod 644 /lib/systemd/system/pifone.service
+sudo systemctl daemon-reload
+sudo systemctl enable pifone.service
+```
     
     
 TODO: Create a disk image I can burn that already has all this done.
