@@ -90,7 +90,7 @@ class Dictaphone(object):
         with open("/home/pi/CARDS.txt", 'a+') as f:
             for dev_index in range(self.player.get_device_count()):
                 info = self.player.get_device_info_by_index(dev_index)
-                f.write(info)
+                f.write(str(info))
                 f.write("\n\n\n\n")
                 # if audio_device in info['name']:
                 self.DEVICE_INDEX = dev_index
