@@ -66,7 +66,7 @@ class Dictaphone(object):
     # Dialtone volume
     VOLUME = 0.5
 
-    def __init__(self, audio_dir='.', audio_device='C-MEDIA ELECTRONICS INC',
+    def __init__(self, audio_dir='.', audio_device='USB',
         rate=None, rec_format=None, chunk_size=None, n_channels=None,
         indicator_pin=18, **kwargs):
         '''Set up the dictaphone's audio stream'''
@@ -92,9 +92,13 @@ class Dictaphone(object):
                 info = self.player.get_device_info_by_index(dev_index)
                 f.write(str(info))
                 f.write("\n\n\n\n")
-                # if audio_device in info['name']:
-                self.DEVICE_INDEX = dev_index
-        print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
+                if audio_device in info['name']:
+                    self.DEVICE_INDEX = dev_index
+        try:
+            print("The USB sound card is device, {}".format(self.DEVICE_INDEX))
+        except:
+            print("Could not find an audio device with '{}' in the name!".format(audio_device))
+            exit()
 
         # Keys for reconstructing the dialtones
         self.button_tones = {
