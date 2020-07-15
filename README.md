@@ -37,15 +37,31 @@ This installs the modules as root, for the service later. Then:
 
 [from here](https://www.instructables.com/id/Disable-the-Built-in-Sound-Card-of-Raspberry-Pi/)
 
-Create a blacklist file and add the soundcard to it:
+The USB sound device can be made the default audio device by editing a system file “alsa.conf” :
+
 ```
-echo "blacklist snd_bcm2835" >> alsa-blacklist.conf
-sudo mv alsa-blacklist.conf /etc/modprobe.d/
+sudo nano /usr/share/alsa/alsa.conf
+```
+Scroll and find the following two lines:
+```
+defaults.ctl.card 0
+defaults.pcm.card 0
+```
+
+Change the 0 to a 1 to match the card number of the USB device :
+
+```
+defaults.ctl.card 1
+defaults.pcm.card 1
 ```
 
 #### If on a zero W
 
-you can ssh in over wifi, and connect while the dongle is in. At this point, test that the pifone works by just running `start.py` in the pifone directory, as the user `pi`.
+you can ssh in over wifi, and connect while the dongle is in. At this point, test that the pifone works by just running `start.py` in the pifone directory, as the user `pi`. Alternatively:
+
+```
+aplay /usr/share/sounds/alsa/Front_Center.wav
+```
 
 ### Add the `start.py` script to the boot services
 
