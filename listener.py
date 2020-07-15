@@ -64,7 +64,7 @@ class Dictaphone(object):
     LOUD = 4
 
     # Dialtone volume
-    VOLUME = 0.5
+    VOLUME = 0.8
 
     def __init__(self, audio_dir='.', audio_device='USB',
         rate=None, rec_format=None, chunk_size=None, n_channels=None,
@@ -180,7 +180,7 @@ class Dictaphone(object):
         stream.close()
         print("Played a dialtone")
 
-    def play_random(self):
+    def play_random(self, directory="."):
         '''Play a random audio file from my audio_files directory.
         Searches for .wav, recursively
         '''
@@ -188,7 +188,7 @@ class Dictaphone(object):
         if self.LOUD > 4:
             print("Files in my audio_dir")
         files = []
-        for filename in Path(self.audio_dir).rglob('*.wav'):
+        for filename in Path(os.path.join(self.audio_dir, directory)).rglob('*.wav'):
             files.append(str(filename))
 
         if self.LOUD > 3:
@@ -217,7 +217,7 @@ class Dictaphone(object):
                     if file_num >= max_num:
                         max_num = file_num + 1
 
-            oname = "{:>04d}.wav".format(max_num)
+            oname = "{:>05d}.wav".format(max_num)
             oname = os.path.join(self.rec_dir, oname)
 
         else:
@@ -678,8 +678,12 @@ class Phone(object):
 
     def play_random(self):
         self.dictaphone.stop()
-        self.dictaphone.start('play_random')
+        self.dictaphone.start('play_random', directory='RECORDED')
 
+    def play_joke(self):
+        self.dictaphone.stop()
+        self.dictaphone.start('play_random', directory='JOKES')
+        
     def play_most_recent(self):
         print("Playing most recent recording")
         self.dictaphone.stop()
@@ -695,7 +699,7 @@ class Phone(object):
                 if file_num >= max_num:
                     max_num = file_num
 
-        oname = "{:>04d}.wav".format(max_num)
+        oname = "{:>05d}.wav".format(max_num)
         oname = os.path.join(self.dictaphone.rec_dir, oname)
 
         self.dictaphone.start('play_file', oname)
