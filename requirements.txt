@@ -15,12 +15,11 @@ PyAudio==0.2.11
 pycrypto==2.6.1
 PyGObject==3.30.4
 pyparsing==2.4.5
-python-apt==1.8.4
 python-dateutil==2.8.1
-pyxdg==0.25
+pyxdg>=0.26
 requests==2.21.0
 SecretStorage==2.3.1
 six==1.12.0
 ssh-import-id==5.7
-urllib3==1.24.1
+urllib3==1.24.2
 Wave==0.0.2
