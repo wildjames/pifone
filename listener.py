@@ -64,7 +64,7 @@ class Dictaphone(object):
     LOUD = 4
 
     # Dialtone volume
-    DIAL_VOLUME = 0.8
+    DIAL_VOLUME = 0.5
     PLAY_VOLUME = 10
 
     def __init__(self, audio_dir='.', audio_device='USB',
@@ -577,8 +577,8 @@ class Phone(object):
         Start up my Dictaphone and Signaller objects, which will handle lower level stuff.
         '''
 
-        self.dictaphone = Dictaphone(audio_dir)
         self.monitor = ButtonMonitor(handset_pin=handset_pin, dial_mode=dial_mode)
+        self.dictaphone = Dictaphone(audio_dir)
 
         self.button_functions = {
             'handset_lifted': self.handset_up,
