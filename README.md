@@ -26,7 +26,7 @@ Flash the latest raspbian image. Then `touch /Volumes/boot/ssh`. After that, ena
 We need to grab a load of python gubbins
 ```
 sudo apt-get update && sudo apt-get upgrade -y
-sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev alsa-utils
+sudo apt-get install -y git python3-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python3-pyaudio python3-pip python3-numpy libatlas-base-dev alsa-utils
 git clone https://github.com/wildjames/pifone
 cd pifone
 sudo -H pip3 install -r requirements.txt
