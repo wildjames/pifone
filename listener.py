@@ -65,7 +65,7 @@ class Dictaphone(object):
 
     # Dialtone volume
     DIAL_VOLUME = 0.8
-    PLAY_VOLUME = 10.0
+    PLAY_VOLUME = 10
 
     def __init__(self, audio_dir='.', audio_device='USB',
         rate=None, rec_format=None, chunk_size=None, n_channels=None,
@@ -317,7 +317,7 @@ class Dictaphone(object):
         # Loop through, reading the data and playing it.
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
-            stream.write(data * self.PLAY_VOLUME)
+            stream.write(data)
             data = audio_file.readframes(self.CHUNKSIZE)
 
         # close stuff gracefully.
