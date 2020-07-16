@@ -64,7 +64,8 @@ class Dictaphone(object):
     LOUD = 4
 
     # Dialtone volume
-    VOLUME = 0.8
+    DIAL_VOLUME = 0.8
+    PLAY_VOLUME = 10.0
 
     def __init__(self, audio_dir='.', audio_device='USB',
         rate=None, rec_format=None, chunk_size=None, n_channels=None,
@@ -135,15 +136,12 @@ class Dictaphone(object):
         args = args
         kwargs = kwargs
 
-        threading.Thread(
-            target=target, args=args, kwargs=kwargs,
-            daemon=True,
-        ).start()
+        threading.Thread(target=target, args=args, kwargs=kwargs, daemon=True).start()
 
     def dialtone(self, button, duration=0.15):
         '''Play a dialtone, corresponding to <button>, for <duration> seconds'''
         print("Playing a button tone for {}".format(button))
-        volume = self.VOLUME / 2
+        volume = self.DIAL_VOLUME / 2
 
         freqs_A = [1209., 1336., 1477., 1633.]
         freqs_B = [ 697.,  770.,  852.,  941.]
@@ -319,7 +317,7 @@ class Dictaphone(object):
         # Loop through, reading the data and playing it.
         data = audio_file.readframes(self.CHUNKSIZE)
         while data and not self._stop_playback:
-            stream.write(data)
+            stream.write(data * self.PLAY_VOLUME)
             data = audio_file.readframes(self.CHUNKSIZE)
 
         # close stuff gracefully.
