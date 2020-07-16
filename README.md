@@ -26,7 +26,7 @@ Flash the latest raspbian image. Then `touch /Volumes/boot/ssh`. After that, ena
 We need to grab a load of python gubbins
 ```
 sudo apt-get update && sudo apt-get upgrade -y
-sudo apt-get install -y git python-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python-pyaudio python3-pip python3-numpy libatlas-base-dev alsa-utils
+sudo apt-get install -y git python3-dev libportaudio0 libportaudio2 libportaudiocpp0 portaudio19-dev python3-pyaudio python3-pip python3-numpy libatlas-base-dev alsa-utils
 git clone https://github.com/wildjames/pifone
 cd pifone
 sudo -H pip3 install -r requirements.txt
@@ -89,6 +89,17 @@ sudo chmod 644 /lib/systemd/system/pifone.service
 sudo systemctl daemon-reload
 sudo systemctl enable pifone.service
 ```
-    
-    
-TODO: Create a disk image I can burn that already has all this done.
+
+For some reason, this sometimes crashes for me on some installations and not others. I'm too lazy to figure out why, so an alternative is to add it to the crontab:
+
+```
+crontab -e
+```
+and add this line:
+```
+@reboot /home/pi/pifone/start.py
+```
+which seems to do the trick.
+
+## TODOs:
+  - Create a disk image I can burn that already has all this done.
