@@ -89,6 +89,17 @@ sudo chmod 644 /lib/systemd/system/pifone.service
 sudo systemctl daemon-reload
 sudo systemctl enable pifone.service
 ```
-    
-    
-TODO: Create a disk image I can burn that already has all this done.
+
+For some reason, this sometimes crashes for me on some installations and not others. I'm too lazy to figure out why, so an alternative is to add it to the crontab:
+
+```
+crontab -e
+```
+and add this line:
+```
+@reboot /home/pi/pifone/start.py
+```
+which seems to do the trick.
+
+## TODOs:
+  - Create a disk image I can burn that already has all this done.
