@@ -681,7 +681,7 @@ class Phone(object):
     def play_joke(self):
         self.dictaphone.stop()
         self.dictaphone.start('play_random', directory='JOKES')
-        
+
     def play_most_recent(self):
         print("Playing most recent recording")
         self.dictaphone.stop()
