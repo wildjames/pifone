@@ -1,6 +1,5 @@
 # pifone
-A raspberry pi-based dictaphone
-
+A raspberry pi-based dictaphone, housed in old-timey phones. I originally made this for my wedding, for people to leave cute recordings on. When that was over though, there were still some rough edges I wanted to smooth out, plus I wanted to try it with a rotary phone. As it stands, I've build four of these, of varying quality. 
 
 This project is one of those that I'll never fully finish, I suspect. Starting from scratch so I don't inherit my crappy logic from before, when I was learining a lot about GPIO, audio streams, and classes.
 
@@ -14,6 +13,8 @@ You'll need to connect up the correct pins to the relevant contacts.
   - Dial pad / rotator
   - Handset switch
   - Indicator LED
+
+This will be highly dependant on the physical phone that you're using, so I want to avoid setting hard requirements on this. You'll very likely have to alter the ButtonMonitor class!
 
 Then bolt on the USB hat, and plug in the sound card & female port. Then, arrange inside the casing and glue down!
   
@@ -103,3 +104,5 @@ which seems to do the trick.
 
 ## TODOs:
   - Create a disk image I can burn that already has all this done.
+  - Put in some pictures
+  - Write a base ButtonMonitor class, that gets built on top of for each phone I make.
