@@ -14,6 +14,9 @@ import gpiozero
 import psutil
 import pyaudio
 from numpy import arange, float32, pi, sin
+import numpy as np
+import noisereduce as nr
+from scipy.io import wavfile
 
 import pyudev
 
@@ -269,6 +272,9 @@ class Dictaphone(object):
         # Playback can also resume now
         self._stop_playback = False
 
+        # Open a thread to clean the audio.
+        self.start("clean_file", oname)
+        
         # Stop the LED
         self.LED.off()
 
@@ -331,6 +337,14 @@ class Dictaphone(object):
 
         # Flash the LED to say that playback is done
         self.LED.blink(on_time=0.1, off_time=0.1, n=3)
+
+    def clean_file(self, fname, noise_sample="noise_sample.wav"):
+        noise_rate, noise_clip = wavfile.read(noise_sample)
+        noise_clip = noise_clip.astype(np.float32)
+        audio_rate, audio_clip = wavfile.read(fname)
+        audio_clip = audio_clip.astype(np.float32)
+        processed_clip = nr.reduce_noise(audio_clip=audio_clip, noise_clip=noise_clip, verbose=False)
+        wavfile.write(fname, audio_rate, np.asarray(processed_clip, dtype=np.int16))
 
     def enable_playback(self):
         '''Set the flag to enable playback'''
