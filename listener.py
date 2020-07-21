@@ -64,7 +64,7 @@ class Dictaphone(object):
     LOUD = 4
 
     # Dialtone volume
-    DIAL_VOLUME = 0.5
+    DIAL_VOLUME = 0.15
     PLAY_VOLUME = 10
 
     def __init__(self, audio_dir='.', audio_device='USB',
@@ -412,7 +412,7 @@ class ButtonMonitor(object):
             self.trigger_button.when_deactivated = self.trigger_deactivated
 
             # There is no such thing as zero pulses from the rotary dial.
-            self.rotary_buttons = [None,'*','#',3,4,5,6,7,8,9,'redial']
+            self.rotary_buttons = [None,1,2,3,4,5,6,7,8,9,0]
             self.ping_buttons = self.rotary_ping
 
         # This variable holds the name of a button if it's function needs to be called
@@ -474,7 +474,8 @@ class ButtonMonitor(object):
 
     def trigger_deactivated(self):
         try:
-            self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
+            if self._handset_raised:
+                self._rotary_pressed = self.rotary_buttons[self.N_PULSES]
         except IndexError:
             # The user can muck about with the rotary and dial an arbitrary
             # number of pulses, if they're being a dick. Catch that.
@@ -583,19 +584,21 @@ class Phone(object):
         self.button_functions = {
             'handset_lifted': self.handset_up,
             'handset_down': self.handset_down,
-            'redial': self.begin_recording,
-            '*': self.play_random,
-            '#': self.play_most_recent,
+            0: self.begin_recording,
+            1: self.play_random,
+            2: self.play_most_recent,
         }
 
         self.sequences = {
             '4868': self.exit,
             '9458': self.record_operator,
-            '9753*': self.dump_to_drive,
+            '97531': self.dump_to_drive,
+            '999': self.play_joke,
+            '345': self.play_voyager,
         }
 
         self.operator_fname = "AUDIO_FILES/operator.wav"
-
+        self.handset_raised_delay = 1.5
 
     def start(self):
         '''Start up the monitor, and myself checking for inputs'''
@@ -669,9 +672,11 @@ class Phone(object):
         self.play_intro()
 
     def play_intro(self):
+        time.sleep(self.handset_raised_delay)
         self.dictaphone.start("play_file", self.operator_fname)
 
     def begin_recording(self):
+        self.dictaphone.stop()
         self.dictaphone.start('make_recording')
 
     def play_random(self):
@@ -681,6 +686,10 @@ class Phone(object):
     def play_joke(self):
         self.dictaphone.stop()
         self.dictaphone.start('play_random', directory='JOKES')
+
+    def play_voyager(self):
+        self.dictaphone.stop()
+        self.dictaphone.start('play_random', directory='VOYAGER')
 
     def play_most_recent(self):
         print("Playing most recent recording")
