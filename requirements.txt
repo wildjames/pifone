@@ -13,7 +13,7 @@ idna==2.6
 keyring==17.1.1
 keyrings.alt==3.1.1
 kiwisolver==1.1.0
-numpy==1.16.2
+numpy==1.22.0
 PyAudio==0.2.11
 PyGObject==3.30.4
 pyparsing==2.4.5
